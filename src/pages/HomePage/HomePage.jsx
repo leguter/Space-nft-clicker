@@ -29,7 +29,7 @@ export default function HomePage() {
       <div className={styles.Card}>
         {/* -- ХЕДЕР -- */}
         <header className={styles.header}>
-          <h1 className={styles.title}>TAP MASTER</h1>
+          <h1 className={styles.title}>SPACE CLICKER</h1>
           <FaUserCircle className={styles.userIcon} />
         </header>
 
