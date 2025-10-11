@@ -4,3 +4,20 @@
   align-items: center;     /* Центрує по вертикалі */
   min-height: 100vh;       /* Робить контейнер висотою з екран */
 }
+.menu {
+  /* flex */
+  display: flex;
+
+  /* justify-around */
+  justify-content: space-around;
+
+  /* border-t border-[#00eaff]/20 */
+  /* border-top: 1px solid rgba(0, 234, 255, 0.2); */
+
+  /* bg-[#080022]/80 */
+  /* background-color: rgba(8, 0, 34, 0.8); */
+
+  /* py-3 */
+  padding-top: 10px; /* 12px */
+  padding-bottom: 10px; /* 12px */
+}

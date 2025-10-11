@@ -37,7 +37,7 @@ export default function App() {
       <div className="your-content">
       <div className="p-4 flex-1">{renderPage()}</div>
 
-      <div className="flex justify-around border-t border-[#00eaff]/20 bg-[#080022]/80 py-3">
+      <div className="menu">
         <button onClick={() => setPage("home")}>🏠</button>
         <button onClick={() => setPage("earn")}>💎</button>
         <button onClick={() => setPage("raffles")}>🎁</button>
