@@ -1,6 +1,7 @@
 import styles from "./ProfilePage.module.css";
 
 export default function ProfilePage({user}) {
+  document.getElementById('debug-output').textContent = JSON.stringify(user,null, 2);
   return (
     <div className={styles.Container}>
       <div className={styles.Card}>
