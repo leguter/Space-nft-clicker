@@ -48,7 +48,7 @@
 //     </div>
 //   );
 // }
-// import { useState } from "react";
+import { useState } from "react";
 // Імпортуємо ваші сторінки
 import HomePage from "./pages/HomePage/HomePage";
 import EarnPage from "./pages/EarnPage/EarnPage";
@@ -57,7 +57,7 @@ import BoostersPage from "./pages/BoostersPage/BoostersPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../src/components/MainLayout/MainLayout"; // Наш новий контейнер
-// import { useEffect } from "react";
+import { useEffect } from "react";
 // import { Routes, Route } from 'react-router-dom';
 // Імпортуємо стилі для App та навігації
 // import styles from "./App.module.css";
@@ -156,53 +156,64 @@ import MainLayout from "../src/components/MainLayout/MainLayout"; // Наш но
 //   );
 // }
 export default function App() {
- const tg = window.Telegram.WebApp;
-let userData = null;
-// Функція, яка буде виконувати автентифікацію
-const authenticate = async () => {
-    try {
-        // Переконуємось, що ми всередині Telegram і є дані
-        if (!tg.initData) {
-            console.error("Не знайдено initData. Додаток запущено не через Telegram?");
-            // Тут можна показати повідомлення користувачу
-            return;
-        }
+   const [userData, setUserData] = useState(null);
+// let userData = null;
+ useEffect(() => {
+        // Хук, який виконується один раз після того, як компонент з'явився на екрані
 
-        console.log("Відправляємо initData на бекенд:", tg.initData);
+        const tg = window.Telegram.WebApp;
 
-        const response = await fetch('https://back-space-clicker.onrender.com/api/auth', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            // Відправляємо весь рядок initData, як і вимагає бекенд
-            body: JSON.stringify({ initData: tg.initData })
-        });
-        
-        if (!response.ok) {
-            // Якщо сервер повернув помилку (напр. 401, 500)
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Помилка автентифікації');
-        }
+        const authenticate = async () => {
+            try {
+                // Повідомляємо Telegram, що додаток готовий
+                tg.ready();
 
-        userData = await response.json();
-        
-        // Зберігаємо дані користувача (включно з токеном)
-        console.log("✅ Успішна відповідь від бекенду:", userData);
-        
-        // Наприклад, зберігаємо токен для подальших запитів
-        localStorage.setItem('authToken', userData.token);
+                if (!tg.initData) {
+                    console.error("Не знайдено initData. Додаток запущено не через Telegram?");
+                    
+                    // Для дебагу у браузері, показуємо повідомлення прямо на екрані
+                    const debugOutput = document.getElementById('debug-output');
+                    if (debugOutput) {
+                        debugOutput.textContent = 'Запустіть додаток через клієнт Telegram для автентифікації.';
+                    }
+                    return; // Важливо: виходимо з функції, якщо даних немає
+                }
 
-    } catch (error) {
-        console.error("❌ Сталася помилка під час автентифікації:", error);
-    }
-};
+                console.log("Відправляємо initData на бекенд:", tg.initData);
 
-// 1. Повідомляємо Telegram, що наш додаток готовий до роботи
-tg.ready();
+                const response = await fetch('https://back-space-clicker.onrender.com/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: tg.initData }),
+                });
 
-// 2. Викликаємо нашу функцію для автентифікації
-authenticate();
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Помилка автентифікації');
+                }
+
+                const userData = await response.json();
+                console.log("✅ Успішна відповідь від бекенду:", userData);
+                localStorage.setItem('authToken', userData.token);
+                 setUserData(userData)
+                // Виводимо дані на екран для дебагу
+                const debugOutput = document.getElementById('debug-output');
+                if (debugOutput) {
+                    debugOutput.textContent = JSON.stringify(userData, null, 2);
+                }
+
+            } catch (error) {
+                console.error("❌ Сталася помилка під час автентифікації:", error);
+                const debugOutput = document.getElementById('debug-output');
+                if (debugOutput) {
+                    debugOutput.textContent = `Помилка: ${error.message}`;
+                }
+            }
+        };
+
+        authenticate();
+
+    }, []); // Пустий масив залежностей означає, що код виконається 1 раз
 
   return (
     <Routes>

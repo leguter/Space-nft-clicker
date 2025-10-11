@@ -1,9 +1,11 @@
+
 import styles from "./ProfilePage.module.css";
 
 export default function ProfilePage({user}) {
   document.getElementById('debug-output').textContent = JSON.stringify(user,null, 2);
   return (
-    <div className={styles.Container}>
+    user ? (
+<div className={styles.Container}>
       <div className={styles.Card}>
         <div className={styles.Avatar}></div>
         <h2 className={styles.Name}>{user}</h2>
@@ -22,5 +24,9 @@ export default function ProfilePage({user}) {
         </div>
       </div>
     </div>
+    ) : (
+      <h1>НЕ ВОРК</h1>
+    )
+    
   );
 }
