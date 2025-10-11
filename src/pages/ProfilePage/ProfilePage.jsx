@@ -1,11 +1,11 @@
 import styles from "./ProfilePage.module.css";
 
-export default function ProfilePage() {
+export default function ProfilePage({user}) {
   return (
     <div className={styles.Container}>
       <div className={styles.Card}>
         <div className={styles.Avatar}></div>
-        <h2 className={styles.Name}>CryptoUser</h2>
+        <h2 className={styles.Name}>{user}</h2>
         <p className={styles.Id}>@username</p>
 
         <div className={styles.Stats}>

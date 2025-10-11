@@ -157,7 +157,7 @@ import MainLayout from "../src/components/MainLayout/MainLayout"; // Наш но
 // }
 export default function App() {
  const tg = window.Telegram.WebApp;
-
+let userData = null;
 // Функція, яка буде виконувати автентифікацію
 const authenticate = async () => {
     try {
@@ -185,7 +185,7 @@ const authenticate = async () => {
             throw new Error(errorData.message || 'Помилка автентифікації');
         }
 
-        const userData = await response.json();
+        userData = await response.json();
         
         // Зберігаємо дані користувача (включно з токеном)
         console.log("✅ Успішна відповідь від бекенду:", userData);
@@ -212,7 +212,7 @@ authenticate();
         <Route path="earn" element={<EarnPage />} />
         <Route path="raffles" element={<RafflesPage />} />
         <Route path="boosters" element={<BoostersPage />} />
-        <Route path="profile" element={<ProfilePage />} />
+        <Route path="profile" element={<ProfilePage user={userData} />} />
       </Route>
     </Routes>
   );
