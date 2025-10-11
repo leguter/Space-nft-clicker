@@ -1,0 +1,52 @@
+.Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #070a2a;
+  min-height: 100vh;
+}
+
+.Card {
+  background: linear-gradient(180deg, rgba(10, 15, 40, 0.9), rgba(4, 6, 25, 0.95));
+  border: 1px solid rgba(255, 204, 0, 0.3);
+  border-radius: 28px;
+  padding: 40px;
+min-width: 220px;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
+}
+
+.Avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 2px solid #ffcc00;
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+  background: radial-gradient(circle at center, #0a1837, #030514);
+}
+
+.Name {
+  color: #ffcc00;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.Id {
+  color: #a7a7d4;
+  margin-bottom: 30px;
+}
+
+.Stats {
+  display: flex;
+  justify-content: space-around;
+}
+
+.StatNumber {
+  color: #ffcc00;
+  font-weight: 700;
+  font-size: 18px;
+}

@@ -1,0 +1,6 @@
+.parent-container {
+  display: flex;
+  justify-content: center; /* Центрує по горизонталі */
+  align-items: center;     /* Центрує по вертикалі */
+  min-height: 100vh;       /* Робить контейнер висотою з екран */
+}

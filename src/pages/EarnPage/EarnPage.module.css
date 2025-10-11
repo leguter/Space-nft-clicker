@@ -1,0 +1,57 @@
+@import "../HomePage/HomePage.module.css";
+
+.Container {
+  composes: Container from "../HomePage/HomePage.module.css";
+}
+
+.Card {
+  composes: Card from "../HomePage/HomePage.module.css";
+}
+
+.Title {
+  color: #1ebfff;
+  font-size: 24px;
+  text-shadow: 0 0 10px #00bfff;
+  margin-bottom: 20px;
+}
+
+.Description {
+  color: #8fa5ff;
+  margin-bottom: 30px;
+}
+
+.Highlight {
+  color: #ffd84a;
+  text-shadow: 0 0 8px #ffd84a;
+}
+
+.TaskList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.TaskItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(0, 136, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px 18px;
+  background: rgba(10, 15, 40, 0.6);
+}
+
+.BtnClaim {
+  border: 2px solid #00ffcc;
+  color: #00ffcc;
+  background: transparent;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.BtnClaim:hover {
+  background: rgba(0, 255, 204, 0.1);
+  box-shadow: 0 0 15px #00ffcc;
+}
