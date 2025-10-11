@@ -57,6 +57,7 @@ import BoostersPage from "./pages/BoostersPage/BoostersPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../src/components/MainLayout/MainLayout"; // Наш новий контейнер
+// import { useEffect } from "react";
 // import { Routes, Route } from 'react-router-dom';
 // Імпортуємо стилі для App та навігації
 // import styles from "./App.module.css";
@@ -155,6 +156,25 @@ import MainLayout from "../src/components/MainLayout/MainLayout"; // Наш но
 //   );
 // }
 export default function App() {
+//   useEffect(() => {
+//   const tg = window.Telegram.WebApp;
+//   if (tg.initData) {
+//     // Відправляємо initData на бекенд для аутентифікації
+//     authenticateUser(tg.initData);
+//   }
+// }, []);
+
+// const authenticateUser = async (initData) => {
+//   // Використовуємо axios або fetch для відправки запиту
+//   const response = await fetch('https://your-backend-url.com/api/auth', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ initData })
+//   });
+//   const userData = await response.json();
+//   // Зберігаємо дані користувача (включно з токеном)
+//   console.log(userData); 
+// };
   return (
     <Routes>
       {/* Всі сторінки тепер знаходяться всередині MainLayout */}
