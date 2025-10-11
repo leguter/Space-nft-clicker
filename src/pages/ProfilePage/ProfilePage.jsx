@@ -17,6 +17,7 @@ export default function ProfilePage({user}) {
             <span className={styles.StatNumber}>480⭐</span>
             <p>Total Earned</p>
           </div>
+          <pre id="debug-output" style="word-wrap: break-word; white-space: pre-wrap; color: white;"></pre>
         </div>
       </div>
     </div>

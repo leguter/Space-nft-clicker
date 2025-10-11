@@ -203,6 +203,7 @@ tg.ready();
 
 // 2. Викликаємо нашу функцію для автентифікації
 authenticate();
+document.getElementById('debug-output').textContent = JSON.stringify(userData, null, 2);
   return (
     <Routes>
       {/* Всі сторінки тепер знаходяться всередині MainLayout */}
