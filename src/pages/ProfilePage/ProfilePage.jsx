@@ -2,7 +2,6 @@
 import styles from "./ProfilePage.module.css";
 
 export default function ProfilePage({user}) {
-  document.getElementById('debug-output').textContent = JSON.stringify(user,null, 2);
   return (
     user ? (
 <div className={styles.Container}>
@@ -20,7 +19,6 @@ export default function ProfilePage({user}) {
             <span className={styles.StatNumber}>480⭐</span>
             <p>Total Earned</p>
           </div>
-          <pre id="debug-output" style="word-wrap: break-word; white-space: pre-wrap; color: white;"></pre>
         </div>
       </div>
     </div>
