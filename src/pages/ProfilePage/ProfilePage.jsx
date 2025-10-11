@@ -7,7 +7,7 @@ export default function ProfilePage({user}) {
 <div className={styles.Container}>
       <div className={styles.Card}>
         <div className={styles.Avatar}></div>
-        <h2 className={styles.Name}>{user}</h2>
+        <h2 className={styles.Name}>space clicker</h2>
         <p className={styles.Id}>@username</p>
 
         <div className={styles.Stats}>
