@@ -1,11 +1,23 @@
 @import "../HomePage/HomePage.module.css";
 
 .Container {
-  composes: Container from "../HomePage/HomePage.module.css";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #070a2a;
+  min-height: 100vh;
+
 }
 
-.Card {
-  composes: Card from "../HomePage/HomePage.module.css";
+.card {
+  background: linear-gradient(180deg, rgba(10, 15, 40, 0.9), rgba(4, 6, 25, 0.95));
+  border: 1px solid rgba(0, 136, 255, 0.3);
+  border-radius: 28px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 100, 255, 0.2);
 }
 
 .Title {
