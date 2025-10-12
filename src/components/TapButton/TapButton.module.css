@@ -1,0 +1,59 @@
+.tapButton {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  display: grid;
+  place-items: center;
+  position: relative;
+  transition: transform 0.1s ease-out;
+  background: radial-gradient(circle, #2d005c, #0d0124);
+}
+
+.tapButton::before, .tapButton::after {
+  content: "";
+  position: absolute;
+  top: -6px; left: -6px;
+  right: -6px; bottom: -6px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tapButton::before {
+  border: 3px solid #00eaff;
+  box-shadow: 0 0 20px #00eaff;
+}
+
+.tapButton::after {
+  border: 3px solid #ff00ff;
+  box-shadow: 0 0 20px #ff00ff;
+  animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.tapButtonInner {
+  color: #fff;
+  text-align: center;
+  z-index: 1;
+}
+
+.tapIcon {
+  font-size: 3rem;
+  display: block;
+}
+
+.tapText {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+.tapped {
+  transform: scale(0.95);
+}

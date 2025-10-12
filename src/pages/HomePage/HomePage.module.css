@@ -172,13 +172,13 @@
 /* -- БАЛАНС -- */
 .balance {
   color: #ffd700;
-  font-size: 2.8rem;
+  font-size: 2.6rem;
   font-weight: 700;
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
 }
 
 /* -- ГОЛОВНА КНОПКА -- */
-.tapButton {
+/* .tapButton {
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -236,7 +236,7 @@
 
 .tapped {
   transform: scale(0.95);
-}
+} */
 
 /* -- ПРОГРЕС БАР -- */
 .progressSection {
@@ -290,4 +290,29 @@
 .boostersButton:hover {
   background-color: rgba(255, 0, 255, 0.1);
   box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
+}
+/* animation +1 +1 */
+.floatingNumber {
+  position: absolute; /* Обов'язково для позиціонування по координатах */
+  font-size: 2.5rem;  /* Зробимо текст більшим */
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 5px #ffd700, 0 0 10px #ffc400;
+  animation: floatUp 1s ease-out forwards;
+  pointer-events: none; /* Щоб цифри не заважали клікати */
+  user-select: none;
+  /* Коригуємо позицію, щоб цифра з'являлась над пальцем */
+  transform: translate(-50%, -100%); 
+}
+
+/* Ключові кадри анімації */
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1); /* Початкова позиція і розмір */
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -250%) scale(1.5); /* Кінцева позиція (вище) і більший розмір */
+  }
 }

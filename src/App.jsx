@@ -176,7 +176,7 @@ export default function App() {
                     if (debugOutput) {
                         debugOutput.textContent = 'Запустіть додаток через клієнт Telegram для автентифікації.';
                     }
-                    return; // Важливо: виходимо з функції, якщо даних немає
+                    return; // Важливо: виходимо з функції, якщо даних немає 
                 }
 
                 console.log("Відправляємо initData на бекенд:", tg.initData);
