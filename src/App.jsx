@@ -158,63 +158,53 @@ import { useEffect } from "react";
 export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
- useEffect(() => {
-        // Хук, який виконується один раз після того, як компонент з'явився на екрані
+useEffect(() => {
+  const tg = window.Telegram.WebApp;
+  tg.ready();
 
-        const tg = window.Telegram.WebApp;
+  const waitForInitData = async () => {
+    // Очікуємо, поки Telegram передасть initData
+    let attempts = 0;
+    while (!tg.initData && attempts < 10) {
+      await new Promise(res => setTimeout(res, 300)); // чекати 0.3 сек
+      attempts++;
+    }
 
-        const authenticate = async () => {
-            try {
-                // Повідомляємо Telegram, що додаток готовий
-                tg.ready();
+    if (!tg.initData) {
+      console.error("❌ Не знайдено initData навіть після очікування");
+      setUserData({ error: true });
+      return;
+    }
 
-                if (!tg.initData) {
-                    console.error("Не знайдено initData. Додаток запущено не через Telegram?");
-                    
-                    // Для дебагу у браузері, показуємо повідомлення прямо на екрані
-                    const debugOutput = document.getElementById('debug-output');
-                    if (debugOutput) {
-                        debugOutput.textContent = 'Запустіть додаток через клієнт Telegram для автентифікації.';
-                    }
-                    return; // Важливо: виходимо з функції, якщо даних немає 
-                }
+    try {
+      console.log("📤 Відправляємо initData:", tg.initData);
+      const res = await fetch("https://back-space-clicker.onrender.com/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData: tg.initData }),
+      });
 
-                console.log("Відправляємо initData на бекенд:", tg.initData);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Помилка автентифікації");
 
-                const response = await fetch('https://back-space-clicker.onrender.com/api/auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: tg.initData }),
-                });
+      console.log("✅ Отримано userData:", data);
+      localStorage.setItem("authToken", data.token);
+      setUserData(data);
+    } catch (err) {
+      console.error("❌ Помилка під час авторизації:", err);
+      setUserData({ error: true });
+    }
+  };
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Помилка автентифікації');
-                }
+  waitForInitData();
+}, []); // Пустий масив залежностей означає, що код виконається 1 раз
+if (userData === null) {
+  return <div>Завантаження...</div>;
+}
 
-                const userData = await response.json();
-                console.log("✅ Успішна відповідь від бекенду:", userData);
-                localStorage.setItem('authToken', userData.token);
-                 setUserData(userData)
-                // Виводимо дані на екран для дебагу
-                const debugOutput = document.getElementById('debug-output');
-                if (debugOutput) {
-                    debugOutput.textContent = JSON.stringify(userData, null, 2);
-                }
-
-            } catch (error) {
-                console.error("❌ Сталася помилка під час автентифікації:", error);
-                const debugOutput = document.getElementById('debug-output');
-                if (debugOutput) {
-                    debugOutput.textContent = `Помилка: ${error.message}`;
-                }
-            }
-        };
-
-        authenticate();
-
-    }, []); // Пустий масив залежностей означає, що код виконається 1 раз
-
+if (userData?.error) {
+  return <div>Запустіть додаток через Telegram для авторизації</div>;
+}
   return (
     <Routes>
       {/* Всі сторінки тепер знаходяться всередині MainLayout */}
