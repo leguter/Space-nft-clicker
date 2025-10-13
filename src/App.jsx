@@ -178,7 +178,7 @@ useEffect(() => {
 
     try {
       console.log("📤 Відправляємо initData:", tg.initData);
-      const res = await fetch("https://back-space-clicker.onrender.com/api/auth", {
+      const res = await fetch("https://back-space-clicker-1.onrender.com/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ initData: tg.initData }),
