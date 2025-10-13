@@ -7,9 +7,9 @@ export default function ProfilePage({user}) {
     user ? (
 <div className={styles.Container}>
       <div className={styles.Card}>
-        <div className={styles.Avatar}></div>
-        <h2 className={styles.Name}>{user.name || "Space User"}</h2>
-        <p className={styles.Id}>{user.username}</p>
+       {user.user.photo ? <img src={user.user.photo} className={styles.Photo}></img> : (<div className={styles.Avatar}></div>)} 
+        <h2 className={styles.Name}>{user.user.name || "Space User"}</h2>
+        <p className={styles.Id}>@{user.user.username}</p>
 
         <div className={styles.Stats}>
           <div>
