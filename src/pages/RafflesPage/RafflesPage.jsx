@@ -31,7 +31,7 @@
 // }
 
 import  { Component } from "react";
-import RaffleCard from "../../components/RafflesCard/RafflesCard";
+import RaffleCard from "../../components/RafflesCard/RaffleCard";
 import styles from "./RafflesPage.module.css";
 
 class RafflesPage extends Component {
