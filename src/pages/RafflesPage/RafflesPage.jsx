@@ -32,7 +32,7 @@
 
 import  { Component } from "react";
 import RaffleCard from "../../components/RafflesCard/RafflesCard";
-import styles from "./Raffles.module.css";
+import styles from "./RafflesPage.module.css";
 
 class RafflesPage extends Component {
   constructor(props) {
