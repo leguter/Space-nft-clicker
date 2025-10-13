@@ -4,6 +4,11 @@
   padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #00ffff;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
 }
 
 .header {
@@ -28,11 +33,17 @@
   background: transparent;
   cursor: pointer;
   transition: all 0.2s;
+  font-weight: bold;
 }
 
 .joinButton:hover:not(:disabled) {
   background: #00ffff;
   color: black;
+  transform: scale(1.05);
+}
+
+.joinButton:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .joinButton:disabled {

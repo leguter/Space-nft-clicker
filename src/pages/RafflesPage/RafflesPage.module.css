@@ -83,54 +83,21 @@ width: 220px;
   margin-bottom: 1rem;
 }
 
-.raffleCard {
-  background: #10132b;
-  border-radius: 1rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #00ffff;
-}
-
-.raffleHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.ticketCost {
-  color: #facc15;
-}
-
-.joinButton {
-  width: 100%;
-  padding: 0.5rem 0;
-  border-radius: 0.5rem;
-  color: #00ffff;
-  border: 1px solid #00ffff;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.joinButton:hover:not(:disabled) {
-  background: #00ffff;
-  color: black;
-}
-
-.joinButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .userTickets {
   margin-top: 1rem;
   color: #ccc;
+  font-size: 1.2rem;
+  transition: all 0.3s ease; /* плавне оновлення */
 }
 
 .userTickets span {
   color: #facc15;
   font-weight: bold;
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
+
+.userTickets span.updated {
+  transform: scale(1.3);
+}
+
