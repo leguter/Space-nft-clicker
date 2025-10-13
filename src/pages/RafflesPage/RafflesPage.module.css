@@ -1,4 +1,4 @@
-.Container {
+/* .Container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,4 +59,78 @@ width: 220px;
 .BtnJoin:hover {
   background: rgba(0, 255, 204, 0.1);
   box-shadow: 0 0 20px #00ffcc;
+} */
+
+.container {
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, #0a0f28, #04061a);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  color: #a0a0a0;
+  margin-bottom: 1rem;
+}
+
+.raffleCard {
+  background: #10132b;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #00ffff;
+}
+
+.raffleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.ticketCost {
+  color: #facc15;
+}
+
+.joinButton {
+  width: 100%;
+  padding: 0.5rem 0;
+  border-radius: 0.5rem;
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.joinButton:hover:not(:disabled) {
+  background: #00ffff;
+  color: black;
+}
+
+.joinButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.userTickets {
+  margin-top: 1rem;
+  color: #ccc;
+}
+
+.userTickets span {
+  color: #facc15;
+  font-weight: bold;
 }
