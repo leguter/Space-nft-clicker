@@ -8,7 +8,7 @@ export default function ProfilePage({user}) {
 <div className={styles.Container}>
       <div className={styles.Card}>
        {user.user.photo ? <img src={user.user.photo} className={styles.Photo}></img> : (<div className={styles.Avatar}></div>)} 
-        <h2 className={styles.Name}>{user.user.name || "Space User"}</h2>
+        <h2 className={styles.Name}>{user.user.firstName || "Space User"}</h2>
         <p className={styles.Id}>@{user.user.username}</p>
 
         <div className={styles.Stats}>
@@ -17,7 +17,7 @@ export default function ProfilePage({user}) {
             <p>Referrals</p>
           </div>
           <div>
-            <span className={styles.StatNumber}>480⭐</span>
+            <span className={styles.StatNumber}>{user.user.balance}⭐</span>
             <p>Total Earned</p>
           </div>
         </div>
