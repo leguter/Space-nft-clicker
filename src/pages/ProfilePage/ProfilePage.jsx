@@ -2,6 +2,7 @@
 import styles from "./ProfilePage.module.css";
 
 export default function ProfilePage({user}) {
+  console.log(user)
   return (
     user ? (
 <div className={styles.Container}>
