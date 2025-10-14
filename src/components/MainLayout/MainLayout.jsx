@@ -96,7 +96,7 @@ export default function MainLayout() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch("/api/user/me", {
+        const res = await fetch("https://back-space-clicker-1.onrender.com/api/user/me", {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
           }
@@ -121,7 +121,7 @@ export default function MainLayout() {
     setIsTapped(true);
 
     try {
-      const res = await fetch("/api/user/tap", {
+      const res = await fetch("https://back-space-clicker-1.onrender.com/api/user/tap", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
