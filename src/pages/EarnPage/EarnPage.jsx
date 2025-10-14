@@ -31,35 +31,47 @@
 // }
 
 // EarnPage.js
-import { useState } from "react";
+// EarnPage.js
+import { useState, useEffect } from "react"; // 👈 Додайте useEffect
 import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
-import api from "../../utils/api"; // Припустимо, у вас є налаштований екземпляр axios
+import api from "../../utils/api";
 
 export default function EarnPage() {
   const [isClaiming, setIsClaiming] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false); // Стан для виконаного завдання
+  const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState(null);
 
-  // TODO: При завантаженні сторінки потрібно перевіряти,
-  // чи це завдання вже було виконано раніше.
-  // Це можна зробити, додавши відповідний роут на бекенд.
+  // ✨ КРОК 2: ДОДАЄМО useEffect ДЛЯ ПЕРЕВІРКИ СТАТУСУ ПРИ ЗАВАНТАЖЕННІ
+  useEffect(() => {
+    const fetchTaskStatus = async () => {
+      try {
+        const response = await api.get("/api/user/tasks");
+        const { completedTasks } = response.data;
+        
+        // Перевіряємо, чи є наше завдання у списку виконаних
+        if (completedTasks.includes("follow_telegram_channel")) {
+          setIsCompleted(true);
+        }
+      } catch (err) {
+        console.error("Failed to fetch task statuses:", err);
+      }
+    };
+
+    fetchTaskStatus();
+  }, []); // 👈 Порожній масив означає, що ефект виконається лише раз при монтуванні
 
   const handleClaim = async () => {
     setIsClaiming(true);
     setError(null);
     try {
-      // Робимо запит на наш новий ендпоінт
       const response = await api.post("/api/user/claim/subscription", {});
-      
       console.log("Success:", response.data.message);
-      setIsCompleted(true); // Позначаємо як виконане
-
+      setIsCompleted(true);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Something went wrong.";
       console.error("Claim error:", errorMessage);
       setError(errorMessage);
-      // Можна показати помилку користувачу через 2-3 секунди
       setTimeout(() => setError(null), 3000);
     } finally {
       setIsClaiming(false);
@@ -75,6 +87,7 @@ export default function EarnPage() {
 
   return (
     <div className={styles.Container}>
+      {/* ... ваша JSX розмітка залишається без змін ... */}
       <div className={styles.card}>
         <h2 className={styles.Title}>Earn Rewards</h2>
         <p className={styles.Description}>
@@ -85,19 +98,17 @@ export default function EarnPage() {
           <div className={styles.TaskItem}>
             <div>
               <p>Follow our Telegram Channel</p>
-              {/* Показуємо помилку, якщо вона є */}
               {error && <p className={styles.ErrorText}>{error}</p>}
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
               className={`${styles.BtnClaim} ${isCompleted ? styles.BtnCompleted : ''}`}
               onClick={handleClaim}
-              disabled={isClaiming || isCompleted} // Блокуємо кнопку
+              disabled={isClaiming || isCompleted}
             >
               {getButtonText()}
             </motion.button>
           </div>
-          {/* ... інші завдання ... */}
         </div>
       </div>
     </div>

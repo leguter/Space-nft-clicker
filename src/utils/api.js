@@ -29,10 +29,29 @@
 // }
 import axios from 'axios';
 
-const apiClient = axios.create({
-  baseURL: 'https://back-space-clicker-1.onrender.com',
-  // Тут можна додати й інші налаштування, наприклад, заголовки
-  // headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
+// Створюємо екземпляр axios
+const api = axios.create({
+  baseURL: 'https://back-space-clicker-1.onrender.com' // Ваш базовий URL
 });
 
-export default apiClient;
+// ✨ Ось магія: створюємо перехоплювач запитів
+api.interceptors.request.use(
+  (config) => {
+    // Перед кожним запитом отримуємо токен з localStorage
+    const token = localStorage.getItem('authToken');
+
+    // Якщо токен існує, додаємо його в заголовок Authorization
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Повертаємо оновлену конфігурацію
+    return config;
+  },
+  (error) => {
+    // Робимо щось із помилкою запиту
+    return Promise.reject(error);
+  }
+);
+
+export default api;
