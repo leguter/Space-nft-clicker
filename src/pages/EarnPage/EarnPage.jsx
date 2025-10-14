@@ -34,7 +34,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
-import api from "./api"; // Припустимо, у вас є налаштований екземпляр axios
+import api from "../../utils/api"; // Припустимо, у вас є налаштований екземпляр axios
 
 export default function EarnPage() {
   const [isClaiming, setIsClaiming] = useState(false);
