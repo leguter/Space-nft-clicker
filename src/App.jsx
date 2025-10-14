@@ -155,6 +155,7 @@ import { useEffect } from "react";
 //     </div>
 //   );
 // }
+import api from './utils/api'
 export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
@@ -177,24 +178,26 @@ useEffect(() => {
     }
 
     try {
-      console.log("📤 Відправляємо initData:", tg.initData);
-      const res = await fetch("https://back-space-clicker-1.onrender.com/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ initData: tg.initData }),
-      });
+    console.log("📤 Відправляємо initData:", tg.initData);
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Помилка автентифікації");
+    // axios.post приймає URL, потім тіло запиту (data), а потім конфігурацію
+    const res = await api.post(
+      "/api/auth",
+      { initData: tg.initData } // 👈 Тіло запиту передається як об'єкт
+    );
 
-      console.log("✅ Отримано userData:", data);
-      localStorage.setItem("authToken", data.token);
-      setUserData(data);
-    } catch (err) {
-      console.error("❌ Помилка під час авторизації:", err);
-      setUserData({ error: true });
-    }
-  };
+    // ✅ Дані вже в res.data, перевірка res.ok не потрібна
+    console.log("✅ Отримано userData:", res.data);
+    localStorage.setItem("authToken", res.data.token);
+    setUserData(res.data);
+
+  } catch (err) {
+    // ❌ Axios автоматично переходить сюди при помилці (статус не 2xx)
+    const errorMessage = err.response ? err.response.data.message : "Помилка автентифікації";
+    console.error("❌ Помилка під час авторизації:", errorMessage);
+    setUserData({ error: true });
+  }
+};
 
   waitForInitData();
 }, []); // Пустий масив залежностей означає, що код виконається 1 раз
