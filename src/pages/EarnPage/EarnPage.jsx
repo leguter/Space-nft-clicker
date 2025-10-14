@@ -50,7 +50,7 @@ export default function EarnPage() {
     setError(null);
     try {
       // Робимо запит на наш новий ендпоінт
-      const response = await api.post("api/user/claim/subscription", {});
+      const response = await api.post("/api/user/claim/subscription", {});
       
       console.log("Success:", response.data.message);
       setIsCompleted(true); // Позначаємо як виконане
