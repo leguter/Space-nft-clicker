@@ -86,33 +86,38 @@ import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import styles from "../../App.module.css";
 import { FaHome, FaGem, FaGift, FaBolt, FaUser } from "react-icons/fa";
-
+import axios from 'axios';
+import api from '../../utils/api'
 export default function MainLayout() {
   const [balance, setBalance] = useState(0);
   const [progress, setProgress] = useState(0.75);
   const [isTapped, setIsTapped] = useState(false);
-
   // 🧩 1. Отримуємо дані користувача при запуску
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const res = await fetch("https://back-space-clicker-1.onrender.com/api/user/me", {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-          }
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          setBalance(data.balance); // отримуємо баланс з бази
-        } else {
-          console.error("❌ Error loading user data:", data.message);
-        }
-      } catch (err) {
-        console.error("❌ Server error:", err);
+  try {
+    const res = await api.get("https://back-space-clicker-1.onrender.com/api/user/me", {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("authToken")}`
       }
-    };
+    });
 
+    // ✅ Axios автоматично перевіряє, чи успішний запит (статус 2xx)
+    // ✅ Дані з відповіді знаходяться в `res.data`
+    setBalance(res.data.balance); // отримуємо баланс з res.data
+
+  } catch (err) {
+    // ❌ Якщо сервер повертає помилку (4xx, 5xx), axios відхиляє проміс,
+    // і виконання переходить у блок catch
+    if (err.response) {
+      // Помилка прийшла з відповіддю від сервера
+      console.error("❌ Error loading user data:", err.response.data.message);
+    } else {
+      // Помилка мережі або інша проблема
+      console.error("❌ Server error:", err.message);
+    }
+  }
+};
     fetchUserData();
   }, []);
 
@@ -121,26 +126,32 @@ export default function MainLayout() {
     setIsTapped(true);
 
     try {
-      const res = await fetch("https://back-space-clicker-1.onrender.com/api/user/tap", {
-        method: "POST",
+    // Для POST-запиту з axios:
+    // 1-й аргумент: URL
+    // 2-й аргумент: тіло запиту (data). Якщо тіла немає, передаємо порожній об'єкт {}
+    // 3-й аргумент: конфігурація (включно з заголовками)
+    const res = await api.post(
+      "/api/user/tap",
+      {}, // 👈 Порожнє тіло запиту
+      {
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
         }
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setBalance(data.newBalance);
-      } else {
-        console.error("❌ Tap error:", data.message);
       }
-    } catch (err) {
-      console.error("❌ Server error:", err);
-    }
+    );
 
+    // ✅ Дані вже розпарсені і знаходяться в res.data
+    setBalance(res.data.newBalance);
+
+  } catch (err) {
+    // ❌ Axios автоматично "ловить" помилки з кодами 4xx/5xx
+    const errorMessage = err.response ? err.response.data.message : err.message;
+    console.error("❌ Tap error:", errorMessage);
+  } finally {
+    // 💡 Цей блок виконається завжди (і при успіху, і при помилці),
+    // що гарантує скидання стану анімації.
     setTimeout(() => setIsTapped(false), 150);
+  }
   };
 
   return (
