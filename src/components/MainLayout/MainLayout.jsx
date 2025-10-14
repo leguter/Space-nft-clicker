@@ -98,7 +98,7 @@ export default function MainLayout() {
       try {
         const res = await fetch("https://back-space-clicker-1.onrender.com/api/user/me", {
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
         });
         const data = await res.json();
@@ -125,7 +125,7 @@ export default function MainLayout() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
         }
       });
 
