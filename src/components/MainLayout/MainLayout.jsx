@@ -95,7 +95,7 @@ export default function MainLayout() {
   useEffect(() => {
     const fetchUserData = async () => {
   try {
-    const res = await api.get("https://back-space-clicker-1.onrender.com/api/user/me", {
+    const res = await api.get("/api/user/me", {
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("authToken")}`
       }
