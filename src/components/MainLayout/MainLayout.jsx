@@ -86,7 +86,6 @@ import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import styles from "../../App.module.css";
 import { FaHome, FaGem, FaGift, FaBolt, FaUser } from "react-icons/fa";
-import axios from 'axios';
 import api from '../../utils/api'
 export default function MainLayout() {
   const [balance, setBalance] = useState(0);
