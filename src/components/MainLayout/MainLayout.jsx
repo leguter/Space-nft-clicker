@@ -105,7 +105,7 @@ export default function MainLayout() {
     // ✅ Axios автоматично перевіряє, чи успішний запит (статус 2xx)
     // ✅ Дані з відповіді знаходяться в `res.data`
     setBalance(res.data.balance); // отримуємо баланс з res.data
-    setTapPower(res.data.tapPower);
+    setTapPower(Number(res.data.tapPower));
     // console.log(tapPower)
 
   } catch (err) {
