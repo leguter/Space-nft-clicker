@@ -90,6 +90,7 @@ import api from '../../utils/api'
 export default function MainLayout() {
   const [balance, setBalance] = useState(0);
   const [progress, setProgress] = useState(0.75);
+   const [tapPower, setTapPower] = useState(0.75);
   const [isTapped, setIsTapped] = useState(false);
   // 🧩 1. Отримуємо дані користувача при запуску
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function MainLayout() {
     // ✅ Axios автоматично перевіряє, чи успішний запит (статус 2xx)
     // ✅ Дані з відповіді знаходяться в `res.data`
     setBalance(res.data.balance); // отримуємо баланс з res.data
+    setTapPower(res.data.tapPower);
 
   } catch (err) {
     // ❌ Якщо сервер повертає помилку (4xx, 5xx), axios відхиляє проміс,
@@ -157,7 +159,7 @@ export default function MainLayout() {
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
         {/* 🔁 передаємо контекст усім сторінкам */}
-        <Outlet context={{ balance, progress, isTapped, handleTap }} />
+        <Outlet context={{ balance, progress, isTapped, handleTap, tapPower}} />
       </main>
 
       {/* 🔽 нижня навігація */}

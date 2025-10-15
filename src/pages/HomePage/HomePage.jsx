@@ -8,7 +8,7 @@ import { FiZap } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import TapButton from "../../components/TapButton/TapButton";
 export default function HomePage() {
-   const { balance, progress, isTapped, handleTap } = useOutletContext();
+   const { balance, progress, isTapped, handleTap, tapPower } = useOutletContext();
      const [floatingNumbers, setFloatingNumbers] = useState([]);
   // Для прикладу використаємо внутрішній стан, але ці дані мають приходити ззовні
   // const [balance, setBalance] = useState(1245678);
@@ -32,7 +32,7 @@ const handleTapWithAnimation = (e) => {
     // 2. Створюємо новий об'єкт для анімації
     const newNumber = {
       id: Date.now(),
-      value: 1, // Використовуємо динамічне значення
+      value: tapPower, // Використовуємо динамічне значення
       x: e.clientX,     // Координати кліку
       y: e.clientY,
     };
