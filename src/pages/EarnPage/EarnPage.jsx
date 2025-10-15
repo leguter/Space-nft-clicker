@@ -36,6 +36,7 @@ import { useState, useEffect } from "react"; // 👈 Додайте useEffect
 import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
 import api from "../../utils/api";
+const TELEGRAM_CHANNEL_URL = "https://t.me/SpaceClicker";
 
 export default function EarnPage() {
   const [isClaiming, setIsClaiming] = useState(false);
@@ -61,10 +62,17 @@ export default function EarnPage() {
     fetchTaskStatus();
   }, []); // 👈 Порожній масив означає, що ефект виконається лише раз при монтуванні
 
-  const handleClaim = async () => {
-    setIsClaiming(true);
-    setError(null);
+const handleClaim = async () => {
+  // 1️⃣ Відкриваємо канал у новій вкладці Telegram
+  window.open(TELEGRAM_CHANNEL_URL, "_blank");
+
+  // 2️⃣ Чекаємо кілька секунд, щоб користувач устиг підписатись
+  setIsClaiming(true);
+  setError(null);
+
+  setTimeout(async () => {
     try {
+      // 3️⃣ Перевіряємо підписку через бекенд
       const response = await api.post("/api/user/claim/subscription", {});
       console.log("Success:", response.data.message);
       setIsCompleted(true);
@@ -76,7 +84,8 @@ export default function EarnPage() {
     } finally {
       setIsClaiming(false);
     }
-  };
+  }, 3000); // можна збільшити до 5 секунд, якщо потрібно
+};
 
   const getButtonText = () => {
     if (isCompleted) return "COMPLETED";
