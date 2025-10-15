@@ -106,6 +106,7 @@ export default function MainLayout() {
     // ✅ Дані з відповіді знаходяться в `res.data`
     setBalance(res.data.balance); // отримуємо баланс з res.data
     setTapPower(res.data.tapPower);
+    console.log(tapPower)
 
   } catch (err) {
     // ❌ Якщо сервер повертає помилку (4xx, 5xx), axios відхиляє проміс,
