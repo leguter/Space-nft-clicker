@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import TapButton from "../../components/TapButton/TapButton";
 export default function HomePage() {
    const { balance, progress, isTapped, handleTap, tapPower } = useOutletContext();
+   
      const [floatingNumbers, setFloatingNumbers] = useState([]);
   // Для прикладу використаємо внутрішній стан, але ці дані мають приходити ззовні
   // const [balance, setBalance] = useState(1245678);

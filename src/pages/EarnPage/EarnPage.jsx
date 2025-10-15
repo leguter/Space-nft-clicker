@@ -33,6 +33,7 @@
 // EarnPage.js
 // EarnPage.js
 import { useState, useEffect } from "react"; // 👈 Додайте useEffect
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
 import api from "../../utils/api";
