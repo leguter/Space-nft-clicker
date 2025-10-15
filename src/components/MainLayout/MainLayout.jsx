@@ -106,7 +106,7 @@ export default function MainLayout() {
     // ✅ Дані з відповіді знаходяться в `res.data`
     setBalance(res.data.balance); // отримуємо баланс з res.data
     setTapPower(res.data.tapPower);
-    console.log(tapPower)
+    // console.log(tapPower)
 
   } catch (err) {
     // ❌ Якщо сервер повертає помилку (4xx, 5xx), axios відхиляє проміс,
@@ -122,6 +122,11 @@ export default function MainLayout() {
 };
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+  console.log("tapPower змінився:", tapPower);
+}, [tapPower]);
+
 
   // ⚡ 2. TAP — збільшуємо баланс через бекенд
   const handleTap = async () => {
