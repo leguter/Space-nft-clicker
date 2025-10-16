@@ -58,36 +58,9 @@
 
 import { Link } from "react-router-dom";
 import styles from "./RafflesPage.module.css";
+import rafflesData from "../../data/rafflesData";
 
 export default function RafflesPage() {
-  // 🔹 Масив розіграшів — сюди можна легко додавати/редагувати
-  const raffles = [
-    {
-      id: "rare",
-      name: "Rare NFT 🌟",
-      cost: 3,
-      gradient: "linear-gradient(135deg, #00e1ff, #0077ff)",
-    },
-    {
-      id: "legend",
-      name: "Legend NFT 🔥",
-      cost: 5,
-      gradient: "linear-gradient(135deg, #ff7b00, #ff0055)",
-    },
-    {
-      id: "epic",
-      name: "Epic NFT 💎",
-      cost: 8,
-      gradient: "linear-gradient(135deg, #9b00ff, #00fff0)",
-    },
-    {
-      id: "mythic",
-      name: "Mythic NFT ⚡",
-      cost: 12,
-      gradient: "linear-gradient(135deg, #ff00cc, #3333ff)",
-    },
-  ];
-
   const userTickets = 10;
 
   return (
@@ -98,14 +71,14 @@ export default function RafflesPage() {
       </p>
 
       <div className={styles.RafflesList}>
-        {raffles.map((raffle) => (
+        {rafflesData.map((raffle) => (
           <div
             key={raffle.id}
             className={styles.Card}
             style={{ borderImage: `${raffle.gradient} 1` }}
           >
             <div className={styles.CardHeader}>
-              <h3>{raffle.name}</h3>
+              <h3>{raffle.title}</h3>
               <p className={styles.TicketsCost}>{raffle.cost} 🎟</p>
             </div>
             <Link
