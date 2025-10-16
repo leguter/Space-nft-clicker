@@ -60,30 +60,68 @@ import { Link } from "react-router-dom";
 import styles from "./RafflesPage.module.css";
 
 export default function RafflesPage() {
+  // 🔹 Масив розіграшів — сюди можна легко додавати/редагувати
   const raffles = [
-    { id: "rare", name: "Rare NFT 🌟", cost: 3 },
-    { id: "legend", name: "Legend NFT 🔥", cost: 5 },
-    { id: "epic", name: "Epic NFT 💎", cost: 8 },
+    {
+      id: "rare",
+      name: "Rare NFT 🌟",
+      cost: 3,
+      gradient: "linear-gradient(135deg, #00e1ff, #0077ff)",
+    },
+    {
+      id: "legend",
+      name: "Legend NFT 🔥",
+      cost: 5,
+      gradient: "linear-gradient(135deg, #ff7b00, #ff0055)",
+    },
+    {
+      id: "epic",
+      name: "Epic NFT 💎",
+      cost: 8,
+      gradient: "linear-gradient(135deg, #9b00ff, #00fff0)",
+    },
+    {
+      id: "mythic",
+      name: "Mythic NFT ⚡",
+      cost: 12,
+      gradient: "linear-gradient(135deg, #ff00cc, #3333ff)",
+    },
   ];
+
+  const userTickets = 10;
 
   return (
     <div className={styles.Container}>
       <h2 className={styles.Title}>NFT Raffles</h2>
       <p className={styles.Description}>
-        Use tickets to join raffles and win exclusive NFT rewards!
+        Join raffles and win exclusive <span className={styles.Highlight}>NFT rewards!</span>
       </p>
 
-      {raffles.map((raffle) => (
-        <div key={raffle.id} className={styles.Card}>
-          <h3>{raffle.name}</h3>
-          <p>{raffle.cost} 🎟</p>
-          <Link to={`/raffles/${raffle.id}`} className={styles.JoinButton}>
-            JOIN
-          </Link>
-        </div>
-      ))}
+      <div className={styles.RafflesList}>
+        {raffles.map((raffle) => (
+          <div
+            key={raffle.id}
+            className={styles.Card}
+            style={{ borderImage: `${raffle.gradient} 1` }}
+          >
+            <div className={styles.CardHeader}>
+              <h3>{raffle.name}</h3>
+              <p className={styles.TicketsCost}>{raffle.cost} 🎟</p>
+            </div>
+            <Link
+              to={`/raffles/${raffle.id}`}
+              className={styles.JoinButton}
+              style={{ background: raffle.gradient }}
+            >
+              JOIN
+            </Link>
+          </div>
+        ))}
+      </div>
 
-      <p className={styles.Tickets}>You have <span>10</span> tickets</p>
+      <p className={styles.Tickets}>
+        You have <span>{userTickets}</span> tickets
+      </p>
     </div>
   );
 }
