@@ -57,3 +57,84 @@ min-width: 220px;
   font-weight: 700;
   font-size: 18px;
 }
+/* ... ваші існуючі стилі ... */
+
+.ReferralSection {
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.ReferralSection h3 {
+  margin-bottom: 5px;
+}
+
+.ReferralSection p {
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: #888;
+}
+
+.ReferralLinkBox {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
+  background-color: #f5f5f5;
+}
+
+.ReferralLinkBox input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-size: 0.9em;
+  color: #333;
+}
+
+.CopyButton {
+  padding: 8px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.CopyButton:hover {
+  background-color: #0056b3;
+}
+
+.TelegramSection {
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.TelegramButton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0088cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.TelegramButton:hover {
+  background-color: #006daa;
+}
+
+.TelegramSection p {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #888;
+}
+
+.Stats {
+    /* Оновлення для кращого відображення трьох елементів */
+    grid-template-columns: repeat(3, 1fr);
+}
