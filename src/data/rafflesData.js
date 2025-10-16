@@ -4,7 +4,7 @@ const rafflesData = [
     title: "Rare NFT 🌟",
     cost: 3,
     gradient: "linear-gradient(135deg, #00e1ff, #0077ff)",
-    image: "/images/rare-nft.png",
+    image: "/images/calendar.jpg",
     endsAt: "2025-10-20T18:00:00",
     participants: 128,
   },
