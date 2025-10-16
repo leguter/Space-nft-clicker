@@ -156,6 +156,7 @@ import { useEffect } from "react";
 //   );
 // }
 import api from './utils/api'
+import RaffleDetail from "./pages/RaffleDetail/RaffleDetail";
 export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
@@ -215,7 +216,8 @@ if (userData?.error) {
         {/* "index" означає, що це сторінка за замовчуванням для "/" */}
         <Route index element={<HomePage />} />
         <Route path="earn" element={<EarnPage />} />
-        <Route path="raffles" element={<RafflesPage />} />
+        <Route path="raffles/:id" element={<RafflesPage />} />
+        <Route path="raffles/:id" element={<RaffleDetail />} />
         <Route path="boosters" element={<BoostersPage />} />
         <Route path="profile" element={<ProfilePage user={userData} />} />
       </Route>
