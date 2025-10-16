@@ -76,7 +76,7 @@ export default function ProfilePage({ user }) {
           </div>
           <div>
             {/* Припускаємо, що кількість тікетів приходить з бекенду в user.user.ticketsCount */}
-            <span className={styles.StatNumber}>{user.user.ticketsCount || 0}🎫</span>
+            <span className={styles.StatNumber}>{user.user.tickets || 0}🎫</span>
             <p>Tickets</p>
           </div>
         </div>
