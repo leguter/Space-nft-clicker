@@ -42,7 +42,7 @@ export default function ProfilePage({ user }) {
 
   const handleCopyLink = () => {
     // Створюємо реферальне посилання
-    const referralLink = `${botUrl}?start=${user.user.telegram_id}`; // Використовуйте telegram_id, це надійніше
+    const referralLink = `${botUrl}?start=${user.user.telegramId}`; // Використовуйте telegram_id, це надійніше
 
     // --- ПОЧАТОК НОВОЇ ЛОГІКИ КОПІЮВАННЯ ---
 
