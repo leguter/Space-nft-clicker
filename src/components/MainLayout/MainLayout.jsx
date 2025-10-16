@@ -101,7 +101,7 @@ export default function MainLayout() {
         "Authorization": `Bearer ${localStorage.getItem("authToken")}`
       }
     });
-
+     console.log(res)
     // ✅ Axios автоматично перевіряє, чи успішний запит (статус 2xx)
     // ✅ Дані з відповіді знаходяться в `res.data`
     setBalance(res.data.balance); // отримуємо баланс з res.data
