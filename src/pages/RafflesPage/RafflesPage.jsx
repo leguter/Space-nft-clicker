@@ -77,7 +77,7 @@ export default function RafflesPage() {
         <div key={raffle.id} className={styles.Card}>
           <h3>{raffle.name}</h3>
           <p>{raffle.cost} 🎟</p>
-          <Link to={`/raffles/${raffle.id}`} className={styles.JoinButton}>
+          <Link to={`raffles/${raffle.id}`} className={styles.JoinButton}>
             JOIN
           </Link>
         </div>
