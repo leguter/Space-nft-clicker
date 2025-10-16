@@ -216,7 +216,7 @@ if (userData?.error) {
         {/* "index" означає, що це сторінка за замовчуванням для "/" */}
         <Route index element={<HomePage />} />
         <Route path="earn" element={<EarnPage />} />
-        <Route path="raffles/:id" element={<RafflesPage />} />
+        <Route path="raffles" element={<RafflesPage />} />
         <Route path="raffles/:id" element={<RaffleDetail />} />
         <Route path="boosters" element={<BoostersPage />} />
         <Route path="profile" element={<ProfilePage user={userData} />} />
