@@ -41,15 +41,52 @@ export default function ProfilePage({ user }) {
   const telegramChannelUrl = "https://t.me/SpaceClicker";
 
   const handleCopyLink = () => {
-    // Створюємо унікальне реферальне посилання для користувача
-    const referralLink = `${botUrl}?start=${user.user.username}`;
-    navigator.clipboard.writeText(referralLink).then(() => {
-      setIsCopied(true);
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 2000); // Скидаємо стан "Скопійовано" через 2 секунди
-    });
+    // Створюємо реферальне посилання
+    const referralLink = `${botUrl}?start=${user.user.telegram_id}`; // Використовуйте telegram_id, це надійніше
+
+    // --- ПОЧАТОК НОВОЇ ЛОГІКИ КОПІЮВАННЯ ---
+
+    // 1. Створюємо тимчасовий елемент <textarea>
+    const textArea = document.createElement("textarea");
+    textArea.value = referralLink;
+
+    // 2. Ховаємо його, щоб користувач не бачив
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = "0";
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+
+    // 3. Додаємо елемент на сторінку
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      // 4. Намагаємось скопіювати текст
+      const successful = document.execCommand('copy');
+      if (successful) {
+        setIsCopied(true); // Показуємо "Copied!"
+        setTimeout(() => setIsCopied(false), 2000);
+      } else {
+        // Якщо не вдалося, можна показати помилку
+        console.error('Fallback: Oops, unable to copy');
+      }
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    // 5. Видаляємо тимчасовий елемент
+    document.body.removeChild(textArea);
+
+    // --- КІНЕЦЬ НОВОЇ ЛОГІКИ КОПІЮВАННЯ ---
   };
+
 
   console.log(user);
 
