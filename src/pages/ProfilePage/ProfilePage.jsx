@@ -88,7 +88,7 @@ export default function ProfilePage({ user }) {
   };
 
 
-  console.log(user);
+  // console.log(user);
 
   return user ? (
     <div className={styles.Container}>
