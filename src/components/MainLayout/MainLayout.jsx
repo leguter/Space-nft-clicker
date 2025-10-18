@@ -238,10 +238,9 @@ export default function MainLayout() {
   return (
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
-        <Outlet context={{ balance, tapPower, isTapped, handleTap }} />
+        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket }} />
 
-        {/* 🔹 Прогрес-бар */}
-        <div style={{ margin: "20px 0" }}>
+        {/* <div style={{ margin: "20px 0" }}>
           <div
             style={{
               width: `${progress * 100}%`,
@@ -251,14 +250,6 @@ export default function MainLayout() {
               overflow: "hidden",
             }}
           >
-            {/* <div
-              style={{
-                width: `${progress * 100}%`,
-                backgroundColor: "#4caf50",
-                height: "100%",
-                transition: "width 0.2s",
-              }}
-            /> */}
           </div>
           <p>{clickCount} / {clicksPerTicket} кліків</p>
 
@@ -267,7 +258,7 @@ export default function MainLayout() {
               Отримати квиток!
             </button>
           )}
-        </div>
+        </div> */}
       </main>
 
       <nav className={styles.bottomNav}>
