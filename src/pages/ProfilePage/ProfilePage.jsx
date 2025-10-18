@@ -119,11 +119,11 @@ export default function ProfilePage({ user }) {
 const [isCopied, setIsCopied] = useState(false);
 
 // 🔗 Посилання на бота та канал — заміни на свої реальні
-const botUrl = "[https://t.me/Durovu_bot](https://t.me/Durovu_bot)";
-const telegramChannelUrl = "[https://t.me/SpaceClicker](https://t.me/SpaceClicker)";
+const botUrl = "https://t.me/Durovu_bot";
+const telegramChannelUrl = "https://t.me/SpaceClicker";
 
 // ✅ Генерація реферального посилання
-const referralLink = `${botUrl}?start=${user?.telegram_id}`;
+const referralLink = `${botUrl}?start=${user.user?.telegram_id}`;
 
 // 📋 Копіювання лінка
 const handleCopyLink = async () => {
@@ -139,25 +139,25 @@ console.error("Помилка копіювання:", err);
 if (!user) return <h1>НЕ ВОРК</h1>;
 
 return ( <div className={styles.Container}> <div className={styles.Card}>
-{user.photo_url ? ( <img src={user.photo_url} className={styles.Photo} alt="User" />
+{user.user.photo_url ? ( <img src={user.user.photo_url} className={styles.Photo} alt="User" />
 ) : ( <div className={styles.Avatar}></div>
 )}
 
 ```
-    <h2 className={styles.Name}>{user.first_name || "Space User"}</h2>
-    <p className={styles.Id}>@{user.username}</p>
+    <h2 className={styles.Name}>{user.user.first_name || "Space User"}</h2>
+    <p className={styles.Id}>@{user.user.username}</p>
 
     <div className={styles.Stats}>
       <div>
-        <span className={styles.StatNumber}>{user.referrals || 0}</span>
+        <span className={styles.StatNumber}>{user.user.referrals || 0}</span>
         <p>Referrals</p>
       </div>
       <div>
-        <span className={styles.StatNumber}>{user.balance}⭐</span>
+        <span className={styles.StatNumber}>{user.user.balance}⭐</span>
         <p>Total Earned</p>
       </div>
       <div>
-        <span className={styles.StatNumber}>{user.tickets || 0}🎫</span>
+        <span className={styles.StatNumber}>{user.user.tickets || 0}🎫</span>
         <p>Tickets</p>
       </div>
     </div>
