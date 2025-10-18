@@ -142,8 +142,6 @@ return ( <div className={styles.Container}> <div className={styles.Card}>
 {user.user.photo_url ? ( <img src={user.user.photo_url} className={styles.Photo} alt="User" />
 ) : ( <div className={styles.Avatar}></div>
 )}
-
-```
     <h2 className={styles.Name}>{user.user.first_name || "Space User"}</h2>
     <p className={styles.Id}>@{user.user.username}</p>
 
