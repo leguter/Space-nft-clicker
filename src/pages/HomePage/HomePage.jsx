@@ -49,7 +49,7 @@ export default function HomePage() {
     try {
       await api.post(
         "/api/user/update-clicks",
-        {clicks: clicks},
+        { progress: localProgress + 0.001 },
         { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
       );
     } catch (err) {
