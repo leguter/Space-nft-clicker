@@ -92,7 +92,7 @@ export default function ProfilePage({ user }) {
           <h3>Your Referral Link</h3>
           <p>Invite a friend and get 3 tickets for the draw!</p>
           <div className={styles.ReferralLinkBox}>
-            <input type="text" value={`${botUrl}?start=${user.user.username}`} readOnly />
+            <input type="text" value={`${botUrl}?start=${user.user.telegramId}`} readOnly />
             <button onClick={handleCopyLink} className={styles.CopyButton}>
               {isCopied ? "Copied!" : "Copy"}
             </button>
