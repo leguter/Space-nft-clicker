@@ -7,32 +7,32 @@ import TapButton from "../../components/TapButton/TapButton";
 import api from "../../utils/api";
 
 export default function HomePage() {
-  const { balance, progress, isTapped, handleTap, tapPower } = useOutletContext();
+  const { balance, isTapped, handleTap, tapPower } = useOutletContext();
 
   const [floatingNumbers, setFloatingNumbers] = useState([]);
-  const [localProgress, setLocalProgress] = useState(progress);
+  const [localProgress, setLocalProgress] = useState(0);
   const [clicks, setClicks] = useState(0);
 
-  // 🔄 синхронізація з пропсом progress при зміні
+  // 🧠 Отримати прогрес при вході
   useEffect(() => {
-    setLocalProgress(progress);
-  }, [progress]);
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/api/user/me", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+        });
+        setLocalProgress(res.data.progress || 0);
+      } catch (err) {
+        console.error("❌ Failed to load user progress:", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  // ⚡ Обробник кліку з анімацією + прогресом
+  // ⚡ Обробник кліку (з анімацією + бекендом)
   const handleTapWithAnimation = async (e) => {
     handleTap();
 
-    // локально додаємо клік для плавного оновлення
-    setClicks(prev => {
-      const newClicks = prev + 1;
-      setLocalProgress(newClicks / 1000);
-      if (newClicks >= 1000) {
-        // автоматично заповнили шкалу
-        setLocalProgress(1);
-      }
-      return newClicks;
-    });
-
+    // анімація числа
     const newNumber = {
       id: Date.now(),
       value: tapPower,
@@ -45,26 +45,32 @@ export default function HomePage() {
       setFloatingNumbers((curr) => curr.filter((num) => num.id !== newNumber.id));
     }, 1000);
 
-    // оновлюємо кліки на бекенді
+    // локальний кліковий приріст
+    setClicks((prev) => prev + 1);
+    setLocalProgress((prev) => Math.min(prev + 0.001, 1));
+
+    // оновлення бекенду
     try {
-      await api.post(
+      const res = await api.post(
         "/api/user/update-clicks",
-         {progress: 0.001 },
+        { progress: 0.001 },
         { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
       );
+
+      setLocalProgress(res.data.progress); // синхронізуємо з сервером
     } catch (err) {
       console.error("❌ update-clicks error:", err.response?.data?.message || err.message);
     }
   };
 
-  // 🎟 Отримання квитка після 1000 кліків
+  // 🎟 Отримати квиток (коли прогрес = 100%)
   const handleClaimTicket = async () => {
     try {
-      const res = await api.post("/api/user/claim-ticket", {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`
-        }
-      });
+      const res = await api.post(
+        "/api/user/claim-ticket",
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
+      );
 
       alert(`🎟 Ticket claimed! You now have ${res.data.tickets} tickets.`);
       setLocalProgress(0);
@@ -89,9 +95,7 @@ export default function HomePage() {
           <FaUserCircle className={styles.userIcon} />
         </header>
 
-        <div className={styles.balance}>
-          {balance.toLocaleString("en-US")} ★
-        </div>
+        <div className={styles.balance}>{balance.toLocaleString("en-US")} ★</div>
 
         <TapButton isTapped={isTapped} onClick={handleTapWithAnimation} />
 
