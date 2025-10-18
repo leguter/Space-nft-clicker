@@ -179,7 +179,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-
+     <Link to="/boosters" className={styles.boostersButton}>
+    <FiZap /> Boosters
+  </Link>
       {floatingNumbers.map((num) => (
         <div
           key={num.id}
@@ -189,9 +191,7 @@ export default function HomePage() {
           +{num.value}
         </div>
       ))}
-        <Link to="/boosters" className={styles.boostersButton}>
-    <FiZap /> Boosters
-  </Link>
+   
     </div>
   );
 }

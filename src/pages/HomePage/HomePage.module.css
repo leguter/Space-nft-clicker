@@ -316,7 +316,7 @@
     transform: translate(-50%, -250%) scale(1.5); /* Кінцева позиція (вище) і більший розмір */
   }
 }
-.progressBar {
+/* .progressBar {
   width: 100%;
   height: 12px;
   background-color: rgba(0, 0, 0, 0.2);
@@ -328,7 +328,7 @@
   height: 100%;
   border-radius: 6px;
   transition: all 0.3s ease-in-out;
-}
+} */
 
 /* Якщо прогрес > 95% - додати анімаційне світіння */
 .progressFillGlow {
