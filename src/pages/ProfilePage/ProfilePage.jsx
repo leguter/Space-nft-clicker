@@ -36,7 +36,7 @@ export default function ProfilePage({ user }) {
   const [isCopied, setIsCopied] = useState(false);
 
   // Припускаємо, що назва вашого телеграм-бота "your_bot_name". Замініть на актуальну.
-  const botUrl = "https://t.me/@Durovu_bot";
+  const botUrl = "https://t.me/Durovu_bot";
   // Припускаємо, що посилання для підписки на телеграм-канал "your_channel_name". Замініть на актуальну.
   const telegramChannelUrl = "https://t.me/SpaceClicker";
 
