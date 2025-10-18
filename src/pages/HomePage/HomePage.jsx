@@ -99,7 +99,7 @@ import styles from "./HomePage.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import TapButton from "../../components/TapButton/TapButton";
 import api from "../../utils/api";
-
+import { Link } from "react-router-dom";
 export default function HomePage() {
   const { balance, progress, isTapped, handleTap, tapPower } = useOutletContext();
   const [floatingNumbers, setFloatingNumbers] = useState([]);
