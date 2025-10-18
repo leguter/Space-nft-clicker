@@ -188,6 +188,9 @@ export default function HomePage() {
           +{num.value}
         </div>
       ))}
+        <Link to="/boosters" className={styles.boostersButton}>
+    <FiZap /> Boosters
+  </Link>
     </div>
   );
 }
