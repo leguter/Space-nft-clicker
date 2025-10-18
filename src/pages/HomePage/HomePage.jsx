@@ -178,10 +178,11 @@ export default function HomePage() {
             ></div>
           </div>
         </div>
-      </div>
-     <Link to="/boosters" className={styles.boostersButton}>
+        <Link to="/boosters" className={styles.boostersButton}>
     <FiZap /> Boosters
   </Link>
+      </div>
+     
       {floatingNumbers.map((num) => (
         <div
           key={num.id}
