@@ -244,20 +244,21 @@ export default function MainLayout() {
         <div style={{ margin: "20px 0" }}>
           <div
             style={{
+              width: `${progress * 100}%`,
               height: "20px",
               backgroundColor: "#ddd",
               borderRadius: "10px",
               overflow: "hidden",
             }}
           >
-            <div
+            {/* <div
               style={{
                 width: `${progress * 100}%`,
                 backgroundColor: "#4caf50",
                 height: "100%",
                 transition: "width 0.2s",
               }}
-            />
+            /> */}
           </div>
           <p>{clickCount} / {clicksPerTicket} кліків</p>
 
