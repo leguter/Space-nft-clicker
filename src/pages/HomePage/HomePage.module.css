@@ -126,7 +126,7 @@
 
 .Card {
   width: 100%;
-  max-width: 380px;
+  min-width: 300px;
   background: linear-gradient(160deg, rgba(16, 2, 48, 0.9), rgba(8, 0, 34, 0.95));
   border: 2px solid rgba(255, 0, 255, 0.4);
   border-radius: 40px;
