@@ -97,6 +97,7 @@ import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import styles from "./HomePage.module.css";
 import { FaUserCircle } from "react-icons/fa";
+import { FiZap } from "react-icons/fi";
 import TapButton from "../../components/TapButton/TapButton";
 import api from "../../utils/api";
 import { Link } from "react-router-dom";
