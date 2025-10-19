@@ -36,7 +36,8 @@ export default function RaffleDetail() {
         setRaffle(raffleData);
         setIsParticipating(status !== "not_participated" && status !== "pending");
         setResult(status === "won" || status === "lost" ? status : null);
-        setCanJoin(tickets >= raffleData.cost && status === "not_participated");
+        setCanJoin(tickets >= raffleData.cost && (status === "not_participated" || status === "pending"));
+
       } catch (err) {
         console.error("Error loading raffle:", err);
       } finally {
