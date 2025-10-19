@@ -239,26 +239,6 @@ export default function MainLayout() {
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
         <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket }} />
-
-        {/* <div style={{ margin: "20px 0" }}>
-          <div
-            style={{
-              width: `${progress * 100}%`,
-              height: "20px",
-              backgroundColor: "#ddd",
-              borderRadius: "10px",
-              overflow: "hidden",
-            }}
-          >
-          </div>
-          <p>{clickCount} / {clicksPerTicket} кліків</p>
-
-          {ticketReady && (
-            <button onClick={claimTicket} style={{ marginTop: "10px" }}>
-              Отримати квиток!
-            </button>
-          )}
-        </div> */}
       </main>
 
       <nav className={styles.bottomNav}>

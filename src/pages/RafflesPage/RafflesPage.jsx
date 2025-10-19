@@ -60,8 +60,8 @@ import { Link } from "react-router-dom";
 import styles from "./RafflesPage.module.css";
 import rafflesData from "../../data/rafflesData";
 
-export default function RafflesPage() {
-  const userTickets = 10;
+export default function RafflesPage({user}) {
+  // const userTickets = 10;
 
   return (
     <div className={styles.Container}>
@@ -93,7 +93,7 @@ export default function RafflesPage() {
       </div>
 
       <p className={styles.Tickets}>
-        You have <span>{userTickets}</span> tickets
+        You have <span>{user.user.tickets}</span> tickets
       </p>
     </div>
   );
