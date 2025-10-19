@@ -110,7 +110,7 @@ export default function HomePage() {
             <div
               className={styles.progressFill}
               style={{
-                width: `${Math.min(localProgress * 100, 100)}%`,
+                width: `${Math.min(localProgress * 1000, 100)}%`,
                 backgroundColor: progressColor,
                 boxShadow:
                   localProgress >= 0.95
