@@ -38,8 +38,8 @@ import api from "../../utils/api";
 export default function BoostersPage() {
   // 🔹 Ціни у зірках (людські значення)
   const boosters = [
-    { id: "speed", name: "x2 Speed", desc: "Double your earning rate for 1 hour.", price: 1 },
-    { id: "auto_clicker", name: "Auto Clicker", desc: "Earn automatically for 30 mins.", price: 2 },
+    { id: "speed", name: "x2 Speed", desc: "Double your earning rate for 1 hour.", price: 15 },
+    { id: "auto_clicker", name: "Auto Clicker", desc: "Earn automatically for 30 mins.", price: 40 },
   ];
 
   const handleBuy = async (boosterId) => {
