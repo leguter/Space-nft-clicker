@@ -82,9 +82,9 @@ export default function HomePage() {
   };
 
   const progressColor =
-    localProgress < 0.7
+    localProgress < 0.07
       ? "#00eaff"
-      : localProgress < 0.95
+      : localProgress < 0.095
       ? "#00ff99"
       : "#ff00ff";
 
@@ -110,7 +110,7 @@ export default function HomePage() {
             <div
               className={styles.progressFill}
               style={{
-                width: `${Math.min(localProgress * 1, 100)}%`,
+                width: `${Math.min(localProgress * 100, 100)}%`,
                 backgroundColor: progressColor,
                 boxShadow:
                   localProgress >= 0.95
