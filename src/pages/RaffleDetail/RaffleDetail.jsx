@@ -127,43 +127,39 @@ export default function RaffleDetail() {
   // ======================================================
   // 🕒 Вираховуємо час до кінця і авто-перевірка результату
   // ======================================================
-  useEffect(() => {
-    if (!raffle?.ends_at) return;
+useEffect(() => {
+  if (!raffle?.ends_at) return;
 
-    const interval = setInterval(async () => {
-      const end = new Date(raffle.ends_at).getTime();
-      const now = new Date().getTime();
-      const diff = end - now;
+  const interval = setInterval(() => {
+    const end = new Date(raffle.ends_at).getTime();
+    const now = new Date().getTime();
+    const diff = end - now;
 
-      if (diff <= 0) {
-        setTimeLeft("Raffle ended");
+    if (diff <= 0) {
+      setTimeLeft("Raffle ended");
+      clearInterval(interval);
+    } else {
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setTimeLeft(
+        `${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`
+      );
+    }
+  }, 1000);
 
-        // Перевіряємо результат після завершення
-        try {
-          const res = await api.get(`/api/raffle/${id}/result`);
-          const status = res.data.status;
-          if (status === "won" || status === "lost") setResult(status);
-          if (status !== "not_participated") setIsParticipating(true);
-        } catch (err) {
-          console.error("Error checking raffle result:", err);
-        }
+  return () => clearInterval(interval);
+}, [raffle]);
+useEffect(() => {
+  if (!raffle) return;
 
-        clearInterval(interval);
-      } else {
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-        setTimeLeft(
-          `${hours.toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-        );
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [raffle, id]);
-
+  // Встановлюємо тестово закінчення через 1 хвилину
+  setRaffle((prev) => ({
+    ...prev,
+    ends_at: new Date(Date.now() + 60 * 1000).toISOString(),
+  }));
+}, [raffle?.id]);
   // ======================================================
   // 🔄 Авто-оновлення кількості учасників
   // ======================================================
