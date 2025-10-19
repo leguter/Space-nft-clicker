@@ -24,24 +24,24 @@ export default function RaffleDetail() {
         setLoading(true);
 
         const res = await api.get(`/api/raffle/${id}`);
-        setRaffle(res.data);
+        const raffleData = res.data;
 
-        // Перевірка кількості тікетів користувача
+        // Тест: встановлюємо закінчення через 30 секунд
+        raffleData.ends_at = new Date(Date.now() + 30 * 1000).toISOString();
+
         const userRes = await api.get("/api/user/me");
         const userTickets = userRes.data.tickets || 0;
 
-        // Перевірка статусу участі
         const resultRes = await api.get(`/api/raffle/${id}/result`);
         const status = resultRes.data.status;
-        if (status === "not_participated" || status === "pending") {
-          setIsParticipating(false);
-          setResult(null);
-          setCanJoin(userTickets >= res.data.cost);
-        } else {
-          setIsParticipating(true);
-          setResult(status);
-          setCanJoin(false);
-        }
+
+        setRaffle(raffleData);
+        setIsParticipating(status === "won" || status === "lost" || status === "participating");
+        setResult(status === "won" || status === "lost" ? status : null);
+        setCanJoin(
+          userTickets >= raffleData.cost &&
+            (status === "not_participated" || status === "pending")
+        );
       } catch (err) {
         console.error("Error loading raffle:", err);
       } finally {
@@ -53,7 +53,7 @@ export default function RaffleDetail() {
   }, [id]);
 
   // ======================================================
-  // 🕒 Вираховуємо час до кінця і авто-перевірка результату
+  // 🕒 Таймер до кінця розіграшу
   // ======================================================
   useEffect(() => {
     if (!raffle?.ends_at) return;
@@ -65,18 +65,19 @@ export default function RaffleDetail() {
 
       if (diff <= 0) {
         setTimeLeft("Raffle ended");
+        clearInterval(interval);
 
-        // Перевіряємо результат після завершення
+        // Авто-завершення для тесту
         try {
+          await api.post(`/api/raffle/${id}/end`); // викликаємо ендпоінт завершення
           const res = await api.get(`/api/raffle/${id}/result`);
           const status = res.data.status;
           if (status === "won" || status === "lost") setResult(status);
           if (status !== "not_participated") setIsParticipating(true);
+          setCanJoin(false);
         } catch (err) {
-          console.error("Error checking raffle result:", err);
+          console.error("Error ending raffle:", err);
         }
-
-        clearInterval(interval);
       } else {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -132,9 +133,6 @@ export default function RaffleDetail() {
     }
   };
 
-  // ======================================================
-  // 💬 Відображення
-  // ======================================================
   if (loading) return <p className={styles.Loading}>Loading raffle...</p>;
   if (!raffle) return <p className={styles.Error}>Raffle not found</p>;
 
@@ -167,7 +165,6 @@ export default function RaffleDetail() {
         </p>
       </div>
 
-      {/* ==== Логіка кнопки ==== */}
       {timeLeft === "Raffle ended" ? (
         <button className={styles.EndedButton} disabled>
           {result
