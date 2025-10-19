@@ -113,7 +113,7 @@ export default function HomePage() {
                 width: `${Math.min(localProgress * 100, 100)}%`,
                 backgroundColor: progressColor,
                 boxShadow:
-                  localProgress >= 0.95
+                  localProgress >= 0.095
                     ? `0 0 20px ${progressColor}, 0 0 40px ${progressColor}`
                     : "none",
                 transition: "all 0.3s ease-in-out",
