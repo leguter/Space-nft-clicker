@@ -20,7 +20,8 @@ export default function HomePage() {
         const res = await api.get("/api/user/me", {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         });
-        setLocalProgress(res.data.progress || 0);
+        // 🟢 Виправлено: беремо click_progress, а не progress
+        setLocalProgress(res.data.click_progress || 0);
       } catch (err) {
         console.error("❌ Failed to load user progress:", err);
       }
@@ -28,28 +29,27 @@ export default function HomePage() {
     fetchUser();
   }, []);
 
-  // ⚡ Обробник кліку (з анімацією + бекендом)
+  // ⚡ Обробник кліку (анімація + оновлення бекенду)
   const handleTapWithAnimation = async (e) => {
     handleTap();
 
-    // анімація числа
+    // створюємо ефект "літаючого числа"
     const newNumber = {
       id: Date.now(),
       value: tapPower,
       x: e.clientX,
       y: e.clientY,
     };
-
     setFloatingNumbers((curr) => [...curr, newNumber]);
     setTimeout(() => {
       setFloatingNumbers((curr) => curr.filter((num) => num.id !== newNumber.id));
     }, 1000);
 
-    // локальний кліковий приріст
+    // локально оновлюємо
     setClicks((prev) => prev + 1);
     setLocalProgress((prev) => Math.min(prev + 0.001, 1));
 
-    // оновлення бекенду
+    // оновлення на бекенді
     try {
       const res = await api.post(
         "/api/user/update-clicks",
@@ -57,13 +57,14 @@ export default function HomePage() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
       );
 
-      setLocalProgress(res.data.progress); // синхронізуємо з сервером
+      // 🟢 синхронізація після відповіді
+      setLocalProgress(res.data.progress);
     } catch (err) {
       console.error("❌ update-clicks error:", err.response?.data?.message || err.message);
     }
   };
 
-  // 🎟 Отримати квиток (коли прогрес = 100%)
+  // 🎟 Отримати квиток (100%)
   const handleClaimTicket = async () => {
     try {
       const res = await api.post(
