@@ -58,7 +58,7 @@
 // src/pages/RaffleDetail/RaffleDetail.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../../utils/api";
+import api from "../utils/api";
 import styles from "./RaffleDetail.module.css";
 
 export default function RaffleDetail() {
