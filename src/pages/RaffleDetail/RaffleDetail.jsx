@@ -167,9 +167,10 @@ export default function RaffleDetail() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
+  const [userTickets, setUserTickets] = useState(0);
 
   // ======================================================
-  // 📦 Завантаження даних розіграшу та статусу користувача
+  // 📦 Завантаження розіграшу та кількості тікетів
   // ======================================================
   useEffect(() => {
     async function fetchRaffle() {
@@ -180,19 +181,14 @@ export default function RaffleDetail() {
         const raffleData = raffleRes.data;
 
         const userRes = await api.get("/api/user/me");
-        const userTickets = Number(userRes.data.tickets) || 0;
+        const tickets = Number(userRes.data.tickets) || 0;
+        setUserTickets(tickets);
 
-        const resultRes = await api.get(`/api/raffle/${id}/result`);
-        const status = resultRes.data.status;
-
-        console.log("User tickets:", userTickets);
-        console.log("Raffle cost:", raffleData.cost);
-        console.log("Status:", status);
-
+        // Користувач ще не приєднався на цьому етапі
         setRaffle(raffleData);
-        setIsParticipating(status === "won" || status === "lost");
-        setResult(status === "won" || status === "lost" ? status : null);
-        setCanJoin(userTickets >= Number(raffleData.cost) && status === "not_participated");
+        setIsParticipating(false);
+        setResult(null);
+        setCanJoin(tickets >= Number(raffleData.cost));
       } catch (err) {
         console.error("Error loading raffle:", err);
       } finally {
@@ -218,15 +214,17 @@ export default function RaffleDetail() {
         setTimeLeft("Raffle ended");
         clearInterval(interval);
 
-        try {
-          const res = await api.get(`/api/raffle/${id}/result`);
-          const status = res.data.status;
-          if (status === "won" || status === "lost") setResult(status);
-          if (status !== "not_participated") setIsParticipating(true);
-          setCanJoin(false);
-        } catch (err) {
-          console.error("Error fetching raffle result:", err);
+        if (isParticipating) {
+          try {
+            const res = await api.get(`/api/raffle/${id}/result`);
+            const status = res.data.status;
+            setResult(status === "won" || status === "lost" ? status : null);
+          } catch (err) {
+            console.error("Error fetching raffle result:", err);
+          }
         }
+
+        setCanJoin(false);
       } else {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -240,7 +238,7 @@ export default function RaffleDetail() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [raffle, id]);
+  }, [raffle, id, isParticipating]);
 
   // ======================================================
   // 🔄 Авто-оновлення кількості учасників
@@ -266,15 +264,19 @@ export default function RaffleDetail() {
   // 🎟 Кнопка приєднання до розіграшу
   // ======================================================
   const handleJoin = async () => {
+    if (!canJoin) return;
+
     try {
       setJoining(true);
       await api.post(`/api/raffle/${id}/join`);
       setIsParticipating(true);
       setCanJoin(false);
+
       setRaffle((prev) => ({
         ...prev,
         participants: prev.participants + 1,
       }));
+      setUserTickets((prev) => prev - Number(raffle.cost));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to join raffle");
     } finally {
@@ -307,13 +309,13 @@ export default function RaffleDetail() {
           Cost: <strong>{raffle.cost} 🎟</strong>
         </p>
         <p>
-          Ends in:{" "}
-          <strong className={timeLeft === "Raffle ended" ? styles.Ended : ""}>
-            {timeLeft}
-          </strong>
+          Ends in: <strong className={timeLeft === "Raffle ended" ? styles.Ended : ""}>{timeLeft}</strong>
         </p>
         <p>
           Participants: <strong>{raffle.participants}</strong>
+        </p>
+        <p>
+          Your tickets: <strong>{userTickets}</strong>
         </p>
       </div>
 
@@ -346,6 +348,7 @@ export default function RaffleDetail() {
     </div>
   );
 }
+
 
 
 
