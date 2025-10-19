@@ -14,43 +14,39 @@ export default function RaffleDetail() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
+  const [tickets, setTickets] = useState(0);
 
-  // ======================================================
-  // Завантаження розіграшу та користувача
-  // ======================================================
+  // ===========================
+  // Завантаження даних
+  // ===========================
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
-
         const raffleRes = await api.get(`/api/raffle/${id}`);
         const userRes = await api.get("/api/user/me");
-        const resultRes = await api.get(`/api/raffle/${id}/result`);
-
         const raffleData = raffleRes.data;
-        const tickets = userRes.data.tickets || 0;
-        const status = resultRes.data.status;
 
         // Тест: закінчення через 30 секунд
         raffleData.ends_at = new Date(Date.now() + 30 * 1000).toISOString();
 
         setRaffle(raffleData);
-        setIsParticipating(status !== "not_participated");
-        setResult(status === "won" || status === "lost" ? status : null);
-        setCanJoin(tickets >= raffleData.cost && status === "not_participated");
+        setTickets(userRes.data.tickets || 0);
+
+        // Кнопка Join активна лише якщо є тікети
+        setCanJoin((userRes.data.tickets || 0) >= raffleData.cost);
       } catch (err) {
-        console.error("Error loading raffle:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     }
-
     fetchData();
   }, [id]);
 
-  // ======================================================
+  // ===========================
   // Таймер
-  // ======================================================
+  // ===========================
   useEffect(() => {
     if (!raffle?.ends_at) return;
 
@@ -61,7 +57,7 @@ export default function RaffleDetail() {
         setTimeLeft("Raffle ended");
         clearInterval(interval);
 
-        // Авто-перевірка результату
+        // Перевіряємо результат після закінчення
         try {
           const res = await api.get(`/api/raffle/${id}/result`);
           const status = res.data.status;
@@ -69,26 +65,30 @@ export default function RaffleDetail() {
           setIsParticipating(status !== "not_participated");
           setCanJoin(false);
         } catch (err) {
-          console.error("Error fetching result:", err);
+          console.error(err);
         }
       } else {
         const seconds = Math.floor(diff / 1000);
         setTimeLeft(`00:${seconds.toString().padStart(2, "0")}`);
       }
-    }, 250); // оновлюємо кожні 0.25 секунди для плавності
+    }, 250);
 
     return () => clearInterval(interval);
   }, [raffle, id]);
 
-  // ======================================================
+  // ===========================
   // Join
-  // ======================================================
+  // ===========================
   const handleJoin = async () => {
+    if (!raffle) return;
+    if (tickets < raffle.cost) return;
+
     try {
       setJoining(true);
       await api.post(`/api/raffle/${id}/join`);
       setIsParticipating(true);
       setCanJoin(false);
+      setTickets((prev) => prev - raffle.cost);
       setRaffle((prev) => ({
         ...prev,
         participants: prev.participants + 1,
@@ -123,6 +123,7 @@ export default function RaffleDetail() {
           Ends in: <strong className={timeLeft === "Raffle ended" ? styles.Ended : ""}>{timeLeft}</strong>
         </p>
         <p>Participants: <strong>{raffle.participants}</strong></p>
+        <p>Your tickets: <strong>{tickets}</strong></p>
       </div>
 
       {timeLeft === "Raffle ended" ? (
