@@ -58,7 +58,7 @@ const baseSpins = 5 * 360; // 5 повних обертів
 const prizeAngle = prizeIndex * degreesPerSegment + degreesPerSegment / 2;
 
 // 🎯 Загальний кут (робимо обертання до потрібного сегмента)
-const stopRotation = baseSpins + prizeAngle;
+const stopRotation = baseSpins - prizeAngle;
 
               setRotation(stopRotation);
 
