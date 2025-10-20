@@ -340,38 +340,42 @@ export default function SpaceRaffle() {
             position: "relative",
           }}
         >
-          {segments.map((p, i) => {
-            const segmentAngle = 360 / segments.length; // 45 для 8 сегментів
-            const skewAngle = 90 - segmentAngle; // 45 для 8 сегментів
+       {segments.map((p, i) => {
+  const segmentAngle = 360 / segments.length; // 45 для 8 сегментів
+  const skewAngle = 90 - segmentAngle; // 45 для 8 сегментів
 
-            return (
-              <div
-                key={i}
-                style={{
-                  position: "absolute",
-                  width: "50%",
-                  height: "50%",
-                  top: "50%",
-                  left: "50%",
-                  transformOrigin: "0% 0%",
-                  // ❗️ Тут логіка для 8 сегментів
-                  transform: `rotate(${i * segmentAngle}deg) skewY(-${skewAngle}deg)`,
-                  background: p.color,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: "bold",
-                  color: p.type === "nft" ? "#000" : "#fff",
-                  textShadow: "0 0 10px rgba(255,255,255,0.6)",
-                }}
-              >
-                {/* Повертаємо текст, щоб він був читабельним */}
-                <span style={{ transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2}deg)` }}>
-                  {p.label}
-                </span>
-              </div>
-            );
-          })}
+  return (
+    <div
+      key={i}
+      style={{
+        position: "absolute",
+        width: "50%",
+        height: "50%",
+        top: "50%",
+        left: "50%",
+        transformOrigin: "0% 0%",
+        
+        // ❗️ ОСЬ ТУТ БУЛА ПОМИЛКА ❗️
+        // Переконайтеся, що у вас тут зворотні лапки `...`
+        transform: `rotate(${i * segmentAngle}deg) skewY(-${skewAngle}deg)`,
+        
+        background: p.color,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "bold",
+        color: p.type === "nft" ? "#000" : "#fff",
+        textShadow: "0 0 10px rgba(255,255,255,0.6)",
+      }}
+    >
+      {/* ❗️ ЦЕЙ SPAN ТЕЖ ВАЖЛИВИЙ ❗️
+          Він "вирівнює" текст, щоб він не був косим */}
+      <span style={{ transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2}deg)` }}>
+        {p.label}
+      </span>
+    </div>
+  );
+})}
         </motion.div>
       </div>
 
