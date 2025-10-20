@@ -34,6 +34,8 @@
 // EarnPage.js
 import { useState, useEffect } from "react"; // 👈 Додайте useEffect
 // eslint-disable-next-line no-unused-vars
+import { Link } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
 import api from "../../utils/api";
@@ -119,6 +121,12 @@ const handleClaim = async () => {
               {getButtonText()}
             </motion.button>
           </div>
+          <div className={styles.TaskItem}><Link to="/wheel">
+  <div className="menu-item">
+    🎡 Wheel
+  </div>
+</Link>
+</div>
         </div>
       </div>
     </div>
