@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import styles from "./WheelPage.module.css";
+import api from "../../utils/api";
 
 export default function WheelPage() {
   const [spinning, setSpinning] = useState(false);
@@ -26,7 +26,7 @@ export default function WheelPage() {
 
     try {
       // 1️⃣ Отримати інвойс від бекенду
-      const invoiceRes = await axios.get("/api/wheel/invoice");
+      const invoiceRes = await api.get("/api/wheel/invoice");
       if (!invoiceRes.data.success) throw new Error("Invoice failed");
 
       const { invoice } = invoiceRes.data;
@@ -38,7 +38,7 @@ export default function WheelPage() {
 
           // Якщо оплата успішна — запустити спін
           if (status === "paid") {
-            const res = await axios.post("/api/wheel/spin");
+            const res = await api.post("/api/wheel/spin");
             const data = res.data;
 
             const index = getSegmentIndex(data.result.type);
