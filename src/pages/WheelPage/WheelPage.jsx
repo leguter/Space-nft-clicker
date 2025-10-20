@@ -1,143 +1,162 @@
 import { useState } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
 import styles from "./WheelPage.module.css";
 import api from "../../utils/api";
 
 export default function WheelPage() {
-  const [spinning, setSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const [result, setResult] = useState(null);
-  const [balance, setBalance] = useState(null);
+  const [spinning, setSpinning] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [result, setResult] = useState(null);
+  const [balance, setBalance] = useState(null); // Баланс внутрішніх зірок
 
-  // 🔹 Сегменти рулетки
-  const segments = [
-    "🎟 Ticket",
-    "🎟 Ticket",
-    "🎟 Ticket",
-    "🎟 Ticket",
-    "🎟 Ticket",
-    "🎟 Ticket",
-    "🌟 5 Stars",
-    "🎁 NFT Box",
-  ];
+  const segments = [
+    "🎟 Ticket",
+    "🎟 Ticket",
+    "🎟 Ticket",
+    "🎟 Ticket",
+    "🎟 Ticket",
+    "🎟 Ticket",
+    "🌟 5 Stars", // Це 5 *внутрішніх* зірок
+    "🎁 NFT Box",
+  ];
 
-  // 🔹 Ціна одного спіну у зірках
-  const spinPrice = 10;
+  const spinWheel = async () => {
+    if (spinning) return;
+    setSpinning(true);
+    setResult(null);
 
-  const handleSpin = async () => {
-    if (spinning) return;
-    setSpinning(true);
-    setResult(null);
+    try {
+      // 1️⃣ Отримати інвойс від бекенду
+      const invoiceRes = await api.post("/api/wheel/create_invoice");
+      if (!invoiceRes.data.success) {
+        throw new Error(invoiceRes.data.message || "Invoice creation failed");
+      }
 
-    try {
-      // 1️⃣ Створюємо інвойс через бекенд
-      const response = await api.post("/api/wheel/create_invoice", { price: spinPrice });
-      const { invoice } = response.data; // отримуємо об'єкт invoice для WebApp
+      const invoiceLink = invoiceRes.data.invoice_link;
 
-      if (!invoice) throw new Error("Invoice not received");
+      // 2️⃣ Відкрити Telegram оплату (XTR)
+      if (window.Telegram?.WebApp) {
+        const onPayment = async (event) => {
+          // Важливо одразу зняти слухача, щоб він не спрацював двічі
+          window.Telegram.WebApp.offEvent("invoiceClosed", onPayment);
 
-      // 2️⃣ Відкриваємо меню Telegram WebApp для оплати зірками
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.openInvoice(invoice);
+          // Перевіряємо, чи оплата успішна
+          if (event.status === "paid") {
+            try {
+              // 3️⃣ Оплата пройшла, викликаємо /spin для отримання призу
+              const res = await api.post("/api/wheel/spin");
+              const data = res.data;
 
-        // Слухаємо подію закриття інвойсу (оплата підтверджена)
-        const onPayment = async (payload) => {
-          if (payload.status === "paid" || payload.success) {
-            // 3️⃣ Виконуємо спін після успішної оплати
-            const res = await api.post("/api/wheel/spin");
-            const data = res.data;
+              // 4️⃣ Анімуємо колесо
+              const index = getSegmentIndex(data.result.type);
 
-            const index = getSegmentIndex(data.result.type);
-            const randomExtra = Math.floor(Math.random() * 360);
-            const newRotation = 360 * 5 + (360 / segments.length) * index + randomExtra;
-            setRotation(rotation + newRotation);
+              const baseSpins = 360 * 5; // 5 повних обертів
+              const segmentAngle = 360 / segments.length; // 45 градусів
+              
+              // Вказівник на 0. Обертаємо "назад"
+              const targetAngle = -(segmentAngle * index);
+              
+              // Невеликий випадковий зсув в межах сегмента
+              const randomJitter = (Math.random() - 0.5) * (segmentAngle * 0.8);
+              
+              const newRotation = baseSpins + targetAngle + randomJitter;
+              setRotation(rotation + newRotation);
 
-            setTimeout(() => {
-              setResult(data.result);
-              setBalance(data.balance);
-              setSpinning(false);
-            }, 4000);
-          } else {
-            setSpinning(false);
-          }
+              // 5️⃣ Показуємо результат після анімації
+              setTimeout(() => {
+                setResult(data.result);
+                setBalance(data.balance); // Оновлюємо баланс *внутрішніх* зірок
+                setSpinning(false);
+              }, 4000); // 4 секунди анімації
 
-          window.Telegram.WebApp.offEvent("invoiceClosed", onPayment);
-        };
+            } catch (spinErr) {
+              console.error("Spin error after payment:", spinErr);
+              alert("Spin failed after payment. Contact support.");
+              setSpinning(false);
+            }
+          } else {
+            // Оплата скасована, "pending" або "failed"
+            console.log("Payment not completed:", event.status);
+            setSpinning(false);
+          }
+        };
 
-        window.Telegram.WebApp.onEvent("invoiceClosed", onPayment);
-      } else {
-        alert("Telegram WebApp not available");
-        setSpinning(false);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Payment or spin error");
-      setSpinning(false);
-    }
-  };
+        // Слухаємо подію закриття інвойсу
+        window.Telegram.WebApp.onEvent("invoiceClosed", onPayment);
+        // Відкриваємо інвойс
+        window.Telegram.WebApp.openInvoice(invoiceLink);
 
-  const getSegmentIndex = (type) => {
-    switch (type) {
-      case "raffle_ticket":
-        return Math.floor(Math.random() * 6);
-      case "stars":
-        return 6;
-      case "nft":
-        return 7;
-      default:
-        return 0;
-    }
-  };
+      } else {
+        alert("Telegram WebApp not available");
+        setSpinning(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Payment or spin error");
+      setSpinning(false);
+    }
+  };
 
-  return (
-    <div className={styles.Container}>
-      <div className={styles.Card}>
-        <h2 className={styles.Title}>Wheel of Fortune</h2>
-        <p className={styles.Subtitle}>Spin the wheel for awesome rewards!</p>
+  const getSegmentIndex = (type) => {
+    switch (type) {
+      case "raffle_ticket":
+        // Повертає випадковий індекс серед перших 6 сегментів
+        return Math.floor(Math.random() * 6);
+      case "stars":
+        return 6; // 7-й сегмент (індекс 6)
+      case "nft":
+        return 7; // 8-й сегмент (індекс 7)
+      default:
+        return 0;
+    }
+  };
 
-        <div className={styles.WheelContainer}>
-          <div
-            className={`${styles.Wheel} ${spinning ? styles.Spinning : ""}`}
-            style={{ transform: `rotate(${rotation}deg)` }}
-          >
-            {segments.map((seg, i) => (
-              <div
-                key={i}
-                className={styles.Segment}
-                style={{
-                  transform: `rotate(${(360 / segments.length) * i}deg) skewY(-45deg)`,
-                }}
-              >
-                <span>{seg}</span>
-              </div>
-            ))}
-          </div>
-          <div className={styles.Pointer}></div>
-        </div>
+  return (
+    <div className={styles.container}>
+      <h2 className={styles.title}>Wheel of Fortune</h2>
 
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          className={styles.BtnBuy}
-          onClick={handleSpin}
-          disabled={spinning}
-        >
-          {spinning ? "Spinning..." : `Spin (${spinPrice}⭐)`}
-        </motion.button>
+      <div className={styles.wheelContainer}>
+        <div
+          className={`${styles.wheel} ${spinning ? styles.spinning : ""}`}
+          style={{ transform: `rotate(${rotation}deg)` }}
+        >
+          {segments.map((seg, i) => (
+            <div
+              key={i}
+              className={styles.segment}
+              style={{
+                // 360 / 8 = 45
+                transform: `rotate(${45 * i}deg) skewY(-45deg)`,
+              }}
+            >
+              <span>{seg}</span>
+            </div>
+          ))}
+        </div>
+        <div className={styles.pointer}></div>
+      </div>
 
-        {result && (
-          <div className={styles.ResultBox}>
-            🎉 You won:{" "}
-            {result.type === "raffle_ticket"
-              ? "🎟 1 Ticket"
-              : result.type === "stars"
-              ? "🌟 5 Stars"
-              : "🎁 NFT Mystery Box"}
-          </div>
-        )}
+      <button
+        className={styles.spinButton}
+        onClick={spinWheel}
+        disabled={spinning}
+      >
+        {spinning ? "Spinning..." : "Spin (10⭐)"}
+      </button>
 
-        {balance !== null && <div className={styles.Balance}>⭐ Balance: {balance}</div>}
-      </div>
-    </div>
-  );
+      {result && (
+        <div className={styles.resultBox}>
+          🎉 You won:{" "}
+          {result.type === "raffle_ticket"
+            ? "🎟 1 Ticket"
+            : result.type === "stars"
+            ? "🌟 5 Stars" // 5 внутрішніх зірок
+            : "🎁 NFT Mystery Box"}
+        </div>
+      )}
+
+      {balance !== null && (
+        <div className={styles.balance}>⭐ Internal Balance: {balance}</div>
+      )}
+    </div>
+  );
 }
