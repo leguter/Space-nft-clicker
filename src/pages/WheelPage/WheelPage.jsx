@@ -1,6 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
 import styles from "./WheelPage.module.css";
-import api from "../../utils/api";
 
 export default function WheelPage() {
   const [spinning, setSpinning] = useState(false);
@@ -25,32 +25,43 @@ export default function WheelPage() {
     setResult(null);
 
     try {
-      // 1️⃣ Надсилаємо запит до бекенду
-      const res = await api.post("/api/wheel/spin");
-      const data = res.data;
+      // 1️⃣ Отримати інвойс від бекенду
+      const invoiceRes = await axios.get("/api/wheel/invoice");
+      if (!invoiceRes.data.success) throw new Error("Invoice failed");
 
-      if (!data.success) {
-        alert(data.message || "Not enough stars!");
+      const { invoice } = invoiceRes.data;
+
+      // 2️⃣ Відкрити Telegram оплату
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.openInvoice(invoice, async (status) => {
+          console.log("Invoice status:", status);
+
+          // Якщо оплата успішна — запустити спін
+          if (status === "paid") {
+            const res = await axios.post("/api/wheel/spin");
+            const data = res.data;
+
+            const index = getSegmentIndex(data.result.type);
+            const randomExtra = Math.floor(Math.random() * 360);
+            const newRotation = 360 * 5 + (360 / segments.length) * index + randomExtra;
+            setRotation(rotation + newRotation);
+
+            setTimeout(() => {
+              setResult(data.result);
+              setBalance(data.balance);
+              setSpinning(false);
+            }, 4000);
+          } else {
+            setSpinning(false);
+          }
+        });
+      } else {
+        alert("Telegram WebApp not available");
         setSpinning(false);
-        return;
       }
-
-      // 2️⃣ Визначаємо сектор на основі типу виграшу
-      const index = getSegmentIndex(data.result.type);
-      const randomExtra = Math.floor(Math.random() * 360);
-      const newRotation = 360 * 5 + (360 / segments.length) * index + randomExtra;
-
-      setRotation(rotation + newRotation);
-
-      // 3️⃣ Показати результат після завершення анімації
-      setTimeout(() => {
-        setResult(data.result);
-        setBalance(data.balance);
-        setSpinning(false);
-      }, 4000);
     } catch (err) {
       console.error(err);
-      alert("Server error during spin");
+      alert("Payment or spin error");
       setSpinning(false);
     }
   };
@@ -71,6 +82,7 @@ export default function WheelPage() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Wheel of Fortune</h2>
+
       <div className={styles.wheelContainer}>
         <div
           className={`${styles.wheel} ${spinning ? styles.spinning : ""}`}
