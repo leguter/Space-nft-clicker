@@ -51,12 +51,14 @@ export default function SpaceRaffle() {
               const data = res.data;
 
               const degreesPerSegment = 360 / segments.length;
-              const prizeIndex = getSegmentIndex(data.result.type);
+const prizeIndex = getSegmentIndex(data.result.type);
 
-              // Обчислюємо, куди має зупинитися колесо
-              const baseSpins = 5 * 360; // 5 повних обертів
-              const prizeAngle = prizeIndex * degreesPerSegment;
-              const stopRotation = baseSpins + (360 - prizeAngle - degreesPerSegment / 2);
+const baseSpins = 5 * 360; // 5 повних обертів
+// 🧭 Кут центру потрібного сегмента (рахуємо проти обертання)
+const prizeAngle = prizeIndex * degreesPerSegment + degreesPerSegment / 2;
+
+// 🎯 Загальний кут (робимо обертання до потрібного сегмента)
+const stopRotation = baseSpins + prizeAngle;
 
               setRotation(stopRotation);
 
