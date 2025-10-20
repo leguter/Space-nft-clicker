@@ -19,52 +19,56 @@ export default function WheelPage() {
     "🎁 NFT Box",
   ];
 
-  const spinWheel = async () => {
-    if (spinning) return;
-    setSpinning(true);
-    setResult(null);
+const spinWheel = async () => {
+  if (spinning) return;
+  setSpinning(true);
+  setResult(null);
 
-    try {
-      // 1️⃣ Отримати інвойс від бекенду
-      const invoiceRes = await api.get("/api/wheel/invoice");
-      if (!invoiceRes.data.success) throw new Error("Invoice failed");
+  try {
+    // 1️⃣ Отримати інвойс від бекенду через POST
+    const invoiceRes = await api.post("/api/wheel/create_invoice");
+    if (!invoiceRes.data.success) throw new Error("Invoice failed");
 
-      const { invoice } = invoiceRes.data;
+    const invoice = invoiceRes.data.invoice; // або invoiceRes.data, якщо бекенд повертає root об'єкт
 
-      // 2️⃣ Відкрити Telegram оплату
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.openInvoice(invoice, async (status) => {
-          console.log("Invoice status:", status);
+    // 2️⃣ Відкрити Telegram оплату
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.openInvoice(invoice);
 
-          // Якщо оплата успішна — запустити спін
-          if (status === "paid") {
-            const res = await api.post("/api/wheel/spin");
-            const data = res.data;
+      const onPayment = async (payload) => {
+        if (payload.status === "paid" || payload.success) {
+          const res = await api.post("/api/wheel/spin");
+          const data = res.data;
 
-            const index = getSegmentIndex(data.result.type);
-            const randomExtra = Math.floor(Math.random() * 360);
-            const newRotation = 360 * 5 + (360 / segments.length) * index + randomExtra;
-            setRotation(rotation + newRotation);
+          const index = getSegmentIndex(data.result.type);
+          const randomExtra = Math.floor(Math.random() * 360);
+          const newRotation = 360 * 5 + (360 / segments.length) * index + randomExtra;
+          setRotation(rotation + newRotation);
 
-            setTimeout(() => {
-              setResult(data.result);
-              setBalance(data.balance);
-              setSpinning(false);
-            }, 4000);
-          } else {
+          setTimeout(() => {
+            setResult(data.result);
+            setBalance(data.balance);
             setSpinning(false);
-          }
-        });
-      } else {
-        alert("Telegram WebApp not available");
-        setSpinning(false);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Payment or spin error");
+          }, 4000);
+        } else {
+          setSpinning(false);
+        }
+
+        window.Telegram.WebApp.offEvent("invoiceClosed", onPayment);
+      };
+
+      window.Telegram.WebApp.onEvent("invoiceClosed", onPayment);
+    } else {
+      alert("Telegram WebApp not available");
       setSpinning(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Payment or spin error");
+    setSpinning(false);
+  }
+};
+
 
   const getSegmentIndex = (type) => {
     switch (type) {
