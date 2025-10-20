@@ -162,16 +162,11 @@
 // }
 
 import React, { useState } from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import api from "../../utils/api";
+import styles from "./SpaceRaffle.module.css"; // ❗️ Імпортуємо стилі
 
-import api from "../../utils/api"; // ❗️ Переконайтесь, що шлях правильний
-
-//
-// ❗️ ОСЬ ТУТ ВИ МОЖЕТЕ НАЛАШТУВАТИ ПРИЗИ ❗️
-// Кількість сегментів (8) та їх 'type' мають відповідати
-// логіці на вашому бекенді (getSegmentIndex)
-//
+// ... (конфігурація segments залишається такою ж)
 const segments = [
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #2266ff, #22ccff)" },
@@ -187,83 +182,64 @@ export default function SpaceRaffle() {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState(null);
-  const [balance, setBalance] = useState(null); // Баланс внутрішніх зірок
-  const [tickets, setTickets] = useState(null); // Баланс квитків
+  const [balance, setBalance] = useState(null);
+  const [tickets, setTickets] = useState(null);
 
-  // Звуки з вашого нового файлу
-  const spinSound = new Audio("https://actions.google.com/sounds/v1/foley/spinning_coin.ogg");
-  const winSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+  // Створюємо audio об'єкти один раз
+  const [spinSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/foley/spinning_coin.ogg"));
+  const [winSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"));
 
-  /**
-   * Функція з вашої старої логіки.
-   * Визначає індекс сегмента на основі відповіді сервера.
-   */
   const getSegmentIndex = (type) => {
     switch (type) {
       case "raffle_ticket":
-        // Повертає випадковий індекс серед перших 6 сегментів (0-5)
-        return Math.floor(Math.random() * 6);
+        return Math.floor(Math.random() * 6); // 0-5
       case "stars":
-        return 6; // 7-й сегмент
+        return 6; // 6
       case "nft":
-        return 7; // 8-й сегмент
+        return 7; // 7
       default:
         return 0;
     }
   };
 
-  /**
-   * Повністю нова логіка spin, що включає оплату XTR
-   */
   const spin = async () => {
     if (spinning) return;
     setSpinning(true);
     setResult(null);
 
     try {
-      // 1️⃣ Отримати інвойс від бекенду
+      // 1️⃣ Отримати інвойс
       const invoiceRes = await api.post("/api/wheel/create_invoice");
       if (!invoiceRes.data.success) {
         throw new Error(invoiceRes.data.message || "Invoice creation failed");
       }
       const invoiceLink = invoiceRes.data.invoice_link;
 
-      // 2️⃣ Відкрити Telegram оплату (XTR)
+      // 2️⃣ Відкрити Telegram оплату
       if (window.Telegram?.WebApp) {
         const onPayment = async (event) => {
           window.Telegram.WebApp.offEvent("invoiceClosed", onPayment);
 
-          // 3️⃣ Перевіряємо, чи оплата успішна
           if (event.status === "paid") {
-            // Оплата пройшла, запускаємо звук та анімацію
             spinSound.currentTime = 0;
             spinSound.play();
 
             try {
-              // 4️⃣ Викликаємо /spin для отримання РЕАЛЬНОГО призу
+              // 4️⃣ Викликаємо /spin
               const res = await api.post("/api/wheel/spin");
-              const data = res.data; // { success, result, balance, tickets }
+              const data = res.data;
 
               // 5️⃣ Розрахунок анімації
               const prizeIndex = getSegmentIndex(data.result.type);
-              const degreesPerSegment = 360 / segments.length;
+              const degreesPerSegment = 360 / segments.length; // 45
               
-              // Цільова позиція (середина сегмента)
-              const targetStop = (prizeIndex * degreesPerSegment) + (degreesPerSegment / 2);
-              
-              // Розраховуємо нове абсолютне значення rotation
-              // Беремо поточний "оберт" та додаємо 5 повних обертів
-              let newAbsoluteRotation = (Math.floor(rotation / 360) * 360) + (360 * 5);
-              newAbsoluteRotation += targetStop;
+              const baseSpins = (Math.floor(rotation / 360) + 5) * 360;
+              const prizeAngle = prizeIndex * degreesPerSegment;
+              const jitter = (Math.random() - 0.5) * (degreesPerSegment * 0.5);
 
-              // Переконуємось, що ми не крутимо назад
-              if (newAbsoluteRotation <= rotation) {
-                newAbsoluteRotation += 360;
-              }
+              setRotation(baseSpins - prizeAngle + jitter);
 
-              setRotation(newAbsoluteRotation); // framer-motion анімує до цього значення
-
-              // 6️⃣ Показуємо результат після анімації
+              // 6️⃣ Показуємо результат
               setTimeout(() => {
                 spinSound.pause();
                 winSound.currentTime = 0;
@@ -281,7 +257,6 @@ export default function SpaceRaffle() {
               setSpinning(false);
             }
           } else {
-            // Оплата скасована або не вдалася
             console.log("Payment not completed:", event.status);
             setSpinning(false);
           }
@@ -301,128 +276,78 @@ export default function SpaceRaffle() {
     }
   };
 
-  //
-  // JSX з вашого нового файлу (але з виправленнями)
-  //
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen text-white"
-      style={{
-        background: "radial-gradient(circle at center, #0a0026, #000010 80%)",
-      }}
-    >
-      <h1 className="text-xl mb-4 tracking-widest text-purple-300 font-bold">
-        SPACE RAFFLE
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>SPACE RAFFLE</h1>
 
-      <div className="relative">
-        {/* Указатель */}
-        <div
-          className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 z-10"
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "12px solid transparent",
-            borderRight: "12px solid transparent",
-            borderBottom: "20px solid #ff00cc",
-            filter: "drop-shadow(0 0 10px #ff00cc)",
-          }}
-        ></div>
+      <div className={styles.wheelWrapper}>
+        <div className={styles.pointer}></div>
 
-        {/* Колесо */}
         <motion.div
           animate={{ rotate: rotation }}
-          transition={{ duration: 4, ease: [0.33, 1, 0.68, 1] }} // 4 секунди анімація
-          className="rounded-full overflow-hidden border-[4px] border-purple-800 shadow-[0_0_30px_rgba(120,0,255,0.7)]"
-          style={{
-            width: "300px",
-            height: "300px",
-            position: "relative",
-          }}
+          transition={{ duration: 4, ease: [0.33, 1, 0.68, 1] }}
+          className={styles.wheel}
         >
-       {segments.map((p, i) => {
-  const segmentAngle = 360 / segments.length; // 45 для 8 сегментів
-  const skewAngle = 90 - segmentAngle; // 45 для 8 сегментів
+          {segments.map((p, i) => {
+            const segmentAngle = 360 / segments.length; // 45
+            const skewAngle = 90 - segmentAngle; // 45
 
-  return (
-    <div
-      key={i}
-      style={{
-        position: "absolute",
-        width: "50%",
-        height: "50%",
-        top: "50%",
-        left: "50%",
-        transformOrigin: "0% 0%",
-        
-        // ❗️ ОСЬ ТУТ БУЛА ПОМИЛКА ❗️
-        // Переконайтеся, що у вас тут зворотні лапки `...`
-        transform: `rotate(${i * segmentAngle}deg) skewY(-${skewAngle}deg)`,
-        
-        background: p.color,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: "bold",
-        color: p.type === "nft" ? "#000" : "#fff",
-        textShadow: "0 0 10px rgba(255,255,255,0.6)",
-      }}
-    >
-      {/* ❗️ ЦЕЙ SPAN ТЕЖ ВАЖЛИВИЙ ❗️
-          Він "вирівнює" текст, щоб він не був косим */}
-      <span style={{ transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2}deg)` }}>
-        {p.label}
-      </span>
-    </div>
-  );
-})}
+            return (
+              <div
+                key={i}
+                className={styles.segment}
+                style={{
+                  // ❗️ Залишаємо лише ДИНАМІЧНІ стилі
+                  transform: `rotate(${i * segmentAngle}deg) skewY(-${skewAngle}deg)`,
+                  background: p.color,
+                  color: p.type === "nft" ? "#000" : "#fff",
+                }}
+              >
+                <span
+                  className={styles.segmentSpan}
+                  style={{
+                    // ❗️ ДИНАМІЧНИЙ стиль для "вирівнювання" тексту
+                    transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2}deg)`,
+                  }}
+                >
+                  {p.label}
+                </span>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
 
       <button
         onClick={spin}
         disabled={spinning}
-        className="mt-8 px-6 py-3 rounded-xl font-semibold text-lg shadow-[0_0_20px_rgba(255,0,255,0.5)] 
-                 bg-gradient-to-r from-[#7a00ff] to-[#ff00cc] hover:scale-105 transition-transform"
+        className={styles.spinButton}
       >
-        {/* ❗️ На кнопці ціна з бекенду (10 XTR) */}
         {spinning ? "Крутиться..." : "Крутить (10⭐)"}
       </button>
 
-      {/* ❗️ Блок результатів з вашої старої логіки */}
+      {/* Блок результатів */}
       {result && (
-        <p
-          className="mt-6 text-2xl font-bold"
-          style={{
-            color: "#ffe600",
-            textShadow: "0 0 20px #ff00cc",
-            animation: "blink 0.5s ease-in-out infinite alternate",
-          }}
-        >
+        <p className={styles.resultBox}>
           Вы выиграли:{" "}
           {result.type === "raffle_ticket"
             ? "🎟 1 Ticket"
             : result.type === "stars"
-            ? "🌟 5 Stars" // 5 внутрішніх зірок
+            ? "🌟 5 Stars"
             : "🎁 NFT Mystery Box"}
         </p>
       )}
 
-      {/* ❗️ Блоки балансу з вашої старої логіки */}
+      {/* Блоки балансу */}
       {tickets !== null && (
-        <div className="mt-4 text-lg">🎟 Tickets: {tickets}</div>
+        <div className={styles.ticketsBox}>🎟 Tickets: {tickets}</div>
       )}
 
       {balance !== null && (
-        <div className="mt-2 text-lg">⭐ Internal Balance: {balance}</div>
+        <div className={styles.balanceBox}>⭐ Internal Balance: {balance}</div>
       )}
 
-      <style>{`
-        @keyframes blink {
-          from { transform: scale(1); opacity: 1; }
-          to { transform: scale(1.1); opacity: 0.6; }
-        }
-      `}</style>
+      {/* ❗️ Тег <style> видалено, бо @keyframes тепер у .css файлі */}
     </div>
   );
 }

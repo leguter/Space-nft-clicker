@@ -92,3 +92,128 @@
   font-size: 1rem;
   color: #aaf;
 } */
+
+/* SpaceRaffle.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: white;
+  background: radial-gradient(circle at center, #0a0026, #000010 80%);
+  overflow: hidden; /* Щоб градієнти не виходили за межі */
+}
+
+.title {
+  font-size: 1.25rem; /* text-xl */
+  margin-bottom: 1rem; /* mb-4 */
+  letter-spacing: 0.1em; /* tracking-widest */
+  color: #c4b5fd; /* text-purple-300 */
+  font-weight: 700; /* font-bold */
+}
+
+.wheelWrapper {
+  position: relative;
+}
+
+.pointer {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 20px solid #ff00cc;
+  filter: drop-shadow(0 0 10px #ff00cc);
+}
+
+.wheel {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  border-radius: 9999px; /* rounded-full */
+  overflow: hidden;
+  border: 4px solid #5b21b6; /* border-purple-800 */
+  box-shadow: 0 0 30px rgba(120, 0, 255, 0.7);
+}
+
+.segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0% 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  user-select: none;
+}
+
+.segmentSpan {
+  display: inline-block;
+  width: 100px; /* Даємо тексту трохи місця */
+  text-align: center; /* Центруємо текст */
+}
+
+.spinButton {
+  margin-top: 2rem; /* mt-8 */
+  padding: 0.75rem 1.5rem; /* px-6 py-3 */
+  border-radius: 0.75rem; /* rounded-xl */
+  font-weight: 600; /* font-semibold */
+  font-size: 1.125rem; /* text-lg */
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  background-image: linear-gradient(to right, #7a00ff, #ff00cc);
+  transition: transform 150ms;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.spinButton:hover {
+  transform: scale(1.05); /* hover:scale-105 */
+}
+
+.spinButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+
+.resultBox {
+  margin-top: 1.5rem; /* mt-6 */
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  color: #ffe600;
+  text-shadow: 0 0 20px #ff00cc;
+  animation: blink 0.5s ease-in-out infinite alternate;
+}
+
+.ticketsBox {
+  margin-top: 1rem; /* mt-4 */
+  font-size: 1.125rem; /* text-lg */
+}
+
+.balanceBox {
+  margin-top: 0.5rem; /* mt-2 */
+  font-size: 1.125rem; /* text-lg */
+}
+
+/* Анімація блимання */
+@keyframes blink {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
