@@ -172,6 +172,7 @@ const segments = [
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
+    // { label: "X2 Clicks BOOST", type: "boost", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
   
 ];
 
