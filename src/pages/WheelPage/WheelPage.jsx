@@ -303,11 +303,11 @@ export default function SpaceRaffle() {
                   color: p.type === "nft" ? "#000" : "#fff",
                 }}
               >
-                <span
+               <span
                   className={styles.segmentSpan}
                   style={{
-                    // ❗️ ДИНАМІЧНИЙ стиль для "вирівнювання" тексту
-                    transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2}deg)`,
+                    // ✅ ОСЬ ВИПРАВЛЕНИЙ РЯДОК
+                    transform: `skewY(${skewAngle}deg) rotate(${segmentAngle / 2 + 180}deg)`,
                   }}
                 >
                   {p.label}
