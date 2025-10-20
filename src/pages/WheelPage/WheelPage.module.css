@@ -131,7 +131,7 @@
   border-bottom: 20px solid #ff00cc;
   filter: drop-shadow(0 0 10px #ff00cc);
 }
-.wheel {
+/* .wheel {
   width: 300px;
   height: 300px;
   position: relative;
@@ -139,6 +139,24 @@
   overflow: hidden;
   border: 4px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 25px rgba(255, 0, 255, 0.3);
+} */
+ .wheel {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  border-radius: 9999px; /* rounded-full */
+  overflow: hidden;
+  
+  /* ❗️ ВИДАЛЯЄМО СТАРИЙ BORDER ❗️ */
+  /* border: 4px solid #5b21b6; */ 
+
+  /* ❗️ ДОДАЄМО НОВІ ТІНІ ❗️ */
+  /* 1. Внутрішня тінь (для обрізки) */
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5),
+  /* 2. Ваша стара тінь-сяйво */
+              0 0 30px rgba(120, 0, 255, 0.7),
+  /* 3. Нова "рамка" (4px) */
+              0 0 0 4px #5b21b6;
 }
 
 .segment {
