@@ -18,18 +18,15 @@ export default function SpaceRaffle() {
   const [result, setResult] = useState(null);
   const [balance, setBalance] = useState(null);
   const [tickets, setTickets] = useState(null);
-  const [tapPower, setTapPower] = useState(null); // Стан для tap_power
+  const [tapPower, setTapPower] = useState(null);
 
   const [spinSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/foley/spinning_coin.ogg"));
   const [winSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"));
 
-  /**
-   * Динамічно знаходить індекс сегмента за його типом.
-   * Якщо є кілька сегментів з однаковим типом (наприклад, "Ticket"),
-   * ця функція обере один з них випадковим чином.
-   */
+  //
+  // ✅✅✅ ОСЬ НОВА, ПРАВИЛЬНА ФУНКЦІЯ ✅✅✅
+  //
   const getSegmentIndex = (type) => {
-    // 1. Знаходимо ВСІ індекси, які відповідають типу призу
     const matchingIndices = [];
     segments.forEach((segment, index) => {
       if (segment.type === type) {
@@ -37,13 +34,10 @@ export default function SpaceRaffle() {
       }
     });
 
-    // 2. Якщо нічого не знайдено (помилка), повертаємо 0
     if (matchingIndices.length === 0) {
       console.warn(`No segment found for type: ${type}`);
       return 0;
     }
-
-    // 3. Вибираємо випадковий індекс з усіх знайдених
     const randomIndex = Math.floor(Math.random() * matchingIndices.length);
     return matchingIndices[randomIndex];
   };
@@ -75,7 +69,7 @@ export default function SpaceRaffle() {
               const res = await api.post("/api/wheel/spin");
               const data = res.data; 
 
-              // 5️⃣ Розрахунок анімації
+              // 5️⃣ Розрахунок анімації (ТЕПЕР ПРАЦЮЄ КОРЕКТНО)
               const prizeIndex = getSegmentIndex(data.result.type);
               const degreesPerSegment = 360 / segments.length; 
               
@@ -97,7 +91,7 @@ export default function SpaceRaffle() {
                   setTapPower(data.tap_power);
                 }
                 setSpinning(false);
-              }, 4200); // 4s анімація + 0.2s буфер
+              }, 4200); 
 
             } catch (spinErr) {
               console.error("Spin error after payment:", spinErr);
@@ -138,7 +132,9 @@ export default function SpaceRaffle() {
           className={styles.wheel}
         >
           {segments.map((p, i) => {
-            // Розрахунки тепер динамічні на основі 5 сегментів
+            //
+            // ✅ ЦЕ ПРАВИЛЬНА МАТЕМАТИКА ДЛЯ 5 СЕГМЕНТІВ ("кривий" вигляд)
+            //
             const segmentAngle = 360 / segments.length; // 72
             const skewAngle = 90 - segmentAngle; // 18
 
@@ -172,7 +168,6 @@ export default function SpaceRaffle() {
         className={styles.spinButton}
       >
         {spinning ? "Крутиться..." : "Крутить (1⭐)"} 
-        {/* Переконайтеся, що ціна на кнопці (1⭐) відповідає ціні на бекенді */}
       </button>
 
       {/* Блок результатів */}
