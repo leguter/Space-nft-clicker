@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "../../utils/api";
-import styles from "./WheelPage.module.css"; 
+import styles from "./WheelPage.module.css";
 
-// Масив сегментів (5 штук)
 const segments = [
   { label: "🎁 NFT Box", type: "nft", color: "linear-gradient(135deg, #ff0077, #ff55cc)" },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
@@ -23,23 +22,10 @@ export default function SpaceRaffle() {
   const [spinSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/foley/spinning_coin.ogg"));
   const [winSound] = useState(() => new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"));
 
-  //
-  // ✅✅✅ ОСЬ НОВА, ПРАВИЛЬНА ФУНКЦІЯ ✅✅✅
-  //
+  // ✅ Функція для визначення правильного сегмента
   const getSegmentIndex = (type) => {
-    const matchingIndices = [];
-    segments.forEach((segment, index) => {
-      if (segment.type === type) {
-        matchingIndices.push(index);
-      }
-    });
-
-    if (matchingIndices.length === 0) {
-      console.warn(`No segment found for type: ${type}`);
-      return 0;
-    }
-    const randomIndex = Math.floor(Math.random() * matchingIndices.length);
-    return matchingIndices[randomIndex];
+    const index = segments.findIndex((s) => s.type === type);
+    return index !== -1 ? index : 0;
   };
 
   const spin = async () => {
@@ -48,14 +34,10 @@ export default function SpaceRaffle() {
     setResult(null);
 
     try {
-      // 1️⃣ Отримати інвойс
       const invoiceRes = await api.post("/api/wheel/create_invoice");
-      if (!invoiceRes.data.success) {
-        throw new Error(invoiceRes.data.message || "Invoice creation failed");
-      }
+      if (!invoiceRes.data.success) throw new Error(invoiceRes.data.message || "Invoice creation failed");
       const invoiceLink = invoiceRes.data.invoice_link;
 
-      // 2️⃣ Відкрити Telegram оплату
       if (window.Telegram?.WebApp) {
         const onPayment = async (event) => {
           window.Telegram.WebApp.offEvent("invoiceClosed", onPayment);
@@ -65,21 +47,19 @@ export default function SpaceRaffle() {
             spinSound.play();
 
             try {
-              // 4️⃣ Викликаємо /spin
               const res = await api.post("/api/wheel/spin");
-              const data = res.data; 
+              const data = res.data;
 
-              // 5️⃣ Розрахунок анімації (ТЕПЕР ПРАЦЮЄ КОРЕКТНО)
+              const degreesPerSegment = 360 / segments.length;
               const prizeIndex = getSegmentIndex(data.result.type);
-              const degreesPerSegment = 360 / segments.length; 
-              
-              const baseSpins = (Math.floor(rotation / 360) + 5) * 360;
+
+              // Обчислюємо, куди має зупинитися колесо
+              const baseSpins = 5 * 360; // 5 повних обертів
               const prizeAngle = prizeIndex * degreesPerSegment;
-              const jitter = (Math.random() - 0.5) * (degreesPerSegment * 0.5);
+              const stopRotation = baseSpins + (360 - prizeAngle - degreesPerSegment / 2);
 
-              setRotation(baseSpins - prizeAngle + jitter);
+              setRotation(stopRotation);
 
-              // 6️⃣ Показуємо результат
               setTimeout(() => {
                 spinSound.pause();
                 winSound.currentTime = 0;
@@ -87,14 +67,11 @@ export default function SpaceRaffle() {
                 setResult(data.result);
                 setBalance(data.balance);
                 setTickets(data.tickets);
-                if (data.tap_power) {
-                  setTapPower(data.tap_power);
-                }
+                if (data.tap_power) setTapPower(data.tap_power);
                 setSpinning(false);
-              }, 4200); 
-
-            } catch (spinErr) {
-              console.error("Spin error after payment:", spinErr);
+              }, 4200);
+            } catch (err) {
+              console.error("Spin error after payment:", err);
               alert("Spin failed after payment. Contact support.");
               spinSound.pause();
               setSpinning(false);
@@ -107,7 +84,6 @@ export default function SpaceRaffle() {
 
         window.Telegram.WebApp.onEvent("invoiceClosed", onPayment);
         window.Telegram.WebApp.openInvoice(invoiceLink);
-
       } else {
         alert("Telegram WebApp not available");
         setSpinning(false);
@@ -132,12 +108,8 @@ export default function SpaceRaffle() {
           className={styles.wheel}
         >
           {segments.map((p, i) => {
-            //
-            // ✅ ЦЕ ПРАВИЛЬНА МАТЕМАТИКА ДЛЯ 5 СЕГМЕНТІВ ("кривий" вигляд)
-            //
-            const segmentAngle = 360 / segments.length; // 72
-            const skewAngle = 90 - segmentAngle; // 18
-
+            const segmentAngle = 360 / segments.length;
+            const skewAngle = 90 - segmentAngle;
             return (
               <div
                 key={i}
@@ -162,18 +134,13 @@ export default function SpaceRaffle() {
         </motion.div>
       </div>
 
-      <button
-        onClick={spin}
-        disabled={spinning}
-        className={styles.spinButton}
-      >
-        {spinning ? "Крутиться..." : "Крутить (1⭐)"} 
+      <button onClick={spin} disabled={spinning} className={styles.spinButton}>
+        {spinning ? "Крутиться..." : "Крутить (1⭐)"}
       </button>
 
-      {/* Блок результатів */}
       {result && (
         <p className={styles.resultBox}>
-          Вы выиграли:{" "}
+          Ви виграли:{" "}
           {result.type === "raffle_ticket"
             ? "🎟 1 Ticket"
             : result.type === "stars"
@@ -184,16 +151,9 @@ export default function SpaceRaffle() {
         </p>
       )}
 
-      {/* Блоки балансу */}
-      {tickets !== null && (
-        <div className={styles.ticketsBox}>🎟 Tickets: {tickets}</div>
-      )}
-      {balance !== null && (
-        <div className={styles.balanceBox}>⭐ Internal Balance: {balance}</div>
-      )}
-      {tapPower !== null && (
-        <div className={styles.balanceBox}>⚡ Tap Power: {tapPower}</div>
-      )}
+      {tickets !== null && <div className={styles.ticketsBox}>🎟 Tickets: {tickets}</div>}
+      {balance !== null && <div className={styles.balanceBox}>⭐ Balance: {balance}</div>}
+      {tapPower !== null && <div className={styles.balanceBox}>⚡ Tap Power: {tapPower}</div>}
     </div>
   );
 }
