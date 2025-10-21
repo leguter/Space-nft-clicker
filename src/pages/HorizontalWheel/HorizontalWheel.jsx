@@ -151,19 +151,18 @@ export default function HorizontalWheel() {
   const segmentWidth = 160;
   const totalSegments = segments.length;
   const wheelCycleLength = totalSegments * segmentWidth; // 4 * 160 = 640px
-  // Зсув для центрування сегмента під маркером (160 / 2 = 80)
-  const centeringOffset = segmentWidth / 2;
+  const centeringOffset = segmentWidth / 2; // 160 / 2 = 80
 
-  // 1. Встановлюємо початковий offset так, щоб "NFT Box" (перший елемент)
-  // був рівно по центру під маркером.
+  // Встановлюємо початковий offset, щоб перший елемент був у центрі
   const [offset, setOffset] = useState(centeringOffset); 
   
-  // 2. Налаштування анімації виносимо в стан, щоб керувати нею
-  const [transition, setTransition] = useState({ duration: 4, ease: "easeOut" });
+  // 1. ❗️ ВИРІШЕННЯ ПРОБЛЕМИ №1:
+  // Початкова тривалість анімації = 0 секунд.
+  // Це запобіжить "повільному" руху колеса при завантаженні сторінки.
+  const [transition, setTransition] = useState({ duration: 0, ease: "easeOut" });
 
   // 🔹 Функція обертання до конкретного призу
   const spinToReward = (rewardType) => {
-    // знаходимо індекс призу
     const winningIndex = segments.findIndex(s => s.type === rewardType);
 
     if (winningIndex === -1) {
@@ -172,62 +171,61 @@ export default function HorizontalWheel() {
       return;
     }
 
-    // 3. Розраховуємо "базову" цільову позицію для цього призу
-    // (напр., 'Ticket' (index 1) -> (1 * -160) + 80 = -80px)
-    // (напр., 'Boost' (index 3) -> (3 * -160) + 80 = -400px)
     const targetPosition = (winningIndex * -segmentWidth) + centeringOffset;
-
-    // 4. Беремо поточний offset (звідки ми починаємо крутити)
     const currentOffset = offset;
-    
-    // 5. Знаходимо "базову" позицію поточного offset.
-    // (напр., якщо offset = -3280, то -3280 % 640 = -80)
     const currentBaseOffset = currentOffset % wheelCycleLength;
-
-    // 6. Кількість повних обертів (ЗАВЖДИ ціле число)
-    const randomTurns = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6
+    const randomTurns = 4 + Math.floor(Math.random() * 3); 
     const spinDistance = wheelCycleLength * randomTurns;
-
-    // 7. ❗️ КЛЮЧОВА ЛОГІКА:
-    // Ми беремо поточну позицію,
-    // додаємо різницю, щоб потрапити на потрібний приз,
-    // і віднімаємо величезну дистанцію для обертання.
     const finalOffset = currentOffset + (targetPosition - currentBaseOffset) - spinDistance;
 
-    // 8. Встановлюємо нормальну анімацію і запускаємо її
+    // 2. Встановлюємо тривалість 4 секунди САМЕ ДЛЯ ПРОКРУТКИ
     setTransition({ duration: 4, ease: "easeOut" });
     setResult(null);
-    setOffset(finalOffset);
+    setOffset(finalOffset); // Запускаємо анімацію до finalOffset
 
-    // 9. Після завершення анімації показуємо результат
+    // Після завершення анімації показуємо результат
     setTimeout(() => {
       setSpinning(false);
       setResult(segments[winningIndex]);
     }, 4500); // 4000ms анімація + 500ms буфер
   };
 
+  // 3. ❗️ ВИРІШЕННЯ ПРОБЛЕМИ №2:
+  // Ця функція спрацює, коли анімація (прокрутка) завершиться
+  const handleAnimationComplete = () => {
+    // Ми НЕ хочемо нічого робити, якщо анімація, що завершилась,
+    // була "миттєвою" (напр., при завантаженні або при цьому ж скиданні)
+    if (transition.duration === 0) return;
+
+    // 4. Розраховуємо базову позицію (напр., -80px для "Ticket")
+    const currentBaseOffset = offset % wheelCycleLength;
+
+    // 5. Встановлюємо наступну анімацію на 0 секунд
+    setTransition({ duration: 0 });
+    
+    // 6. "Телепортуємо" колесо з (напр.) -2640px на -80px
+    // Візуально нічого не зміниться, але offset буде малим
+    // і ми ніколи не "вийдемо за межі" відрендерених сегментів.
+    setOffset(currentBaseOffset);
+  };
+
   // 🔹 Обробка спіну з оплатою
   const handleSpin = async () => {
     if (spinning) return;
     setSpinning(true);
-    setResult(null); // Ховаємо попередній результат
+    setResult(null); 
 
     try {
-      // 1️⃣ створюємо інвойс
       const { data: invoice } = await api.post("/api/wheel/create_invoice");
       if (!invoice.success) throw new Error("Не вдалося створити інвойс");
 
       const link = invoice.invoice_link;
 
-      // 2️⃣ оплата через Telegram
       if (window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(link, async (status) => {
           if (status === "paid") {
-            // 3️⃣ отримуємо результат від бекенду
             const { data: spinData } = await api.post("/api/wheel/spin");
             if (!spinData.success) throw new Error("Спін не вдався");
-
-            // 4️⃣ запускаємо обертання до правильного призу
             spinToReward(spinData.result.type);
           } else {
             setSpinning(false);
@@ -252,11 +250,11 @@ export default function HorizontalWheel() {
         <motion.div
           className={styles.wheel}
           animate={{ x: offset }}
-          // Використовуємо transition зі стану
           transition={transition}
-          // onAnimationComplete нам більше НЕ ПОТРІБЕН
+          // 7. Додаємо обробник завершення анімації
+          onAnimationComplete={handleAnimationComplete} 
         >
-          {[...Array(8)].flatMap((_, i) =>
+          {[...Array(8)].flatMap((_, i) => // 8 масивів достатньо з цим фіксом
             segments.map((seg, idx) => (
               <div
                 key={`${i}-${idx}`}
