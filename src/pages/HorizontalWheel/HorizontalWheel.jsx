@@ -31,7 +31,7 @@ export default function HorizontalWheel() {
     }
 
     // обчислюємо offset для анімації
-    const randomTurns = 4 + Math.random() * 2; // 4–6 повних обертів
+  const randomTurns = 4 + Math.floor(Math.random() * 3);
     // (160 / 2 = 80). Цей зсув центрує сегмент під маркером.
      const centeringOffset = segmentWidth / 2; 
  const finalOffset = -((winningIndex + totalSegments * randomTurns) * segmentWidth) + centeringOffset;
