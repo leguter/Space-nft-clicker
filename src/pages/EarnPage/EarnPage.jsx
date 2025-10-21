@@ -122,17 +122,20 @@ const handleClaim = async () => {
             </motion.button>
           </div>
           <div className={styles.TaskItem}>
+              <p>Try your luck</p>
+              {error && <p className={styles.ErrorText}>{error}</p>}
+          
+            <Link to="/wheel">
            <motion.button
               whileTap={{ scale: 0.9 }}
               className={`${styles.BtnClaim}`}
-              onClick={<Link to="/wheel">
-  <div className="menu-item">
-  </div>
-</Link>}
+              // onClick={1}
               disabled={isClaiming || isCompleted}
             >
               🎡 Wheel
             </motion.button>
+            </Link>
+          
 </div>
         </div>
       </div>
