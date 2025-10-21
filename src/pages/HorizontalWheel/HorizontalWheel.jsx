@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import api from "../../utils/api";
 import styles from "./HorizontalWheel.module.css";
 
+// Кожен тип призу унікальний
 const segments = [
   { label: "🎁 NFT Box", type: "nft", color: "linear-gradient(135deg, #ff0077, #ff55cc)" },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
@@ -10,77 +11,78 @@ const segments = [
   { label: "🚀 Boost", type: "boost", color: "linear-gradient(135deg, #00ff99, #00ffaa)" },
 ];
 
-
 export default function HorizontalWheel() {
   const [spinning, setSpinning] = useState(false);
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState(null);
 
-  const segmentWidth = 160;
+  const segmentWidth = 160; // ширина одного сегмента
   const totalSegments = segments.length;
 
-  // 🎯 Обертання саме на потрібному секторі
+  // 🔹 Функція обертання до конкретного призу
   const spinToReward = (rewardType) => {
-    const matchingIndexes = segments
-      .map((s, i) => (s.type === rewardType ? i : -1))
-      .filter((i) => i !== -1);
+    // знаходимо індекс призу
+    const winningIndex = segments.findIndex(s => s.type === rewardType);
 
-    const winningIndex =
-      matchingIndexes[Math.floor(Math.random() * matchingIndexes.length)];
+    if (winningIndex === -1) {
+      console.error("Приз не знайдено:", rewardType);
+      setSpinning(false);
+      return;
+    }
 
-    // обертання на кілька повних оборотів + до потрібного сегмента
-    const randomTurns = 4 + Math.random() * 2;
-    const finalOffset =
-      -((winningIndex + totalSegments * randomTurns) * segmentWidth);
+    // обчислюємо offset для анімації
+    const randomTurns = 4 + Math.random() * 2; // 4–6 повних обертів
+    const finalOffset = -((winningIndex + totalSegments * randomTurns) * segmentWidth);
 
-    // ⚡️ Скидаємо позицію колеса перед новим спіном
+    // скидаємо попереднє положення, щоб анімація повторювалась коректно
     setOffset(0);
     setResult(null);
 
-    // Трошки чекаємо, щоб Framer Motion встиг оновити DOM перед анімацією
     setTimeout(() => {
       setOffset(finalOffset);
     }, 50);
 
-    // коли анімація завершена — показуємо результат
+    // після завершення анімації показуємо результат
     setTimeout(() => {
       setSpinning(false);
       setResult(segments[winningIndex]);
     }, 4500);
   };
 
+  // 🔹 Обробка спіну з оплатою
   const handleSpin = async () => {
     if (spinning) return;
     setSpinning(true);
     setResult(null);
 
     try {
-      // 1️⃣ Створюємо інвойс
+      // 1️⃣ створюємо інвойс
       const { data: invoice } = await api.post("/api/wheel/create_invoice");
-      if (!invoice.success) throw new Error("Invoice creation failed");
+      if (!invoice.success) throw new Error("Не вдалося створити інвойс");
 
       const link = invoice.invoice_link;
 
-      // 2️⃣ Оплата в Telegram
+      // 2️⃣ оплата через Telegram
       if (window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(link, async (status) => {
           if (status === "paid") {
-            // 3️⃣ Після оплати — виклик бекенду для розрахунку нагороди
+            // 3️⃣ отримуємо результат від бекенду
             const { data: spinData } = await api.post("/api/wheel/spin");
-            if (!spinData.success) throw new Error("Spin failed");
+            if (!spinData.success) throw new Error("Спін не вдався");
+
+            // 4️⃣ запускаємо обертання до правильного призу
             spinToReward(spinData.result.type);
           } else {
             setSpinning(false);
           }
         });
       } else {
-        // 🧪 Тест без Telegram (локальний режим)
-        console.log("⚠️ Telegram WebApp не знайдено — тестовий спін");
+        // 🧪 Тест без Telegram
         const { data: spinData } = await api.post("/api/wheel/spin");
         spinToReward(spinData.result.type);
       }
     } catch (err) {
-      console.error("Spin error:", err);
+      console.error("Помилка спіну:", err);
       setSpinning(false);
     }
   };
