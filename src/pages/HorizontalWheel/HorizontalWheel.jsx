@@ -56,7 +56,7 @@ export default function HorizontalWheel() {
 
     try {
       // 1️⃣ Створюємо інвойс
-      const { data: invoice } = await api.post("/wheel/create_invoice");
+      const { data: invoice } = await api.post("/api/wheel/create_invoice");
       if (!invoice.success) throw new Error("Invoice creation failed");
 
       const link = invoice.invoice_link;
@@ -66,7 +66,7 @@ export default function HorizontalWheel() {
         window.Telegram.WebApp.openInvoice(link, async (status) => {
           if (status === "paid") {
             // 3️⃣ Після оплати — виклик бекенду для розрахунку нагороди
-            const { data: spinData } = await api.post("/wheel/spin");
+            const { data: spinData } = await api.post("/api/wheel/spin");
             if (!spinData.success) throw new Error("Spin failed");
             spinToReward(spinData.result.type);
           } else {
@@ -76,7 +76,7 @@ export default function HorizontalWheel() {
       } else {
         // 🧪 Тест без Telegram (локальний режим)
         console.log("⚠️ Telegram WebApp не знайдено — тестовий спін");
-        const { data: spinData } = await api.post("/wheel/spin");
+        const { data: spinData } = await api.post("/api/wheel/spin");
         spinToReward(spinData.result.type);
       }
     } catch (err) {
