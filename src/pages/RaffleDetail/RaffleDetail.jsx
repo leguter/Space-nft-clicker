@@ -349,7 +349,7 @@
 //   );
 // }
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import styles from "./RaffleDetail.module.css";
@@ -366,13 +366,14 @@ export default function RaffleDetail() {
   const [canJoin, setCanJoin] = useState(false);
   const [userTickets, setUserTickets] = useState(0);
 
+  const timerRef = useRef(null);
+
   // ===============================
   // 📦 Завантаження активного розіграшу та тікетів
   // ===============================
   const fetchActiveRaffle = async () => {
     try {
       setLoading(true);
-
       // Беремо останній активний розіграш
       const raffleRes = await api.get("/api/raffle/active");
       const raffleData = raffleRes.data;
@@ -387,6 +388,7 @@ export default function RaffleDetail() {
       setCanJoin(tickets >= Number(raffleData.cost));
     } catch (err) {
       console.error("Error loading raffle:", err);
+      setRaffle(null);
     } finally {
       setLoading(false);
     }
@@ -402,12 +404,15 @@ export default function RaffleDetail() {
   useEffect(() => {
     if (!raffle?.ends_at) return;
 
-    const interval = setInterval(async () => {
+    // Чистимо попередній таймер
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    timerRef.current = setInterval(async () => {
       const diff = new Date(raffle.ends_at).getTime() - Date.now();
 
       if (diff <= 0) {
         setTimeLeft("Raffle ended");
-        clearInterval(interval);
+        clearInterval(timerRef.current);
 
         // Перевіряємо результат
         try {
@@ -415,6 +420,9 @@ export default function RaffleDetail() {
           const status = res.data.status;
           setResult(status === "won" || status === "lost" ? status : null);
           setIsParticipating(status !== "not_participated");
+
+          // Якщо розіграш завершився, підвантажуємо новий
+          fetchActiveRaffle();
         } catch (err) {
           console.error("Error fetching raffle result:", err);
         }
@@ -432,27 +440,21 @@ export default function RaffleDetail() {
       }
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timerRef.current);
   }, [raffle]);
 
   // ===============================
-  // 🔄 Авто-оновлення учасників та перевірка нового розіграшу
+  // 🔄 Авто-оновлення кількості учасників
   // ===============================
   useEffect(() => {
     if (!raffle) return;
 
     const interval = setInterval(async () => {
       try {
-        // Оновлюємо кількість учасників
         const res = await api.get(`/api/raffle/${raffle.id}`);
         setRaffle((prev) => ({ ...prev, participants: res.data.participants }));
-
-        // Якщо поточний розіграш завершився, підвантажуємо новий
-        if (!res.data.is_active) {
-          await fetchActiveRaffle();
-        }
       } catch (err) {
-        console.error("Error updating raffle:", err);
+        console.error("Error updating participants:", err);
       }
     }, 5000);
 
@@ -479,6 +481,9 @@ export default function RaffleDetail() {
     }
   };
 
+  // ===============================
+  // 💬 Відображення
+  // ===============================
   if (loading) return <p className={styles.Loading}>Loading raffle...</p>;
   if (!raffle) return <p className={styles.Error}>No active raffle</p>;
 
@@ -524,8 +529,3 @@ export default function RaffleDetail() {
     </div>
   );
 }
-
-
-
-
-
