@@ -275,7 +275,7 @@ export default function HorizontalWheel() {
         disabled={spinning}
         className={styles.spinButton}
       >
-        {spinning ? "Spinning..." : "Spin for 1 XTR"}
+        {spinning ? "Spinning..." : "Spin for 10 ⭐ "}
       </button>
 
       {result && (
