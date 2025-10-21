@@ -123,7 +123,7 @@ const handleClaim = async () => {
           </div>
           <div className={styles.TaskItem}>
               <p>Try your luck</p>
-              {error && <p className={styles.ErrorText}>{error}</p>}
+              {/* {error && <p className={styles.ErrorText}>{error}</p>} */}
           
             <Link to="/wheel">
            <motion.button
