@@ -158,6 +158,7 @@ import { useEffect } from "react";
 import api from './utils/api'
 import RaffleDetail from "./pages/RaffleDetail/RaffleDetail";
 import WheelPage from "./pages/WheelPage/WheelPage";
+import HorizontalWheel from "./pages/HorizontalWheel/HorizontalWheel";
 export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
@@ -221,7 +222,7 @@ if (userData?.error) {
         <Route path="raffles/:id" element={<RaffleDetail />} />
         <Route path="boosters" element={<BoostersPage />} />
         <Route path="profile" element={<ProfilePage user={userData} />} />
-        <Route path="/wheel" element={<WheelPage />} />
+        <Route path="/wheel" element={<HorizontalWheel />} />
       </Route>
     </Routes>
   );
