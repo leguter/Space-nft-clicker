@@ -30,7 +30,6 @@
 //   );
 // }
 // eslint-disable-next-line no-unused-vars
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import styles from "./BoostersPage.module.css";
 import api from "../../utils/api";

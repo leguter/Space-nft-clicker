@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
@@ -18,12 +17,11 @@ export default function HorizontalWheel() {
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState(null);
 
-  const segmentWidth = 160; // px ширина одного блоку
+  const segmentWidth = 160;
   const totalSegments = segments.length;
 
-  const handleSpin = async () => {
-    if (spinning) return;
-
+  // 🚀 Запускає обертання після оплати
+  const startSpin = async () => {
     setSpinning(true);
     setResult(null);
 
@@ -32,24 +30,54 @@ export default function HorizontalWheel() {
       if (!data.success) throw new Error("Spin failed");
 
       const rewardType = data.result.type;
-      const winningIndex = segments.findIndex(s => s.type === rewardType);
-      if (winningIndex === -1) throw new Error("Prize not found in segments");
 
-      // Додатковий оберт для ефекту
-      const randomTurns = 3 + Math.random() * 2; // 3–5 повних обертів
+      // Випадковий сегмент відповідного типу
+      const matchingIndexes = segments
+        .map((s, i) => (s.type === rewardType ? i : -1))
+        .filter(i => i !== -1);
+
+      const winningIndex =
+        matchingIndexes[Math.floor(Math.random() * matchingIndexes.length)];
+
+      const randomTurns = 4 + Math.random() * 2;
       const finalOffset =
         offset - (winningIndex + totalSegments * randomTurns) * segmentWidth;
 
       setOffset(finalOffset);
 
-      // Після анімації показуємо результат
       setTimeout(() => {
         setSpinning(false);
         setResult(data.result);
       }, 4500);
     } catch (err) {
-      console.error(err);
+      console.error("Spin error:", err);
       setSpinning(false);
+    }
+  };
+
+  // 💳 Обробка натискання кнопки (спочатку інвойс)
+  const handleSpin = async () => {
+    if (spinning) return;
+    setResult(null);
+
+    try {
+      const invoice = await api.post("/api/wheel/create_invoice");
+      if (!invoice.data.success) throw new Error("Invoice creation failed");
+
+      const link = invoice.data.invoice_link;
+
+      // Telegram WebApp оплата
+      if (window.Telegram?.WebApp?.openInvoice) {
+        window.Telegram.WebApp.openInvoice(link, async (status) => {
+          if (status === "paid") await startSpin();
+        });
+      } else {
+        // Для локального тесту без Telegram WebApp
+        console.log("⚠️ Telegram WebApp не знайдено — спін без оплати");
+        await startSpin();
+      }
+    } catch (err) {
+      console.error("Invoice error:", err);
     }
   };
 
@@ -89,7 +117,10 @@ export default function HorizontalWheel() {
 
       {result && (
         <div className={styles.result}>
-          🎉 You won: <strong>{result.value}</strong> ({result.type})
+          🎉 You won:{" "}
+          <strong>
+            {result.value} ({result.type})
+          </strong>
         </div>
       )}
     </div>
