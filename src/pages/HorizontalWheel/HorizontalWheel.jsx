@@ -157,7 +157,7 @@ export default function HorizontalWheel() {
   // 1. ❗️ ЦЕ ВИРІШУЄ ПРОБЛЕМУ "ЗСУНУТЕ В ПРАВО":
   // Ми встановлюємо початковий offset = +80px.
   // Це змушує "NFT Box" (перший елемент) опинитися рівно по центру.
-  const [offset, setOffset] = useState(centeringOffset); 
+  const [offset, setOffset] = useState(80); 
   
   // 2. ❗️ ЦЕ ВИРІШУЄ ПРОБЛЕМУ "ПОВІЛЬНОГО ПОВЗАННЯ" ПРИ ЗАВАНТАЖЕННІ:
   // Початкова тривалість анімації = 0 секунд.
