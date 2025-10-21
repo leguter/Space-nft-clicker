@@ -150,7 +150,7 @@ import { motion } from "framer-motion";
 import styles from "./EarnPage.module.css";
 import api from "../../utils/api";
 
-const TELEGRAM_CHANNEL_URL = "https://t.me/SpaceClicker";
+const TELEGRAM_CHANNEL_URL = "https://t.me/SpaceClickRU";
 
 export default function EarnPage() {
   const [isClaiming, setIsClaiming] = useState(false);
