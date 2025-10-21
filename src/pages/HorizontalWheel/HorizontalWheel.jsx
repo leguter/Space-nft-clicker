@@ -28,7 +28,7 @@ export default function HorizontalWheel() {
     setResult(null);
 
     try {
-      const { data } = await api.post("/wheel/spin");
+      const { data } = await api.post("/api/wheel/spin");
       if (!data.success) throw new Error("Spin failed");
 
       const rewardType = data.result.type;
