@@ -265,7 +265,7 @@ export default function HorizontalWheel() {
               >
                 {seg.label}
               </div>
-    S          ))
+             ))
           )}
         </motion.div>
 
