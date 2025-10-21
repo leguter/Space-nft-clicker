@@ -146,18 +146,22 @@ const segments = [
 
 export default function HorizontalWheel() {
   const [spinning, setSpinning] = useState(false);
-  const [offset, setOffset] = useState(0);
   const [result, setResult] = useState(null);
-  // 1. Додаємо стан для налаштувань анімації
-  const [transition, setTransition] = useState({ duration: 4, ease: "easeOut" });
 
-  const segmentWidth = 160; // ширина одного сегмента
+  const segmentWidth = 160;
   const totalSegments = segments.length;
   const wheelCycleLength = totalSegments * segmentWidth; // 4 * 160 = 640px
-  // 2. Зсув для центрування сегмента під маркером (160 / 2 = 80)
+  // Зсув для центрування сегмента під маркером (160 / 2 = 80)
   const centeringOffset = segmentWidth / 2;
 
-  // 🔹 Оновлена функція обертання
+  // 1. Встановлюємо початковий offset так, щоб "NFT Box" (перший елемент)
+  // був рівно по центру під маркером.
+  const [offset, setOffset] = useState(centeringOffset); 
+  
+  // 2. Налаштування анімації виносимо в стан, щоб керувати нею
+  const [transition, setTransition] = useState({ duration: 4, ease: "easeOut" });
+
+  // 🔹 Функція обертання до конкретного призу
   const spinToReward = (rewardType) => {
     // знаходимо індекс призу
     const winningIndex = segments.findIndex(s => s.type === rewardType);
@@ -168,56 +172,45 @@ export default function HorizontalWheel() {
       return;
     }
 
-    // 3. Розраховуємо цільову позицію, щоб сегмент був у центрі
-    // (напр. 1 * -160 + 80 = -80px)
+    // 3. Розраховуємо "базову" цільову позицію для цього призу
+    // (напр., 'Ticket' (index 1) -> (1 * -160) + 80 = -80px)
+    // (напр., 'Boost' (index 3) -> (3 * -160) + 80 = -400px)
     const targetPosition = (winningIndex * -segmentWidth) + centeringOffset;
 
-    // 4. Поточна "базова" позиція (залишок від ділення)
-    const currentBaseOffset = offset % wheelCycleLength;
+    // 4. Беремо поточний offset (звідки ми починаємо крутити)
+    const currentOffset = offset;
     
-    // 5. Кількість повних обертів (завжди ціле число)
+    // 5. Знаходимо "базову" позицію поточного offset.
+    // (напр., якщо offset = -3280, то -3280 % 640 = -80)
+    const currentBaseOffset = currentOffset % wheelCycleLength;
+
+    // 6. Кількість повних обертів (ЗАВЖДИ ціле число)
     const randomTurns = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6
-    const spinDistance = (totalSegments * randomTurns) * segmentWidth;
+    const spinDistance = wheelCycleLength * randomTurns;
 
-    // 6. Нова фінальна позиція
-    // Ми беремо поточну базу, віднімаємо дистанцію обертів,
-    // і додаємо різницю, щоб потрапити на цільову позицію.
-    const finalOffset = currentBaseOffset - spinDistance + (targetPosition - currentBaseOffset);
+    // 7. ❗️ КЛЮЧОВА ЛОГІКА:
+    // Ми беремо поточну позицію,
+    // додаємо різницю, щоб потрапити на потрібний приз,
+    // і віднімаємо величезну дистанцію для обертання.
+    const finalOffset = currentOffset + (targetPosition - currentBaseOffset) - spinDistance;
 
-    // 7. Встановлюємо нормальну анімацію і запускаємо її
+    // 8. Встановлюємо нормальну анімацію і запускаємо її
     setTransition({ duration: 4, ease: "easeOut" });
     setResult(null);
     setOffset(finalOffset);
 
-    // після завершення анімації показуємо результат
+    // 9. Після завершення анімації показуємо результат
     setTimeout(() => {
       setSpinning(false);
       setResult(segments[winningIndex]);
     }, 4500); // 4000ms анімація + 500ms буфер
   };
 
-  // 8. 🔹 Нова функція: "невидиме" скидання позиції
-  const handleAnimationComplete = () => {
-    if (spinning) return; // Ігнорувати, якщо анімація ще не завершена
-    
-    // 9. Визначаємо, на якій "базовій" позиції ми зупинилися
-    // (Це та сама логіка 'targetPosition', що й у spinToReward)
-    const winningIndex = result ? segments.findIndex(s => s.type === result.type) : -1;
-
-    if (winningIndex !== -1) {
-      const targetPosition = (winningIndex * -segmentWidth) + centeringOffset;
-      // 10. Встановлюємо анімацію на 0 секунд
-      setTransition({ duration: 0 });
-      // 11. "Телепортуємо" колесо на базову позицію
-      setOffset(targetPosition);
-    }
-  };
-
   // 🔹 Обробка спіну з оплатою
   const handleSpin = async () => {
     if (spinning) return;
     setSpinning(true);
-    setResult(null);
+    setResult(null); // Ховаємо попередній результат
 
     try {
       // 1️⃣ створюємо інвойс
@@ -259,10 +252,9 @@ export default function HorizontalWheel() {
         <motion.div
           className={styles.wheel}
           animate={{ x: offset }}
-          // 12. Використовуємо transition зі стану
+          // Використовуємо transition зі стану
           transition={transition}
-          // 13. Додаємо обробник завершення анімації
-          onAnimationComplete={handleAnimationComplete}
+          // onAnimationComplete нам більше НЕ ПОТРІБЕН
         >
           {[...Array(8)].flatMap((_, i) =>
             segments.map((seg, idx) => (
