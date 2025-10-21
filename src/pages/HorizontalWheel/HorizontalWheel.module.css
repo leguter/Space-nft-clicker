@@ -35,7 +35,7 @@
 .marker {
   position: absolute;
   top: -14px;
-  left: 50%;
+  left: 25%;
   transform: translateX(-50%);
   font-size: 22px;
   color: #ffeb3b;
