@@ -139,7 +139,12 @@ import styles from "./HorizontalWheel.module.css";
 
 // Кожен тип призу унікальний
 const segments = [
-  { label: "🎁 NFT Box", type: "nft", color: "linear-gradient(135deg, #ff0077, #ff55cc)" },
+  { 
+    label: "🎁 NFT Box", 
+    type: "nft", 
+    color: "", // gradient більше не потрібен
+    image: "/images/calendar.jpg" // шлях до картинки
+  },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
   { label: "🚀 Boost", type: "boost", color: "linear-gradient(135deg, #00ff99, #00ffaa)" },
@@ -234,7 +239,7 @@ export default function HorizontalWheel() {
           transition={transition}
           onAnimationComplete={handleAnimationComplete}
         >
-          {[...Array(8)].flatMap((_, i) =>
+          {/* {[...Array(8)].flatMap((_, i) =>
             segments.map((seg, idx) => (
               <div
                 key={`${i}-${idx}`}
@@ -244,7 +249,18 @@ export default function HorizontalWheel() {
                 {seg.label}
               </div>
             ))
-          )}
+          )} */}
+          {segments.map((seg, idx) => (
+  <div
+    key={idx}
+    className={styles.segment}
+    style={{
+      background: seg.image ? `url(${seg.image}) center/cover no-repeat` : seg.color
+    }}
+  >
+    {!seg.image && seg.label}
+  </div>
+))}
         </motion.div>
 
         <div className={styles.marker}>▼</div>
