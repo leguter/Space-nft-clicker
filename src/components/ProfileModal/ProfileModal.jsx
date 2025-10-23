@@ -64,7 +64,7 @@ export default function ProfileModal({ isOpen, onClose }) {
 
                 <div className={styles.section}>
                   <h3>NFT 🎁</h3>
-                  {profile.user.nfts?.length ? (
+                  {profile.nft?.length ? (
                     <div className={styles.nftGrid}>
                       {profile.nfts.map((nft, i) => (
                         <div key={i} className={styles.nftCard}>
