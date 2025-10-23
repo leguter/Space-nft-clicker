@@ -149,7 +149,7 @@ const segments = [
   },
   { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png", },
   { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
-  { label: "🚀 Boost", type: "boost", color: "linear-gradient(135deg, #00ff99, #00ffaa)" },
+  { label: "🚀 Boost", type: "boost", image: "/images/boost.png", },
     { 
     label: "🎁 NFT Box", 
     type: "nft", 
