@@ -49,21 +49,21 @@ export default function ProfileModal({ isOpen, onClose }) {
             transition={{ type: "spring", stiffness: 80 }}
           >
             <div className={styles.header}>
-              <h2>ИНВЕНТАРЬ</h2>
+              <h2>👤 Profile</h2>
               <button className={styles.closeBtn} onClick={onClose}>✖</button>
             </div>
 
             {profile ? (
               <div className={styles.content}>
                 <div className={styles.infoBlock}>
-                  {/* <p><strong>ID:</strong> {profile.telegram_id}</p> */}
-                  <p><strong>Ім'я:</strong> {profile.username}</p>
-                  <p><strong>Зірки:</strong> ⭐ {profile.stars}</p>
-                  <p><strong>Тікети:</strong> 🎟 {profile.tickets}</p>
+                  <p><strong>ID:</strong> {profile.telegram_id}</p>
+                  <p><strong>Name:</strong> {profile.username}</p>
+                  <p><strong>Stars:</strong> ⭐ {profile.stars}</p>
+                  <p><strong>Tickets:</strong> 🎟 {profile.tickets}</p>
                 </div>
-                    <h2>ИНВЕНТАРЬ</h2>
+     
                 <div className={styles.section}>
-                  <h3>NFT 🎁</h3>
+                  <h3>INVENTORY</h3>
                   {profile.nft?.length ? (
                     <div className={styles.nftGrid}>
                       {profile.nfts.map((nft, i) => (
@@ -74,7 +74,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                       ))}
                     </div>
                   ) : (
-                    <p>Поки що NFT не знайдено 😢</p>
+                    <p>No NFTs found yet 😢</p>
                   )}
                 </div>
 
@@ -82,11 +82,11 @@ export default function ProfileModal({ isOpen, onClose }) {
                   <button onClick={handleLanguageChange}>
                     🌐 Мова: {language.toUpperCase()}
                   </button>
-                  <button onClick={handleWithdraw}>💸 Вивести зірки</button>
+                  <button onClick={handleWithdraw}>💸 Bring out the stars</button>
                 </div>
               </div>
             ) : (
-              <p>Завантаження...</p>
+              <p>Loading...</p>
             )}
           </motion.div>
         </motion.div>
