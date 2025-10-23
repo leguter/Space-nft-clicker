@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../utils/api";
 import styles from "./ProfileModal.module.css";
-
+import ExchangeModal from "../ExchangeModal/ExchangeModal";
 export default function ProfileModal({ isOpen, onClose }) {
   const [profile, setProfile] = useState(null);
   const [language, setLanguage] = useState(localStorage.getItem("lang") || "ua");
-
+ const [showExchange, setShowExchange] = useState(false);
   useEffect(() => {
     if (isOpen) fetchProfile();
   }, [isOpen]);
@@ -28,9 +28,9 @@ export default function ProfileModal({ isOpen, onClose }) {
     localStorage.setItem("lang", newLang);
   };
 
-  const handleWithdraw = async () => {
-    alert("Функція виводу зірок ще в розробці 🌟");
-  };
+//   const handleWithdraw = async () => {
+//     alert("Функція виводу зірок ще в розробці 🌟");
+//   };
 
   return (
     <AnimatePresence>
@@ -82,7 +82,14 @@ export default function ProfileModal({ isOpen, onClose }) {
                   <button onClick={handleLanguageChange}>
                     🌐 Мова: {language.toUpperCase()}
                   </button>
-                  <button onClick={handleWithdraw}>💸 Bring out the stars</button>
+                  <div>
+      <button onClick={() => setShowExchange(true)}>💸 Bring out the stars</button>
+
+      {showExchange && (
+        <ExchangeModal onClose={() => setShowExchange(false)} />
+      )}
+    </div>
+                  {/* <button onClick={handleWithdraw}>💸 Bring out the stars</button> */}
                 </div>
               </div>
             ) : (
