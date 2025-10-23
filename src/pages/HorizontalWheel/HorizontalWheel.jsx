@@ -148,7 +148,7 @@ const segments = [
     stars: 1200,
   },
   { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png", },
-  { label: "🌟 5 Stars", type: "stars", image: "/images/5stars.png", },
+  { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png", },
   { label: "🚀 Boost", type: "boost", image: "/images/boost.png", },
     { 
     label: "🎁 NFT Box", 
@@ -312,7 +312,7 @@ export default function HorizontalWheel() {
         <p className={styles.itemName}>{item.label}</p>
         
         <div className={styles.itemStars}>
-            {item.stars ? <span className={styles.rotatingStar}>⭐️</span> : <span></span> }
+            {item.stars ? <span className={styles.rotatingStar}>{item.stars}⭐️</span> : <span></span> }
           {/* {item.stars ?? 0} <span className={styles.rotatingStar}>⭐️</span> */}
         </div>
       </div>
