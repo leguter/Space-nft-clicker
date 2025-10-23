@@ -56,10 +56,10 @@ export default function ProfileModal({ isOpen, onClose }) {
             {profile ? (
               <div className={styles.content}>
                 <div className={styles.infoBlock}>
-                  <p><strong>ID:</strong> {profile.user.telegramId}</p>
-                  <p><strong>Ім'я:</strong> {profile.user.username}</p>
-                  <p><strong>Зірки:</strong> ⭐ {profile.user.stars}</p>
-                  <p><strong>Тікети:</strong> 🎟 {profile.user.tickets}</p>
+                  <p><strong>ID:</strong> {profile.telegramId}</p>
+                  <p><strong>Ім'я:</strong> {profile.username}</p>
+                  <p><strong>Зірки:</strong> ⭐ {profile.stars}</p>
+                  <p><strong>Тікети:</strong> 🎟 {profile.tickets}</p>
                 </div>
 
                 <div className={styles.section}>

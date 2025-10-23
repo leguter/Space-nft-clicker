@@ -162,6 +162,7 @@ export default function MainLayout() {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
+        console.log(res.data)
         const clicks = res.data.clickCount;
         setBalance(res.data.balance);
         setTapPower(Number(res.data.tap_power));
