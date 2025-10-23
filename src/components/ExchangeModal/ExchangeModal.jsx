@@ -23,7 +23,7 @@ export default function ExchangeModal({ onClose }) {
       setMessage(null);
 
       // ✅ правильний бекенд-роут
-      const res = await api.post("/withdraw/request", {
+      const res = await api.post("/api/withdraw/request", {
         stars: item.stars,
         clicks: item.clicks,
       });
