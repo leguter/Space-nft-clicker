@@ -307,15 +307,11 @@ export default function HorizontalWheel() {
         />
       </div>
 
-      {/* Назва */}
+      {/* Назва та зірки */}
       <div className={styles.itemDetails}>
         <p className={styles.itemName}>{item.label}</p>
-
-        {/* Поле для зірок */}
         <div className={styles.itemStars}>
-          <span className={styles.stars}>
-            {item.stars ?? 0} <span className={styles.rotatingStar}>⭐️</span>
-          </span>
+          {item.stars ?? 0} <span className={styles.rotatingStar}>⭐️</span>
         </div>
       </div>
     </div>
