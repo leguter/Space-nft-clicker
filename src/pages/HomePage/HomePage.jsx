@@ -97,7 +97,7 @@ export default function HomePage() {
           <h1 className={styles.title}>SPACE CLICKER</h1>
             <div className={styles.userIcon}>
       {/* решта твого клікеру */}
-      <button width="24px" height="24px" onClick={() => setProfileOpen(true)}><FaUserCircle className={styles.userIcon} /></button>
+      <button width="24px" height="24px" className={styles.btnProfile} onClick={() => setProfileOpen(true)}><FaUserCircle className={styles.userIcon} /></button>
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} /> 
     </div>
         </header>
