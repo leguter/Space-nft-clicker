@@ -5,7 +5,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { FiZap } from "react-icons/fi";
 import TapButton from "../../components/TapButton/TapButton";
 import api from "../../utils/api";
-import ProfileModal from "../components/ProfileModal";
+import ProfileModal from "../../components/ProfileModal/ProfileModal";
 
 export default function HomePage() {
   const { balance, isTapped, handleTap, tapPower } = useOutletContext();
