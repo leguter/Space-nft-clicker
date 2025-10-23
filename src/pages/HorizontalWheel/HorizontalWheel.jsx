@@ -239,7 +239,7 @@ export default function HorizontalWheel() {
           transition={transition}
           onAnimationComplete={handleAnimationComplete}
         >
-          {/* {[...Array(8)].flatMap((_, i) =>
+          {[...Array(8)].flatMap((_, i) =>
             segments.map((seg, idx) => (
               <div
                 key={`${i}-${idx}`}
@@ -249,8 +249,8 @@ export default function HorizontalWheel() {
                 {seg.label}
               </div>
             ))
-          )} */}
-          {segments.map((seg, idx) => (
+          )}
+          {/* {segments.map((seg, idx) => (
   <div
     key={idx}
     className={styles.segment}
@@ -260,7 +260,7 @@ export default function HorizontalWheel() {
   >
     {!seg.image && seg.label}
   </div>
-))}
+))} */}
         </motion.div>
 
         <div className={styles.marker}>▼</div>
