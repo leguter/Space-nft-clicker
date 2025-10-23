@@ -312,7 +312,7 @@ export default function HorizontalWheel() {
         <p className={styles.itemName}>{item.label}</p>
         
         
-            {item.stars ? <div className={styles.itemStars}>{item.stars} <span className={styles.rotatingStar}>{item.stars}⭐️</span> </div> :  <div className={styles.itemStars}></div> }
+            {item.stars ? <div className={styles.itemStars}>{item.stars} <span className={styles.rotatingStar}>⭐️</span> </div> :  <div className={styles.itemStars}></div> }
           {/* {item.stars ?? 0} <span className={styles.rotatingStar}>⭐️</span> */}
       </div>
     </div>
