@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-/* .wheelWrapper {
+.wheelWrapper {
   position: relative;
   width: 320px;
   height: 120px;
@@ -19,7 +19,7 @@
 .wheel {
   display: flex;
   flex-direction: row;
-} */
+}
  .wheelWrapper {
   position: relative;
   overflow: visible;
