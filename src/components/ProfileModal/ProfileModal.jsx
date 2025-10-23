@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import api from "../utils/api";
+import api from "../../utils/api";
 import styles from "./ProfileModal.module.css";
 
 export default function ProfileModal({ isOpen, onClose }) {
