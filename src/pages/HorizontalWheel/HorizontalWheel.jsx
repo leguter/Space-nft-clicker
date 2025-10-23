@@ -286,6 +286,42 @@ export default function HorizontalWheel() {
           🎉 You won: <strong>{result.label}</strong>
         </div>
       )}
+      {/* <div className={styles.dropList}>
+        {segments.map((seg, i)=> (
+            <div> </div>
+        ))} */}
+    <h2 className={styles.sectionTitle}>СОДЕРЖИМОЕ КЕЙСА</h2>
+<div className={styles.itemsGrid}>
+  {segments.map((item, index) => (
+    <div key={index} className={styles.itemCard}>
+      {/* Картинка подарунка/NFT */}
+      <div className={styles.itemImageWrapper}>
+        <img
+          src={item.image || "/images/placeholder.png"}
+          alt={item.label}
+          className={styles.itemImage}
+          width="48"
+          height="48"
+        />
+      </div>
+
+      {/* Назва */}
+      <div className={styles.itemDetails}>
+        <p className={styles.itemName}>{item.label}</p>
+
+        {/* Поле для зірок */}
+        <div className={styles.itemStars}>
+          <span className={styles.stars}>
+            {item.stars ?? 0} <span className={styles.rotatingStar}>⭐️</span>
+          </span>
+        </div>
+      </div>
     </div>
+  ))}
+</div>
+ {/* </div> */}
+      </div>
+    // </div>
+    
   );
 }
