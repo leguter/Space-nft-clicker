@@ -147,8 +147,8 @@ const segments = [
     image: "/images/calendar.jpg", // шлях до картинки
     stars: 1200,
   },
-  { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
-  { label: "🌟 5 Stars", type: "stars", image: "/images/ticket.png", },
+  { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png", },
+  { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
   { label: "🚀 Boost", type: "boost", color: "linear-gradient(135deg, #00ff99, #00ffaa)" },
     { 
     label: "🎁 NFT Box", 
