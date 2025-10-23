@@ -139,6 +139,7 @@ import styles from "./HorizontalWheel.module.css";
 
 // Кожен тип призу унікальний
 const segments = [
+      { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { 
     label: "calendar", 
     type: "nft", 
