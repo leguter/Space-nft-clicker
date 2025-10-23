@@ -49,19 +49,19 @@ export default function ProfileModal({ isOpen, onClose }) {
             transition={{ type: "spring", stiffness: 80 }}
           >
             <div className={styles.header}>
-              <h2>👤 Профіль</h2>
+              <h2>ИНВЕНТАРЬ</h2>
               <button className={styles.closeBtn} onClick={onClose}>✖</button>
             </div>
 
             {profile ? (
               <div className={styles.content}>
                 <div className={styles.infoBlock}>
-                  <p><strong>ID:</strong> {profile.telegram_id}</p>
+                  {/* <p><strong>ID:</strong> {profile.telegram_id}</p> */}
                   <p><strong>Ім'я:</strong> {profile.username}</p>
                   <p><strong>Зірки:</strong> ⭐ {profile.stars}</p>
                   <p><strong>Тікети:</strong> 🎟 {profile.tickets}</p>
                 </div>
-
+                    <h2>ИНВЕНТАРЬ</h2>
                 <div className={styles.section}>
                   <h3>NFT 🎁</h3>
                   {profile.nft?.length ? (
