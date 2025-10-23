@@ -151,7 +151,7 @@ const segments = [
   { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png", },
   { label: "🚀 Boost", type: "boost", image: "/images/boost.png", },
     { 
-    label: "🎁 NFT Box", 
+    label: "Swiss watch", 
     type: "nft", 
     color: "", // gradient більше не потрібен
     image: "/images/swisswatch.jpg", // шлях до картинки
