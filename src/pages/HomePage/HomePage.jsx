@@ -5,6 +5,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { FiZap } from "react-icons/fi";
 import TapButton from "../../components/TapButton/TapButton";
 import api from "../../utils/api";
+import ProfileModal from "../components/ProfileModal";
 
 export default function HomePage() {
   const { balance, isTapped, handleTap, tapPower } = useOutletContext();
@@ -12,6 +13,7 @@ export default function HomePage() {
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [localProgress, setLocalProgress] = useState(0);
   const [clicks, setClicks] = useState(0);
+   const [profileOpen, setProfileOpen] = useState(false);
 
   // 🧠 Отримати прогрес при вході
   useEffect(() => {
@@ -93,7 +95,11 @@ export default function HomePage() {
       <div className={styles.Card}>
         <header className={styles.header}>
           <h1 className={styles.title}>SPACE CLICKER</h1>
-          <FaUserCircle className={styles.userIcon} />
+            <div className={styles.userIcon}>
+      {/* решта твого клікеру */}
+      <button onClick={() => setProfileOpen(true)}><FaUserCircle className={styles.userIcon} /></button>
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} /> 
+    </div>
         </header>
 
         <div className={styles.balance}>{balance.toLocaleString("en-US")} ★</div>
