@@ -144,7 +144,8 @@ const segments = [
     label: "calendar", 
     type: "nft", 
     color: "", // gradient більше не потрібен
-    image: "/images/calendar.jpg" // шлях до картинки
+    image: "/images/calendar.jpg", // шлях до картинки
+    stars: 1200,
   },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
   { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
@@ -153,7 +154,8 @@ const segments = [
     label: "🎁 NFT Box", 
     type: "nft", 
     color: "", // gradient більше не потрібен
-    image: "/images/swisswatch.jpg" // шлях до картинки
+    image: "/images/swisswatch.jpg", // шлях до картинки
+    stars: 5500,
   },
 ];
 
