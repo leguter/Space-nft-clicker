@@ -139,7 +139,7 @@ import styles from "./HorizontalWheel.module.css";
 
 // Кожен тип призу унікальний
 const segments = [
-      { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
+      { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png", },
   { 
     label: "calendar", 
     type: "nft", 
@@ -148,7 +148,7 @@ const segments = [
     stars: 1200,
   },
   { label: "🎟 Ticket", type: "raffle_ticket", color: "linear-gradient(135deg, #0066ff, #00ccff)" },
-  { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
+  { label: "🌟 5 Stars", type: "stars", image: "/images/ticket.png", },
   { label: "🚀 Boost", type: "boost", color: "linear-gradient(135deg, #00ff99, #00ffaa)" },
     { 
     label: "🎁 NFT Box", 

@@ -77,7 +77,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ff99;
+  /* box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ff99; */
   transition: all 0.2s ease-in-out;
 }
 
