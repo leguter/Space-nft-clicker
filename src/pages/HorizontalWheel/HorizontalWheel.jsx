@@ -244,7 +244,7 @@ export default function HorizontalWheel() {
               <div
                 key={`${i}-${idx}`}
                 className={styles.segment}
-                style={{ background: seg.color }}
+                style={{ background: seg.image ? `url(${seg.image}) center/cover no-repeat` : seg.color}}
               >
                 {seg.label}
               </div>
