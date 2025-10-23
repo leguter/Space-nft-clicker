@@ -15,7 +15,7 @@ export default function ProfileModal({ isOpen, onClose }) {
 
   const fetchProfile = async () => {
     try {
-      const res = await api.get("/api/profile");
+      const res = await api.get("/api/user/me");
       setProfile(res.data);
     } catch (err) {
       console.error("Помилка при завантаженні профілю:", err);
