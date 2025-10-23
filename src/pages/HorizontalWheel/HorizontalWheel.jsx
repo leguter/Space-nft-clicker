@@ -148,7 +148,7 @@ const segments = [
     stars: 1200,
   },
   { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png", },
-  { label: "🌟 5 Stars", type: "stars", color: "linear-gradient(135deg, #ffee55, #ffaa00)" },
+  { label: "🌟 5 Stars", type: "stars", image: "/images/5stars.png", },
   { label: "🚀 Boost", type: "boost", image: "/images/boost.png", },
     { 
     label: "🎁 NFT Box", 
