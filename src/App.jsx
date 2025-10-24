@@ -164,6 +164,29 @@ export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
 useEffect(() => {
+    // Функція для реєстрації
+    const registerReferral = async (referrerId) => {
+      try {
+        // Викликаємо ваш бекенд-ендпоінт
+        await api.post('/api/user/referral/register', { referrerId });
+        console.log('Referral registered successfully!');
+      } catch (err) {
+        // Ми не показуємо помилку користувачу (B),
+        // тому що "ви не можете запросити самі себе" або "вже зареєстровані"
+        // не є критичними помилками для нього.
+        console.warn('Referral registration failed (this is often OK):', err.response?.data?.message);
+      }
+    };
+
+    // Перевіряємо, чи є start_param
+    const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+
+    if (startParam) {
+      // Якщо параметр є, викликаємо реєстрацію
+      registerReferral(startParam);
+    }
+  }, []);
+useEffect(() => {
   const tg = window.Telegram.WebApp;
   tg.ready();
 
