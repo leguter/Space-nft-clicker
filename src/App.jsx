@@ -318,16 +318,17 @@ export default function App() {
         
         console.log("✅ Отримано userData:", res.data);
         localStorage.setItem("authToken", res.data.token);
-        // Важливо: переконайтеся, що ваш 'api' wrapper автоматично підхоплює
-        // 'authToken' з localStorage для всіх наступних запитів.
         
         // 2. ❗️ РЕЄСТРАЦІЯ РЕФЕРАЛА (ТІЛЬКИ ПІСЛЯ АВТЕНТИФІКАЦІЇ)
-        const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
-
-        // --- ❗️ ДОДАНО ДІАГНОСТИЧНИЙ ЛОГ ❗️ ---
-        // Цей лог покаже, чи отримав додаток ID реферера
-        console.log('Перевірка start_param (ID реферера):', startParam || 'НЕ ЗНАЙДЕНО');
+        
+        // --- ❗️ ДОДАНО НОВИЙ ДІАГНОСТИЧНИЙ ЛОГ ❗️ ---
+        // Ми виведемо ВЕСЬ об'єкт, щоб побачити, що в ньому є
+        console.log('Повний об\'єкт initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
         // --- Кінець діагностики ---
+
+        const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+        console.log('Перевірка start_param (ID реферера):', startParam || 'НЕ ЗНАЙДЕНО');
+
 
         if (startParam) {
           await registerReferral(startParam);
@@ -363,7 +364,6 @@ export default function App() {
           <Route path="raffles" element={<RafflesPage user={userData} />} />
           <Route path="raffles/:id" element={<RaffleDetail />} />
           <Route path="boosters" element={<BoostersPage />} />
-          {/* Передаємо userData в ProfilePage */}
           <Route path="profile" element={<ProfilePage user={userData} />} />
           <Route path="/wheel" element={<HorizontalWheel />} />
         </Route>
@@ -376,3 +376,4 @@ export default function App() {
     </div>
   );
 }
+
