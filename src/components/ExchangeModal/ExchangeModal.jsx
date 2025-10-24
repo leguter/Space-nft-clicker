@@ -18,28 +18,44 @@ export default function ExchangeModal({ onClose }) {
   ];
 
   const handleExchange = async (item) => {
-    try {
-      setLoading(true);
-      setMessage(null);
+  try {
+    setLoading(true);
+    setMessage(null);
 
-      // ✅ правильний бекенд-роут
-      const res = await api.post("/api/withdraw/request", {
-        stars: item.stars,
-        clicks: item.clicks,
-      });
+    // ✅ правильний бекенд-роут
+    const res = await api.post("/api/withdraw/request", {
+      stars: item.stars,
+      clicks: item.clicks,
+    });
 
-      if (res.success) {
-        setMessage("✅ Заявка на вивід успішно створена!");
-      } else {
-        setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`);
-      }
-    } catch (err) {
-      console.error("Exchange error:", err);
-      setMessage("❌ Сталася помилка. Спробуйте пізніше.");
-    } finally {
-      setLoading(false);
+    // Цей блок тепер виконається ТІЛЬКИ при успіху (статус 200)
+    // 'res' тут - це 'res.data' з axios
+    if (res.success) {
+      setMessage("✅ Заявка на вивід успішно створена!");
+    } else {
+      // Цей блок, ймовірно, ніколи не виконається, але ми його залишимо
+      setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`);
     }
-  };
+
+  } catch (err) {
+    
+    // ❗️ БЛОК CATCH ТЕПЕР ПРАЦЮЄ ПРАВИЛЬНО ❗️
+    // Сюди код потрапить при помилці 400 (немає рефералів) або 500
+    
+    console.error("Exchange error:", err);
+
+    if (err.response && err.response.data && err.response.data.message) {
+      // Дістаємо повідомлення з бекенду (напр: "❗ Для виводу потрібно 5 рефералів")
+      setMessage(`⚠️ ${err.response.data.message}`);
+    } else {
+      // Запасний варіант, якщо щось пішло не так (напр. немає зв'язку)
+      setMessage("❌ Сталася помилка. Спробуйте пізніше.");
+    }
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={styles.modalOverlay}>
