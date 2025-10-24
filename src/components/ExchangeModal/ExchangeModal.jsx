@@ -67,21 +67,22 @@ export default function ExchangeModal({ onClose }) {
 
         <div className={styles.list}>
           {offers.map((item, i) => (
-            <div key={i} className={styles.row}>
+            <div key={i} className={styles.row} onClick={() => handleExchange(item)}>
               <div className={styles.left}>
                 <img src="/images/star.png" alt="star" className={styles.icon} />
                 <span className={styles.text}>{item.stars.toLocaleString()} Stars</span>
               </div>
               <div className={styles.right}>
                 <span className={styles.price}>{item.clicks.toLocaleString()} кліків</span>
-                <button
+                {/* <button
                   disabled={loading}
                   onClick={() => handleExchange(item)}
                   className={styles.exchangeBtn}
                 >
                   {loading ? "⏳..." : "Вивести"}
-                </button>
+                </button> */}
               </div>
+               {loading ? "⏳..." : "Вивести"}
             </div>
           ))}
         </div>
