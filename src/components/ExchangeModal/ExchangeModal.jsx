@@ -32,10 +32,10 @@ const handleExchange = async (item) => {
 
     if (res.success) {
       // setMessage("✅ Заявка на вивід успішно створена!"); ❗️ Замініть це
-      toast.success("✅ Заявка на вивід успішно створена!"); // ✅ На це
+      toast.success("✅ Withdrawal request successfully created!"); // ✅ На це
     } else {
       // setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`); ❗️ Замініть це
-      toast.warn(`⚠️ ${res.message || "Помилка при створенні заявки"}`); // ✅ На це
+      toast.warn(`⚠️ ${res.message || "Error creating application"}`); // ✅ На це
     }
 
   } catch (err) {
@@ -45,7 +45,7 @@ const handleExchange = async (item) => {
       toast.error(`⚠️ ${err.response.data.message}`); // ✅ На це (напр: "❗ Потрібно 5 рефералів")
     } else {
       // setMessage("❌ Сталася помилка. Спробуйте пізніше."); ❗️ Замініть це
-      toast.error("❌ Сталася помилка. Спробуйте пізніше."); // ✅ На це
+      toast.error("❌ An error occurred. Please try again later."); // ✅ На це
     }
   } finally {
     setLoading(false);
