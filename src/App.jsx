@@ -213,6 +213,7 @@ if (userData?.error) {
   return <div>Запустіть додаток через Telegram для авторизації</div>;
 }
   return (
+    <div>
     <Routes>
       {/* Всі сторінки тепер знаходяться всередині MainLayout */}
       <Route path="/" element={<MainLayout />}>
@@ -225,11 +226,12 @@ if (userData?.error) {
         <Route path="profile" element={<ProfilePage user={userData} />} />
         <Route path="/wheel" element={<HorizontalWheel />} />
       </Route>
-      <ToastContainer
+    </Routes>
+    <ToastContainer
         theme="dark"
         position="bottom-right"
         autoClose={3000}
       />
-    </Routes>
+    </div>
   );
 }
