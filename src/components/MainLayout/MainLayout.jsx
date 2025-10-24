@@ -153,7 +153,7 @@ export default function MainLayout() {
   const [progress, setProgress] = useState(0); // 0 - 100%
   const clicksPerTicket = 1000; // потрібно 1000 кліків для квитка
   const [ticketReady, setTicketReady] = useState(false);
-   const [refferals, setReferrals] = useState(false);
+   const [referrals, setReferrals] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -241,7 +241,7 @@ export default function MainLayout() {
   return (
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
-        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket, refferals }} />
+        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket, referrals }} />
       </main>
 
       <nav className={styles.bottomNav}>
