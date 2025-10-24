@@ -288,7 +288,7 @@ export default function App() {
       try {
         // Цей запит тепер буде мати правильний 'authToken'
         await api.post('/api/user/referral/register', { referrerId });
-        console.log('Referral registered successfully!');
+        console.log('✅ Referral registered successfully!');
       } catch (err) {
         console.warn('Referral registration failed (this is often OK):', err.response?.data?.message);
       }
@@ -323,6 +323,12 @@ export default function App() {
         
         // 2. ❗️ РЕЄСТРАЦІЯ РЕФЕРАЛА (ТІЛЬКИ ПІСЛЯ АВТЕНТИФІКАЦІЇ)
         const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+
+        // --- ❗️ ДОДАНО ДІАГНОСТИЧНИЙ ЛОГ ❗️ ---
+        // Цей лог покаже, чи отримав додаток ID реферера
+        console.log('Перевірка start_param (ID реферера):', startParam || 'НЕ ЗНАЙДЕНО');
+        // --- Кінець діагностики ---
+
         if (startParam) {
           await registerReferral(startParam);
         }
