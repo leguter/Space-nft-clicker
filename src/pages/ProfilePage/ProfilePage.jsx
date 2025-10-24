@@ -74,7 +74,7 @@ export default function ProfilePage({ user }) {
         <div className={styles.Stats}>
           <div>
             {/* Припускаємо, що кількість рефералів приходить з бекенду в user.user.referralsCount */}
-            <span className={styles.StatNumber}>{user.user.referralsCount || 0}</span>
+            <span className={styles.StatNumber}>{user.user.referrals || 0}</span>
             <p>Referrals</p>
           </div>
           <div>
