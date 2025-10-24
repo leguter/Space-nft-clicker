@@ -153,7 +153,7 @@ export default function MainLayout() {
   const [progress, setProgress] = useState(0); // 0 - 100%
   const clicksPerTicket = 1000; // потрібно 1000 кліків для квитка
   const [ticketReady, setTicketReady] = useState(false);
-   const [refferals, setRefferals] = useState(false);
+   const [refferals, setReferrals] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -167,7 +167,7 @@ export default function MainLayout() {
         const clicks = res.data.clickCount;
         setBalance(res.data.balance);
         setTapPower(Number(res.data.tap_power));
-        setRefferals(res.data.refferals)
+        setReferrals(res.data.referrals)
         setClickCount(clicks || 0); // якщо бекенд зберігає
       } catch (err) {
         console.error("❌ Error loading user data:", err.message);
