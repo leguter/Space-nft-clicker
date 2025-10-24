@@ -1,10 +1,10 @@
 import { useState } from "react";
 import styles from "./ExchangeModal.module.css";
 import api from "../../utils/api";
-
+ import { toast } from 'react-toastify'; // ❗️ Додайте цей імпорт
 export default function ExchangeModal({ onClose }) {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  // const [message, setMessage] = useState(null);
 
   const offers = [
     { stars: 100, clicks: 100000 },
@@ -17,41 +17,36 @@ export default function ExchangeModal({ onClose }) {
     { stars: 150000, clicks: 150000000 },
   ];
 
-  const handleExchange = async (item) => {
+
+// ... (ваш код)
+
+const handleExchange = async (item) => {
   try {
     setLoading(true);
-    setMessage(null);
+    // setMessage(null); // ❗️ Більше не потрібно
 
-    // ✅ правильний бекенд-роут
     const res = await api.post("/api/withdraw/request", {
       stars: item.stars,
       clicks: item.clicks,
     });
 
-    // Цей блок тепер виконається ТІЛЬКИ при успіху (статус 200)
-    // 'res' тут - це 'res.data' з axios
     if (res.success) {
-      setMessage("✅ Заявка на вивід успішно створена!");
+      // setMessage("✅ Заявка на вивід успішно створена!"); ❗️ Замініть це
+      toast.success("✅ Заявка на вивід успішно створена!"); // ✅ На це
     } else {
-      // Цей блок, ймовірно, ніколи не виконається, але ми його залишимо
-      setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`);
+      // setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`); ❗️ Замініть це
+      toast.warn(`⚠️ ${res.message || "Помилка при створенні заявки"}`); // ✅ На це
     }
 
   } catch (err) {
-    
-    // ❗️ БЛОК CATCH ТЕПЕР ПРАЦЮЄ ПРАВИЛЬНО ❗️
-    // Сюди код потрапить при помилці 400 (немає рефералів) або 500
-    
     console.error("Exchange error:", err);
-
     if (err.response && err.response.data && err.response.data.message) {
-      // Дістаємо повідомлення з бекенду (напр: "❗ Для виводу потрібно 5 рефералів")
-      setMessage(`⚠️ ${err.response.data.message}`);
+      // setMessage(`⚠️ ${err.response.data.message}`); ❗️ Замініть це
+      toast.error(`⚠️ ${err.response.data.message}`); // ✅ На це (напр: "❗ Потрібно 5 рефералів")
     } else {
-      // Запасний варіант, якщо щось пішло не так (напр. немає зв'язку)
-      setMessage("❌ Сталася помилка. Спробуйте пізніше.");
+      // setMessage("❌ Сталася помилка. Спробуйте пізніше."); ❗️ Замініть це
+      toast.error("❌ Сталася помилка. Спробуйте пізніше."); // ✅ На це
     }
-
   } finally {
     setLoading(false);
   }
@@ -87,7 +82,7 @@ export default function ExchangeModal({ onClose }) {
           ))}
         </div>
 
-        {message && <div className={styles.message}>{message}</div>}
+        {/* {message && <div className={styles.message}>{message}</div>} */}
       </div>
     </div>
   );

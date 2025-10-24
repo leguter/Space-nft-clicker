@@ -157,8 +157,9 @@ import { useEffect } from "react";
 // }
 import api from './utils/api'
 import RaffleDetail from "./pages/RaffleDetail/RaffleDetail";
-import WheelPage from "./pages/WheelPage/WheelPage";
+// import WheelPage from "./pages/WheelPage/WheelPage";
 import HorizontalWheel from "./pages/HorizontalWheel/HorizontalWheel";
+import { ToastContainer } from 'react-toastify';
 export default function App() {
    const [userData, setUserData] = useState(null);
 // let userData = null;
@@ -224,6 +225,11 @@ if (userData?.error) {
         <Route path="profile" element={<ProfilePage user={userData} />} />
         <Route path="/wheel" element={<HorizontalWheel />} />
       </Route>
+      <ToastContainer
+        theme="dark"
+        position="bottom-right"
+        autoClose={3000}
+      />
     </Routes>
   );
 }
