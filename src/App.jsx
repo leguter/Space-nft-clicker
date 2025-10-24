@@ -260,10 +260,11 @@
 // }
 
 
+// Всі ваші закоментовані версії видалені для чистоти
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Додайте, якщо ще не додали
+import 'react-toastify/dist/ReactToastify.css';
 
 // Імпортуємо ваші сторінки
 import HomePage from "./pages/HomePage/HomePage";
@@ -319,19 +320,21 @@ export default function App() {
         console.log("✅ Отримано userData:", res.data);
         localStorage.setItem("authToken", res.data.token);
         
-        // 2. ❗️ РЕЄСТРАЦІЯ РЕФЕРАЛА (ТІЛЬКИ ПІСЛЯ АВТЕНТИФІКАЦІЇ)
+        // 2. ❗️ РЕФАКТОРИНГ ЛОГІКИ РЕЄСТРАЦІЇ РЕФЕРАЛА ❗️
         
-        // --- ❗️ ДОДАНО НОВИЙ ДІАГНОСТИЧНИЙ ЛОГ ❗️ ---
-        // Ми виведемо ВЕСЬ об'єкт, щоб побачити, що в ньому є
-        console.log('Повний об\'єкт initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
-        // --- Кінець діагностики ---
-
-        const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
-        console.log('Перевірка start_param (ID реферера):', startParam || 'НЕ ЗНАЙДЕНО');
-
-
-        if (startParam) {
-          await registerReferral(startParam);
+        // Створюємо об'єкт для роботи з параметрами URL
+        const params = new URLSearchParams(window.location.search);
+        
+        // Дістаємо 'referrer_id' з URL (https://...app?referrer_id=12345)
+        // Це той 'referrer_id', який ваш bot.py успішно додає!
+        const referrerId = params.get('referrer_id'); 
+  
+        console.log(`Перевірка referrer_id (з URL): ${referrerId || 'НЕ ЗНАЙДЕНО'}`);
+  
+        // ❗️ Ми більше не перевіряємо ненадійний 'start_param'.
+        // Ми перевіряємо 'referrerId' з URL.
+        if (referrerId) {
+          await registerReferral(referrerId);
         }
 
         // 3. ВСТАНОВЛЕННЯ ДАНИХ
