@@ -6,7 +6,7 @@ export default function DepositPage() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
   const [message, setMessage] = useState("");
-  const [balance, setBalance] = useState(0); // ← збережений поточний баланс
+  const [balance, setBalance] = useState(0);
 
   const depositOptions = [
     { amount: 1, bonus: 0 },
@@ -16,63 +16,59 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
-  // === Ініціалізація Telegram WebApp ===
+  // === Початкове завантаження балансу ===
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-
-      // Слухач завершення платежу
-      tg.onEvent("invoiceClosed", async (status) => {
-        console.log("Invoice closed:", status);
-
-        if (status === "paid") {
-          setMessage("✅ Оплата успішна! Оновлюємо баланс...");
-          try {
-            const res = await api.get("/api/user/me"); // <-- твій бек повертає оновленого юзера
-            if (res.data?.user) {
-              setBalance(res.data.user.internal_stars); // <-- оновлюємо баланс
-              setMessage("💰 Баланс оновлено!");
-            }
-          } catch (e) {
-            console.error("Balance update error:", e);
-            setMessage("⚠️ Не вдалося оновити баланс");
-          }
-        } else if (status === "cancelled") {
-          setMessage("❌ Оплату скасовано.");
-        } else if (status === "failed") {
-          setMessage("💀 Помилка під час оплати.");
+    const fetchBalance = async () => {
+      try {
+        const res = await api.get("/api/user/me");
+        if (res.data?.user) {
+          setBalance(res.data.user.internal_stars || 0);
         }
-      });
-    }
-
-    // При виході — чистимо слухач
-    return () => {
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.offEvent("invoiceClosed");
+      } catch (e) {
+        console.error("Load balance error:", e);
       }
     };
+    fetchBalance();
   }, []);
 
-  // === Створення інвойсу ===
+  // === Створення інвойсу та обробка оплати ===
   const handleDeposit = async (amount) => {
     try {
       setLoading(true);
       setSelected(amount);
       setMessage("");
 
+      // 1️⃣ Створюємо інвойс через бекенд
       const res = await api.post("/api/deposit/create_invoice", { amount });
 
       if (res.data?.success && res.data.invoice_link) {
+        setMessage("💳 Відкриваємо оплату у Telegram...");
+
+        // 2️⃣ Відкриваємо Telegram WebApp оплату
         if (window.Telegram?.WebApp) {
-          // 🔥 Відкриваємо оплату саме у Telegram WebApp, не у браузері
           window.Telegram.WebApp.openInvoice(res.data.invoice_link);
-          setMessage("💳 Відкриваємо оплату у Telegram...");
         } else {
-          // fallback для вебверсії (якщо тестуєш у браузері)
           window.open(res.data.invoice_link, "_blank");
-          setMessage("Відкрито у новому вікні ✅");
         }
+
+        // 3️⃣ Після закриття інвойсу відправляємо Complete для оновлення internal_stars
+        const checkPayment = async () => {
+          try {
+            const completeRes = await api.post("/api/deposit/complete", { amount });
+            if (completeRes.data?.success) {
+              setBalance((prev) => prev + amount + (completeRes.data.internal_stars - prev - amount));
+              setMessage("💰 Баланс оновлено!");
+            } else {
+              setMessage("❌ Оплата не підтверджена");
+            }
+          } catch (err) {
+            console.error("Deposit complete error:", err);
+            setMessage("⚠️ Не вдалося оновити баланс");
+          }
+        };
+
+        // Викликаємо перевірку через 1-2 секунди після закриття інвойсу
+        setTimeout(checkPayment, 2000);
       } else {
         setMessage("Не вдалося створити інвойс 😕");
       }
@@ -84,20 +80,6 @@ export default function DepositPage() {
     }
   };
 
-  // === Початкове завантаження поточного балансу ===
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await api.get("/api/user/me");
-        if (res.data?.user) {
-          setBalance(res.data.user.internal_stars || 0);
-        }
-      } catch (e) {
-        console.error("Load balance error:", e);
-      }
-    })();
-  }, []);
-
   return (
     <div className={styles.Container}>
       <h2 className={styles.Title}>💰 Deposit Stars</h2>
@@ -107,9 +89,7 @@ export default function DepositPage() {
         {depositOptions.map(({ amount, bonus }) => (
           <button
             key={amount}
-            className={`${styles.DepositButton} ${
-              selected === amount ? styles.Active : ""
-            }`}
+            className={`${styles.DepositButton} ${selected === amount ? styles.Active : ""}`}
             onClick={() => handleDeposit(amount)}
             disabled={loading}
           >
