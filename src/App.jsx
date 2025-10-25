@@ -310,7 +310,7 @@ export default function App() {
       }
 
       try {
-        console.log("📤 Відправляємо initData:", tg.initData);
+        // console.log("📤 Відправляємо initData:", tg.initData);
 
         // 1. АВТЕНТИФІКАЦІЯ
         const res = await api.post(
@@ -318,7 +318,7 @@ export default function App() {
           { initData: tg.initData }
         );
         
-        console.log("✅ Отримано userData:", res.data);
+        // console.log("✅ Отримано userData:", res.data);
         localStorage.setItem("authToken", res.data.token);
         
         // 2. ❗️ РЕФАКТОРИНГ ЛОГІКИ РЕЄСТРАЦІЇ РЕФЕРАЛА ❗️
@@ -330,7 +330,7 @@ export default function App() {
         // Це той 'referrer_id', який ваш bot.py успішно додає!
         const referrerId = params.get('referrer_id'); 
   
-        console.log(`Перевірка referrer_id (з URL): ${referrerId || 'НЕ ЗНАЙДЕНО'}`);
+        // console.log(`Перевірка referrer_id (з URL): ${referrerId || 'НЕ ЗНАЙДЕНО'}`);
   
         // ❗️ Ми більше не перевіряємо ненадійний 'start_param'.
         // Ми перевіряємо 'referrerId' з URL.
