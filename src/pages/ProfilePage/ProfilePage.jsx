@@ -115,12 +115,12 @@
 import { useState } from "react";
 import styles from "./ProfilePage.module.css";
 import { useOutletContext } from "react-router-dom";
-import api from "../../utils/api"; // твій api helper
+// import api from "../../utils/api"; // твій api helper
 import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage({ user }) {
   const [isCopied, setIsCopied] = useState(false);
-  const [showDeposit, setShowDeposit] = useState(false);
+  // const [showDeposit, setShowDeposit] = useState(false);
   const { referrals } = useOutletContext();
 
   const botUrl = "https://t.me/Durovu_bot";
@@ -133,17 +133,17 @@ const navigate = useNavigate();
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleDeposit = async (amount) => {
-    try {
-      const res = await api.post("/deposit/create_invoice", { amount });
-      if (res.data?.invoice_link) {
-        window.open(res.data.invoice_link, "_blank");
-      }
-    } catch (err) {
-      console.error("Deposit error:", err);
-      alert("Failed to create invoice.");
-    }
-  };
+  // const handleDeposit = async (amount) => {
+  //   try {
+  //     const res = await api.post("/deposit/create_invoice", { amount });
+  //     if (res.data?.invoice_link) {
+  //       window.open(res.data.invoice_link, "_blank");
+  //     }
+  //   } catch (err) {
+  //     console.error("Deposit error:", err);
+  //     alert("Failed to create invoice.");
+  //   }
+  // };
 
   if (!user) return <h1>НЕ ВОРК</h1>;
 
@@ -210,7 +210,7 @@ const navigate = useNavigate();
         </div>
       </div>
 
-      {showDeposit && (
+      {/* {showDeposit && (
         <div className={styles.ModalOverlay} onClick={() => setShowDeposit(false)}>
           <div
             className={styles.DepositModal}
@@ -237,7 +237,7 @@ const navigate = useNavigate();
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
