@@ -16,30 +16,29 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
-  // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ (Версія 4) 🟢 ===
+  // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ 🟢 ===
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        // Цей ендпоінт, судячи з вашого першого скріншоту,
-        // повертає масив: [ { ... } ]
-        const res = await api.get("/api/user/me");
- console.log(res.data.internal_stars)
-        // 1. Перевіряємо, що res.data - це масив і він не пустий
-        if (Array.isArray(res.data) && res.data.length > 0) {
-         
-          // 2. Беремо internal_stars з ПЕРШОГО об'єкта в масиві
-          const stars = res.data[0].internal_stars;
-          setBalance(stars || 0);
+        // 1. ДОДАЄМО ЗАГОЛОВОК АВТОРИЗАЦІЇ
+        const res = await api.get("/api/user/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
 
+        // 2. ПРАВИЛЬНО ПАРСИМО ДАНІ
+        // Ваш бекенд повертає ОДИН ОБ'ЄКТ (res.json(userResult.rows[0]))
+        // Тому ми звертаємось напряму до res.data
+        if (res.data && res.data.internal_stars !== undefined) {
+          setBalance(res.data.internal_stars);
         } else {
-          // Про всяк випадок, якщо структура раптом зміниться на ту,
-          // що у вашому новому лозі (хоча це малоймовірно для /api/user/me)
-          if (res.data?.user?.internal_stars) {
-             setBalance(res.data.user.internal_stars);
-          }
+          console.warn("Не знайдено 'internal_stars' у відповіді", res.data);
+          setBalance(0);
         }
+
       } catch (err) {
-        console.error("Failed to fetch balance:", err);
+        console.error("❌ Failed to fetch balance:", err.response?.data || err.message);
       }
     };
     fetchBalance();
