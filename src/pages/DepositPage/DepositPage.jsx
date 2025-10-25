@@ -22,7 +22,7 @@ export default function DepositPage() {
       try {
         const res = await api.get("/api/user/me");
         if (res.data?.user) {
-          setBalance(res.data.internal_stars || 0);
+          setBalance(res.data.user.internal_stars || 0);
         }
       } catch (e) {
         console.error("Load balance error:", e);
@@ -41,7 +41,8 @@ export default function DepositPage() {
       // 1️⃣ Створюємо інвойс через бекенд
       const res = await api.post("/api/deposit/create_invoice", { amount });
 
-      if (res.data?.success && res.data.invoice_link) {
+      if (res.data?.success && res.data.invoice_link && res.data.payload) {
+        const payload = res.data.payload;
         setMessage("💳 Відкриваємо оплату у Telegram...");
 
         // 2️⃣ Відкриваємо Telegram WebApp оплату
@@ -51,24 +52,37 @@ export default function DepositPage() {
           window.open(res.data.invoice_link, "_blank");
         }
 
-        // 3️⃣ Після закриття інвойсу відправляємо Complete для оновлення internal_stars
-        const checkPayment = async () => {
-          try {
-            const completeRes = await api.post("/api/deposit/complete", { amount });
-            if (completeRes.data?.success) {
-              setBalance((prev) => prev + amount + (completeRes.data.internal_stars - prev - amount));
-              setMessage("💰 Баланс оновлено!");
-            } else {
-              setMessage("❌ Оплата не підтверджена");
-            }
-          } catch (err) {
-            console.error("Deposit complete error:", err);
-            setMessage("⚠️ Не вдалося оновити баланс");
-          }
-        };
+        // 3️⃣ Слухаємо подію закриття інвойсу
+        if (window.Telegram?.WebApp) {
+          const tg = window.Telegram.WebApp;
 
-        // Викликаємо перевірку через 1-2 секунди після закриття інвойсу
-        setTimeout(checkPayment, 2000);
+          const onInvoiceClosed = async (status) => {
+            tg.offEvent("invoiceClosed", onInvoiceClosed);
+
+            if (status === "paid") {
+              setMessage("✅ Оплата успішна! Оновлюємо баланс...");
+              try {
+                // Викликаємо бекенд для підтвердження платежу і нарахування internal_stars
+                const completeRes = await api.post("/api/deposit/complete", { payload });
+                if (completeRes.data?.success) {
+                  setBalance(completeRes.data.internal_stars);
+                  setMessage("💰 Баланс оновлено!");
+                } else {
+                  setMessage("❌ Оплата не підтверджена");
+                }
+              } catch (err) {
+                console.error("Deposit complete error:", err);
+                setMessage("⚠️ Не вдалося оновити баланс");
+              }
+            } else if (status === "cancelled") {
+              setMessage("❌ Оплату скасовано.");
+            } else if (status === "failed") {
+              setMessage("💀 Помилка під час оплати.");
+            }
+          };
+
+          tg.onEvent("invoiceClosed", onInvoiceClosed);
+        }
       } else {
         setMessage("Не вдалося створити інвойс 😕");
       }
