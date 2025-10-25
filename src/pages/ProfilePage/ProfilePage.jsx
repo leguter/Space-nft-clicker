@@ -170,18 +170,19 @@ export default function ProfilePage({ user }) {
             <p>Total Clicked</p>
           </div>
 
-          <div>
-            <span className={styles.StatNumber}>
-              {user.user.internal_stars || 0}💫
-              <button
-                className={styles.PlusButton}
-                onClick={() => setShowDeposit(true)}
-              >
-                +
-              </button>
-            </span>
-            <p>Internal Stars</p>
-          </div>
+         <div>
+  <span className={styles.StatNumber}>
+    {user.user.internal_stars || 0}{" "}
+    <img src="/images/star.png" alt="star" className={styles.StarIcon} />
+    <button
+      className={styles.PlusButton}
+      onClick={() => setShowDeposit(true)}
+    >
+      +
+    </button>
+  </span>
+  <p>Internal Stars</p>
+</div>
         </div>
 
         <div className={styles.ReferralSection}>

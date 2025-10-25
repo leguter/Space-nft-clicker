@@ -408,4 +408,9 @@ min-width: 220px;
 .CloseButton:hover {
   color: #a721fd;
 }
-
+.StarIcon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-left: 3px; /* невеликий відступ від числа */
+}
