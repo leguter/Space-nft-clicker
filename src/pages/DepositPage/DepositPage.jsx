@@ -46,15 +46,22 @@ export default function DepositPage() {
         const tg = window.Telegram.WebApp;
         tg.openInvoice(invoice_link);
 
-        const onInvoiceClosed = async (status) => {
+        // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ 🟢 ===
+        // 1. Аргумент 'status' перейменовано на 'eventData', бо Telegram надсилає об'єкт
+        const onInvoiceClosed = async (eventData) => {
           tg.offEvent("invoiceClosed", onInvoiceClosed);
 
-          if (status === "paid") {
+          // 2. Перевіряємо поле 'status' всередині об'єкта 'eventData'
+          if (eventData.status === "paid") {
             setMessage("✅ Оплата завершена. Перевіряємо сервер...");
 
             try {
+              // Викликаємо наш бекенд, який ми виправили раніше
               const completeRes = await api.post("/api/deposit/complete", { payload });
+              
               if (completeRes.data?.success) {
+                // Встановлюємо новий загальний баланс,
+                // який повернув бекенд (internal_stars)
                 setBalance(completeRes.data.internal_stars);
                 setMessage("💰 Баланс оновлено!");
               } else {
@@ -65,9 +72,11 @@ export default function DepositPage() {
               setMessage("⚠️ Не вдалося оновити баланс");
             }
           } else {
+            // Сюди потраплять статуси 'cancelled', 'failed' тощо.
             setMessage("❌ Оплата скасована або не завершена");
           }
         };
+        // === / Кінець виправлення ===
 
         tg.onEvent("invoiceClosed", onInvoiceClosed);
       } else {
