@@ -116,6 +116,7 @@ import { useState } from "react";
 import styles from "./ProfilePage.module.css";
 import { useOutletContext } from "react-router-dom";
 import api from "../../utils/api"; // твій api helper
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage({ user }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -124,7 +125,7 @@ export default function ProfilePage({ user }) {
 
   const botUrl = "https://t.me/Durovu_bot";
   const telegramChannelUrl = "https://t.me/SpaceClicker";
-
+const navigate = useNavigate();
   const handleCopyLink = () => {
     const referralLink = `${botUrl}?start=${user.user.telegramId}`;
     navigator.clipboard.writeText(referralLink);
@@ -171,7 +172,7 @@ export default function ProfilePage({ user }) {
           </div>
 
    <div className={styles.InternalStarsContainer}>
-  <div className={styles.InternalStarsContainer} onClick={() => setShowDeposit(true)}>
+  <div className={styles.InternalStarsContainer} onClick={() => navigate("/deposit")}>
   <span className={styles.InternalStarsNumber}>
     {user.user.internal_stars || 0}
   </span>
