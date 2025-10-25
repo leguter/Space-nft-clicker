@@ -21,7 +21,7 @@ export default function DepositPage() {
       setSelected(amount);
       setMessage("");
 
-      const res = await api.post("/deposit/create_invoice", { amount });
+      const res = await api.post("/api/deposit/create_invoice", { amount });
 
       if (res.data?.success && res.data.invoice_link) {
         // Відкриваємо Telegram invoice link
