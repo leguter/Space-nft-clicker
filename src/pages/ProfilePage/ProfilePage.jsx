@@ -121,7 +121,7 @@ import { useNavigate } from "react-router-dom";
 export default function ProfilePage({ user }) {
   const [isCopied, setIsCopied] = useState(false);
   // const [showDeposit, setShowDeposit] = useState(false);
-  const { referrals } = useOutletContext();
+  const { referrals, internalStars } = useOutletContext();
 
   const botUrl = "https://t.me/Durovu_bot";
   const telegramChannelUrl = "https://t.me/SpaceClicker";
@@ -174,7 +174,7 @@ const navigate = useNavigate();
    <div className={styles.InternalStarsContainer}>
   <div className={styles.InternalStarsContainer} onClick={() => navigate("/deposit")}>
   <span className={styles.InternalStarsNumber}>
-    {user.user.internal_stars || 0}
+    {internalStars|| 0}
   </span>
   <img src="/images/star.png" alt="star" className={styles.StarIcon} />
 </div>

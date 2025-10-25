@@ -154,7 +154,7 @@ export default function MainLayout() {
   const clicksPerTicket = 1000; // потрібно 1000 кліків для квитка
   const [ticketReady, setTicketReady] = useState(false);
    const [referrals, setReferrals] = useState(false);
-
+ const [internalStars, setInternalStars] = useState(false);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -169,6 +169,7 @@ export default function MainLayout() {
         setTapPower(Number(res.data.tap_power));
         setReferrals(res.data.referrals)
         setClickCount(clicks || 0); // якщо бекенд зберігає
+        setInternalStars(res.data.internal_stars)
       } catch (err) {
         console.error("❌ Error loading user data:", err.message);
       }
@@ -241,7 +242,7 @@ export default function MainLayout() {
   return (
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
-        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket, referrals }} />
+        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket, referrals, internalStars}} />
       </main>
 
       <nav className={styles.bottomNav}>
