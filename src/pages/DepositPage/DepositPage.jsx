@@ -15,28 +15,34 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
-  const handleDeposit = async (amount) => {
-    try {
-      setLoading(true);
-      setSelected(amount);
-      setMessage("");
+const handleDeposit = async (amount) => {
+  try {
+    setLoading(true);
+    setSelected(amount);
+    setMessage("");
 
-      const res = await api.post("/api/deposit/create_invoice", { amount });
+    const res = await api.post("/api/deposit/create_invoice", { amount });
 
-      if (res.data?.success && res.data.invoice_link) {
-        // Відкриваємо Telegram invoice link
-        window.open(res.data.invoice_link, "_blank");
-        setMessage("Оплату відкрито у Telegram ✅");
+    if (res.data?.success && res.data.invoice_link) {
+      // Якщо користувач у Telegram WebApp
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.openInvoice(res.data.invoice_link);
+        setMessage("Оплата відкрилася у Telegram ✅");
       } else {
-        setMessage("Не вдалося створити інвойс 😕");
+        // fallback, якщо відкрито не через Telegram
+        window.open(res.data.invoice_link, "_blank");
+        setMessage("Оплату відкрито у новому вікні ✅");
       }
-    } catch (err) {
-      console.error("Deposit error:", err);
-      setMessage("Помилка під час створення інвойсу");
-    } finally {
-      setLoading(false);
+    } else {
+      setMessage("Не вдалося створити інвойс 😕");
     }
-  };
+  } catch (err) {
+    console.error("Deposit error:", err);
+    setMessage("Помилка під час створення інвойсу");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={styles.Container}>
