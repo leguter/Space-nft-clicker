@@ -337,80 +337,75 @@ min-width: 220px;
 /* -------------------------------------------- */
 
 
+/* Кнопка "+" для Internal Stars */
 .PlusButton {
-  margin-left: 8px;
-  background: none;
+  margin-left: 6px;
+  background: linear-gradient(45deg, #00ffff, #00aaff);
   border: none;
-  color: #00ffff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  color: #0d0c1d;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 1.2em;
-  transition: transform 0.2s ease, color 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.PlusButton:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
 }
 
-.PlusButton:hover {
-  transform: scale(1.2);
+/* Модальне вікно */
+.ModalOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.DepositModal {
+  background: #1a1a2e;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0,255,255,0.4);
+}
+
+/* Сітка кнопок суми депозиту */
+.AmountGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.AmountButton {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #00ffff, #00aaff);
+  color: #0d0c1d;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.AmountButton:hover {
+  transform: scale(1.05);
+}
+
+/* Кнопка закриття модалки */
+.CloseButton {
+  background: none;
+  color: #00ffff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.CloseButton:hover {
   color: #a721fd;
 }
 
-/* === Модальне вікно === */
-.ModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 10, 30, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.Modal {
-  background: linear-gradient(135deg, #1a1a2e, #0f0a21);
-  border: 1px solid #00ffff;
-  border-radius: 15px;
-  padding: 25px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-}
-
-.DepositButtons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.DepositButton {
-  padding: 10px 15px;
-  background: linear-gradient(45deg, #00ffff, #00aaff);
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #0f0a21;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.DepositButton:hover {
-  background: linear-gradient(45deg, #00aaff, #00ffff);
-  transform: translateY(-2px);
-}
-
-.CloseButton {
-  background: none;
-  border: none;
-  color: #aaa;
-  cursor: pointer;
-  margin-top: 10px;
-  font-size: 1em;
-  transition: color 0.3s;
-}
-
-.CloseButton:hover {
-  color: #fff;
-}

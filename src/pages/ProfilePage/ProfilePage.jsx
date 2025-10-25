@@ -115,12 +115,11 @@
 import { useState } from "react";
 import styles from "./ProfilePage.module.css";
 import { useOutletContext } from "react-router-dom";
-import api from "../../utils/api"; // ✅ Для запитів на бекенд
+import api from "../../utils/api"; // твій api helper
 
 export default function ProfilePage({ user }) {
   const [isCopied, setIsCopied] = useState(false);
-  const [isDepositOpen, setIsDepositOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showDeposit, setShowDeposit] = useState(false);
   const { referrals } = useOutletContext();
 
   const botUrl = "https://t.me/Durovu_bot";
@@ -133,24 +132,15 @@ export default function ProfilePage({ user }) {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const openDeposit = () => setIsDepositOpen(true);
-  const closeDeposit = () => setIsDepositOpen(false);
-
   const handleDeposit = async (amount) => {
     try {
-      setLoading(true);
       const res = await api.post("/deposit/create_invoice", { amount });
-      if (res.data.success) {
-        window.open(res.data.invoice_link, "_blank"); // 🔗 Відкриває Telegram оплату
-      } else {
-        alert("Failed to create deposit invoice");
+      if (res.data?.invoice_link) {
+        window.open(res.data.invoice_link, "_blank");
       }
     } catch (err) {
       console.error("Deposit error:", err);
-      alert("Error creating deposit");
-    } finally {
-      setLoading(false);
-      setIsDepositOpen(false);
+      alert("Failed to create invoice.");
     }
   };
 
@@ -164,7 +154,6 @@ export default function ProfilePage({ user }) {
         ) : (
           <div className={styles.Avatar}></div>
         )}
-
         <h2 className={styles.Name}>{user.user.firstName || "Space User"}</h2>
         <p className={styles.Id}>@{user.user.username}</p>
 
@@ -176,17 +165,22 @@ export default function ProfilePage({ user }) {
 
           <div>
             <span className={styles.StatNumber}>
-              {user.user.balance}⭐{" "}
-              <button onClick={openDeposit} className={styles.PlusButton}>
-                ➕
-              </button>
+              {user.user.balance}⭐
             </span>
-            <p>Stars</p>
+            <p>Total Clicked</p>
           </div>
 
           <div>
-            <span className={styles.StatNumber}>{user.user.tickets || 0}🎫</span>
-            <p>Tickets</p>
+            <span className={styles.StatNumber}>
+              {user.user.internal_stars || 0}💫
+              <button
+                className={styles.PlusButton}
+                onClick={() => setShowDeposit(true)}
+              >
+                +
+              </button>
+            </span>
+            <p>Internal Stars</p>
           </div>
         </div>
 
@@ -194,7 +188,11 @@ export default function ProfilePage({ user }) {
           <h3>Your Referral Link</h3>
           <p>Invite a friend and get 3 tickets for the draw!</p>
           <div className={styles.ReferralLinkBox}>
-            <input type="text" value={`${botUrl}?start=${user.user.telegramId}`} readOnly />
+            <input
+              type="text"
+              value={`${botUrl}?start=${user.user.telegramId}`}
+              readOnly
+            />
             <button onClick={handleCopyLink} className={styles.CopyButton}>
               {isCopied ? "Copied!" : "Copy"}
             </button>
@@ -202,33 +200,42 @@ export default function ProfilePage({ user }) {
         </div>
 
         <div className={styles.TelegramSection}>
-          <a href={telegramChannelUrl} target="_blank" rel="noopener noreferrer" className={styles.TelegramButton}>
+          <a
+            href={telegramChannelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.TelegramButton}
+          >
             Subscribe to Telegram
           </a>
           <p>Subscribe to our channel to receive bonuses!</p>
         </div>
       </div>
 
-      {/* 💰 Модальне вікно депозиту */}
-      {isDepositOpen && (
-        <div className={styles.ModalOverlay}>
-          <div className={styles.Modal}>
-            <h3>Deposit Stars</h3>
-            <p>Select the amount you want to deposit:</p>
-            <div className={styles.DepositButtons}>
+      {showDeposit && (
+        <div className={styles.ModalOverlay} onClick={() => setShowDeposit(false)}>
+          <div
+            className={styles.DepositModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Deposit Internal Stars</h3>
+            <p>Select amount to deposit:</p>
+            <div className={styles.AmountGrid}>
               {[10, 50, 100, 500, 1000].map((amount) => (
                 <button
                   key={amount}
+                  className={styles.AmountButton}
                   onClick={() => handleDeposit(amount)}
-                  className={styles.DepositButton}
-                  disabled={loading}
                 >
-                  {amount}⭐
+                  {amount} ⭐
                 </button>
               ))}
             </div>
-            <button onClick={closeDeposit} className={styles.CloseButton}>
-              ✖ Close
+            <button
+              className={styles.CloseButton}
+              onClick={() => setShowDeposit(false)}
+            >
+              Close
             </button>
           </div>
         </div>
@@ -236,8 +243,3 @@ export default function ProfilePage({ user }) {
     </div>
   );
 }
-
-
-
-
-
