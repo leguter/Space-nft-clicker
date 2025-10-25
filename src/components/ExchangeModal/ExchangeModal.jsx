@@ -1,89 +1,102 @@
+// Це твій React-компонент, наприклад /pages/ExchangePage.js
+
 import { useState } from "react";
-import styles from "./ExchangeModal.module.css";
-import api from "../../utils/api";
- import { toast } from 'react-toastify'; // ❗️ Додайте цей імпорт
-export default function ExchangeModal({ onClose }) {
+import api from "../../utils/api"; // Твій файл для API-запитів
+import styles from "./ExchangePage.module.css"; // Твої стилі
+
+// Опції для обміну
+const exchangeOptions = [
+  { stars: 100, clicks: 100000 },
+  { stars: 250, clicks: 250000 },
+  { stars: 500, clicks: 500000 },
+  { stars: 1000, clicks: 1000000 },
+  { stars: 2500, clicks: 2500000 },
+  { stars: 10000, clicks: 10000000 },
+  { stars: 50000, clicks: 50000000 },
+];
+
+export default function ExchangePage() {
   const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(""); // Для повідомлень про успіх або помилку
 
-  const offers = [
-    { stars: 100, clicks: 100000 },
-    { stars: 250, clicks: 250000 },
-    { stars: 500, clicks: 500000 },
-    { stars: 1000, clicks: 1000000 },
-    { stars: 2500, clicks: 2500000 },
-    { stars: 10000, clicks: 10000000 },
-    { stars: 50000, clicks: 50000000 },
-    { stars: 150000, clicks: 150000000 },
-  ];
-
-
-// ... (ваш код)
-
-const handleExchange = async (item) => {
-  try {
+  // === 🟢 ГОЛОВНА ФУНКЦІЯ, ЯКУ ТРЕБА ВИПРАВИТИ ===
+  const handleExchange = async (stars, clicks) => {
     setLoading(true);
-    // setMessage(null); // ❗️ Більше не потрібно
+    setMessage(""); // Очищуємо старі повідомлення
 
-    const res = await api.post("/api/exchange", {
-      stars: item.stars,
-      clicks: item.clicks,
-    });
+    try {
+      // Робимо запит на той самий роут, що й у бекенді
+      const res = await api.post("/api/withdraw/exchange", { stars, clicks });
 
-    if (res.success) {
-      // setMessage("✅ Заявка на вивід успішно створена!"); ❗️ Замініть це
-      toast.success("✅ Withdrawal request successfully created!"); // ✅ На це
-    } else {
-      // setMessage(`⚠️ ${res.message || "Помилка при створенні заявки"}`); ❗️ Замініть це
-      toast.warn(`⚠️ ${res.message || "Error creating application"}`); // ✅ На це
+      // Якщо бекенд повернув success: true
+      if (res.data.success) {
+        setMessage(res.data.message); // Покажемо "✅ Обмін успішний!"
+        // Тут можна також оновити баланс юзера, якщо потрібно
+      } else {
+        // Це для "м'яких" помилок (якщо бекенд забув повернути .status(400))
+        setMessage(`⚠️ ${res.data.message}`);
+      }
+    } catch (err) {
+      
+      // === 🟢 ОСЬ ТУТ БУЛА ПОМИЛКА ===
+      // 'err' - це об'єкт помилки від Axios
+      
+      console.error("Exchange error:", err); // Лог для тебе
+
+      // Перевіряємо, чи є у помилці відповідь від сервера (err.response)
+      // і чи є в ній наше повідомлення (err.response.data.message)
+      if (err.response && err.response.data && err.response.data.message) {
+        // ✅ Встановлюємо КОНКРЕТНЕ повідомлення з бекенду
+        // (напр, "❗ Для обміну потрібно мати мінімум 5 рефералів")
+        setMessage(`⚠️ ${err.response.data.message}`);
+      } else {
+        // ❌ Це твій старий код, який показував загальну помилку
+        setMessage("⚠️ Error creating application");
+      }
+      
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err) {
-    console.error("Exchange error:", err);
-    if (err.response && err.response.data && err.response.data.message) {
-      // setMessage(`⚠️ ${err.response.data.message}`); ❗️ Замініть це
-      toast.error(`⚠️ ${err.response.data.message}`); // ✅ На це (напр: "❗ Потрібно 5 рефералів")
-    } else {
-      // setMessage("❌ Сталася помилка. Спробуйте пізніше."); ❗️ Замініть це
-      toast.error("❌ An error occurred. Please try again later."); // ✅ На це
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modal}>
-        <div className={styles.header}>
-          <h2>Обмін кліків на зірки</h2>
-          <button className={styles.closeButton} onClick={onClose}>✕</button>
-        </div>
-
-        <div className={styles.list}>
-          {offers.map((item, i) => (
-            <div key={i} className={styles.row} onClick={() => handleExchange(item)}>
-              <div className={styles.left}>
-                <img src="/images/star.png" alt="star" className={styles.icon} />
-                <span className={styles.text}>{item.stars.toLocaleString()} Stars</span>
-              </div>
-              <div className={styles.right}>
-                <span className={styles.price}>{item.clicks.toLocaleString()} кліків</span>
-                {/* <button
-                  disabled={loading}
-                  onClick={() => handleExchange(item)}
-                  className={styles.exchangeBtn}
-                >
-                  {loading ? "⏳..." : "Вивести"}
-                </button> */}
-              </div>
-               {loading}
-            </div>
-          ))}
-        </div>
-
-        {/* {message && <div className={styles.message}>{message}</div>} */}
+    <div className={styles.container}>
+      {/* Кнопка закриття */}
+      <div className={styles.header}>
+        <h2 className={styles.title}>Обмін кліків на зірки</h2>
+        <button className={styles.closeButton}>×</button>
       </div>
+
+      {/* Список опцій */}
+      <div className={styles.optionsList}>
+        {exchangeOptions.map((option) => (
+          <div key={option.stars} className={styles.optionItem}>
+            <div className={styles.starsValue}>
+              ⭐ {option.stars.toLocaleString()} Stars
+            </div>
+            
+            <button
+              className={styles.exchangeButton}
+              onClick={() => handleExchange(option.stars, option.clicks)}
+              disabled={loading} // Блокуємо кнопку під час запиту
+            >
+              {option.clicks.toLocaleString()} кліків
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Повідомлення про помилку/успіх */}
+      {/* Цей блок буде показувати повідомлення, 
+        яке ми встановили у 'handleExchange'
+      */}
+      {message && (
+        <div 
+          className={message.includes("✅") ? styles.messageSuccess : styles.messageError}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 }
