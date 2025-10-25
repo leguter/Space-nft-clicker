@@ -26,7 +26,7 @@ export default function DepositPage() {
 
         // 1. Перевіряємо, що res.data - це масив і він не пустий
         if (Array.isArray(res.data) && res.data.length > 0) {
-          
+          console.log(res.data.internal_stars)
           // 2. Беремо internal_stars з ПЕРШОГО об'єкта в масиві
           const stars = res.data[0].internal_stars;
           setBalance(stars || 0);
