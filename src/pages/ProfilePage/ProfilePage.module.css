@@ -340,25 +340,35 @@ min-width: 220px;
 /* Кнопка "+" для Internal Stars */
 .PlusButton {
   margin-left: 6px;
-  background: linear-gradient(45deg, #00ffff, #00aaff);
+  background: linear-gradient(45deg, #ffd700, #ffb700); /* жовтий градієнт */
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  color: #0d0c1d;
+  width: 28px;
+  height: 28px;
+  color: #1a1a1a;
   font-weight: bold;
   font-size: 16px;
-  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .PlusButton:hover {
   transform: scale(1.15);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+}
+
+/* Іконка зірки всередині кнопки */
+.StarIcon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-left: 2px;
+  display: inline-block;
+  filter: drop-shadow(0 0 4px #ffd700);
 }
 
 /* Модальне вікно */
@@ -434,10 +444,3 @@ min-width: 220px;
 }
 
 /* Іконка зірки */
-.StarIcon {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  margin-left: 5px;
-  display: inline-block;
-}
