@@ -141,110 +141,116 @@ import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import styles from "../../App.module.css";
 import { FaHome, FaGem, FaGift, FaBolt, FaUser } from "react-icons/fa";
-import api from "../../utils/api";
+import api from '../../utils/api';
 
 export default function MainLayout() {
   const [balance, setBalance] = useState(0);
-  const [tapPower, setTapPower] = useState(0);
+  const [tapPower, setTapPower] = useState(1); // Починаємо з 1, поки не завантажилось
+  const [progress, setProgress] = useState(0); // Стан для прогрес-бару
   const [isTapped, setIsTapped] = useState(false);
+  const [referrals, setReferrals] = useState(0);
+  const [internalStars, setInternalStars] = useState(0);
 
-  // Для прогресу
-  const [clickCount, setClickCount] = useState(0);
-  const [progress, setProgress] = useState(0); // 0 - 100%
-  const clicksPerTicket = 1000; // потрібно 1000 кліків для квитка
-  const [ticketReady, setTicketReady] = useState(false);
-   const [referrals, setReferrals] = useState(false);
- const [internalStars, setInternalStars] = useState(false);
+  // 1. Отримуємо дані користувача при запуску
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const res = await api.get("/api/user/me", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          }
         });
-        console.log(res.data)
-        const clicks = res.data.clickCount;
-        setBalance(res.data.balance);
-        setTapPower(Number(res.data.tap_power));
-        setReferrals(res.data.referrals)
-        setClickCount(clicks || 0); // якщо бекенд зберігає
-        setInternalStars(res.data.internal_stars)
+        
+        // Встановлюємо всі дані з бекенду
+        setBalance(res.data.balance || 0);
+        setTapPower(Number(res.data.tap_power) || 1);
+        setProgress(Number(res.data.click_progress) || 0); // 🟢 ВИПРАВЛЕНО: завантажуємо прогрес
+        setReferrals(res.data.referrals || 0);
+        setInternalStars(res.data.internal_stars || 0);
+
       } catch (err) {
-        console.error("❌ Error loading user data:", err.message);
+        console.error("❌ Error loading user data:", err.response?.data?.message || err.message);
       }
     };
     fetchUserData();
-  }, []);
+  }, []); // Пустий масив - виконати 1 раз
 
-  // Обновлюємо прогрес при зміні clickCount
-  useEffect(() => {
-    const newProgress = clickCount / clicksPerTicket;
-    setProgress(newProgress > 1 ? 1 : newProgress);
-    setTicketReady(clickCount >= clicksPerTicket);
-  }, [clickCount]);
 
+  // 2. ⚡ TAP — один запит, який оновлює все
   const handleTap = async () => {
     setIsTapped(true);
+
     try {
+      // Викликаємо ТІЛЬКИ /api/user/tap
       const res = await api.post(
         "/api/user/tap",
-        {},
+        {}, // Порожнє тіло запиту
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          }
         }
       );
+
+      // Бекенд повертає нові дані, ми їх просто встановлюємо
       setBalance(res.data.newBalance);
+      setProgress(res.data.progress); // 🟢 ВИПРАВЛЕНО: оновлюємо прогрес
 
-      // Лічимо кліки для прогресу
-      const newClickCount = clickCount + 1;
-      setClickCount(newClickCount);
-
-      // Якщо бекенд підтримує, можна синхронізувати clickCount:
-      await api.post(
-        "/api/user/update-clicks",
-        { clickCount: newClickCount },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
     } catch (err) {
-      console.error("❌ Tap error:", err.message);
+      const errorMessage = err.response ? err.response.data.message : err.message;
+      console.error("❌ Tap error:", errorMessage);
     } finally {
+      // Гарантує скидання анімації
       setTimeout(() => setIsTapped(false), 150);
     }
   };
 
+  // 3. 🎟️ CLAIM — окрема функція для отримання квитка
+  // (Твій старий код змішував 'tap' і 'claim', це виправлено)
   const claimTicket = async () => {
     try {
-      await api.post(
+      // ❗️ ВАЖЛИВО: цей роут має існувати на бекенді
+      // (Я бачу його у твоєму файлі - /api/user/claim-ticket)
+      const res = await api.post(
         "/api/user/claim-ticket",
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           },
         }
       );
-      // Скидаємо прогрес
-      setClickCount(0);
-      setProgress(0);
-      setTicketReady(false);
+      
+      // Після 'claim' бекенд повертає 'progress: 0'
+      setProgress(res.data.progress); 
+      // Тут можна також оновити кількість квитків, якщо потрібно
+      
     } catch (err) {
-      console.error("❌ Claim ticket error:", err.message);
+      console.error("❌ Claim ticket error:", err.response?.data?.message || err.message);
     }
   };
+
+  // Визначаємо, чи готова кнопка "Claim"
+  const ticketReady = progress >= 1;
 
   return (
     <div className={styles.appContainer}>
       <main className={styles.mainContent}>
-        <Outlet context={{ balance, tapPower, isTapped, handleTap, progress, ticketReady, claimTicket, referrals, internalStars}} />
+        {/* 🔁 передаємо оновлений контекст усім сторінкам */}
+        <Outlet context={{ 
+          balance, 
+          tapPower, 
+          isTapped, 
+          handleTap, 
+          progress, 
+          ticketReady, // ⬅️ чи заповнений бар
+          claimTicket, // ⬅️ функція для клейму
+          referrals,
+          internalStars
+        }} />
       </main>
 
+      {/* 🔽 нижня навігація (без змін) */}
       <nav className={styles.bottomNav}>
         <NavLink to="/" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ""}`}>
           <FaHome /><span>Home</span>
@@ -265,4 +271,3 @@ export default function MainLayout() {
     </div>
   );
 }
-
