@@ -333,3 +333,84 @@ min-width: 220px;
     font-size: 0.9em;
     color: #e0e0e0;
 }
+
+/* -------------------------------------------- */
+
+
+.PlusButton {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  color: #00ffff;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.PlusButton:hover {
+  transform: scale(1.2);
+  color: #a721fd;
+}
+
+/* === Модальне вікно === */
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 30, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.Modal {
+  background: linear-gradient(135deg, #1a1a2e, #0f0a21);
+  border: 1px solid #00ffff;
+  border-radius: 15px;
+  padding: 25px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+}
+
+.DepositButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.DepositButton {
+  padding: 10px 15px;
+  background: linear-gradient(45deg, #00ffff, #00aaff);
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #0f0a21;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.DepositButton:hover {
+  background: linear-gradient(45deg, #00aaff, #00ffff);
+  transform: translateY(-2px);
+}
+
+.CloseButton {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 1em;
+  transition: color 0.3s;
+}
+
+.CloseButton:hover {
+  color: #fff;
+}

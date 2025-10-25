@@ -25,7 +25,7 @@ const handleExchange = async (item) => {
     setLoading(true);
     // setMessage(null); // ❗️ Більше не потрібно
 
-    const res = await api.post("/api/withdraw/request", {
+    const res = await api.post("/api/withdraw/exchange", {
       stars: item.stars,
       clicks: item.clicks,
     });
