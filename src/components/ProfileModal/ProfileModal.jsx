@@ -5,10 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../../utils/api";
 import styles from "./ProfileModal.module.css";
 import ExchangeModal from "../ExchangeModal/ExchangeModal";
+import { useOutletContext } from "react-router-dom";
 export default function ProfileModal({ isOpen, onClose }) {
   const [profile, setProfile] = useState(null);
   const [language, setLanguage] = useState(localStorage.getItem("lang") || "ua");
  const [showExchange, setShowExchange] = useState(false);
+ const {internalStars } = useOutletContext();
   useEffect(() => {
     if (isOpen) fetchProfile();
   }, [isOpen]);
@@ -58,7 +60,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                 <div className={styles.infoBlock}>
                   <p><strong>ID:</strong> {profile.telegram_id}</p>
                   <p><strong>Name:</strong> {profile.username}</p>
-                  <p><strong>Stars:</strong> ⭐ {profile.stars}</p>
+                  <p><strong>Stars:</strong> ⭐ {internalStars}</p>
                   <p><strong>Tickets:</strong> 🎟 {profile.tickets}</p>
                 </div>
      
