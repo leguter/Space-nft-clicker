@@ -170,7 +170,7 @@ export default function ProfilePage({ user }) {
             <p>Total Clicked</p>
           </div>
 
-   <div>
+   <div className={styles.InternalStarsContainer}>
   <div className={styles.InternalStarsContainer} onClick={() => setShowDeposit(true)}>
   <span className={styles.InternalStarsNumber}>
     {user.user.internal_stars || 0}
