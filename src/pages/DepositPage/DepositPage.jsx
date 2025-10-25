@@ -23,10 +23,10 @@ export default function DepositPage() {
         // Цей ендпоінт, судячи з вашого першого скріншоту,
         // повертає масив: [ { ... } ]
         const res = await api.get("/api/user/me");
-
+ console.log(res.data.internal_stars)
         // 1. Перевіряємо, що res.data - це масив і він не пустий
         if (Array.isArray(res.data) && res.data.length > 0) {
-          console.log(res.data.internal_stars)
+         
           // 2. Беремо internal_stars з ПЕРШОГО об'єкта в масиві
           const stars = res.data[0].internal_stars;
           setBalance(stars || 0);
