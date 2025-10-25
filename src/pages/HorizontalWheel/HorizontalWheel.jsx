@@ -479,7 +479,7 @@ export default function HorizontalWheel() {
 
       {/* 5. ДОДАНО КЛІКАБЕЛЬНИЙ БАЛАНС */}
       <div className={styles.balanceDisplay} onClick={goToDeposit}>
-        Твій баланс: {balance} ⭐
+        Your Balance: {balance} ⭐
         <span className={styles.depositIcon}>+</span>
       </div>
       {/* / Кінець доданого блоку */}
@@ -520,7 +520,7 @@ export default function HorizontalWheel() {
           🎉 You won: <strong>{result.label}</strong>
         </div>
       )}
-      <h2 className={styles.sectionTitle}>СОДЕРЖИМОЕ КЕЙСА</h2>
+      <h2 className={styles.sectionTitle}>CASE CONTENTS</h2>
       <div className={styles.itemsGrid}>
         {segments.map((item, index) => (
           <div key={index} className={styles.itemCard}>

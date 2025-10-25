@@ -53,10 +53,10 @@ export default function DepositPage() {
 
     try {
       const res = await api.post("/api/deposit/create_invoice", { amount });
-      if (!res.data?.success) return setMessage("Не вдалося створити інвойс");
+      if (!res.data?.success) return setMessage("Failed to create invoice");
 
       const { invoice_link, payload } = res.data;
-      setMessage("💳 Відкриваємо оплату...");
+      setMessage("💳 We open the payment...");
 
       if (window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -66,22 +66,22 @@ export default function DepositPage() {
           tg.offEvent("invoiceClosed", onInvoiceClosed);
 
           if (eventData.status === "paid") {
-            setMessage("✅ Оплата завершена. Перевіряємо сервер...");
+            setMessage("✅ Payment is completed. We are checking the server...");
 
             try {
               const completeRes = await api.post("/api/deposit/complete", { payload });
               if (completeRes.data?.success) {
                 setBalance(completeRes.data.internal_stars);
-                setMessage("💰 Баланс оновлено!");
+                setMessage("💰 Balance updated!");
               } else {
-                setMessage("❌ Оплата не підтверджена на сервері");
+                setMessage("❌ Payment is not confirmed on the server");
               }
             } catch (err) {
               console.error(err);
-              setMessage("⚠️ Не вдалося оновити баланс");
+              setMessage("⚠️ It was not possible to restore the balance");
             }
           } else {
-            setMessage("❌ Оплата скасована або не завершена");
+            setMessage("❌ Payment declined or not completed");
           }
         };
 
@@ -107,11 +107,11 @@ export default function DepositPage() {
         className={styles.BackButton} // Вам потрібно буде додати стилі для .BackButton
         onClick={() => navigate(-1)} // Ця функція повертає на попередню сторінку
       >
-        ← Назад
+        ← Back
       </button>
 
       <h2 className={styles.Title}>💰 Deposit Stars</h2>
-      <p className={styles.Subtitle}>Твій поточний баланс: {balance} ⭐</p>
+      <p className={styles.Subtitle}>Your current balance: {balance} ⭐</p>
 
       <div className={styles.ButtonGrid}>
         {depositOptions.map(({ amount, bonus }) => (
@@ -122,7 +122,7 @@ export default function DepositPage() {
             disabled={loading}
           >
             <div className={styles.Amount}>{amount} ⭐</div>
-            {bonus > 0 && <div className={styles.Bonus}>+{bonus} бонус</div>}
+            {bonus > 0 && <div className={styles.Bonus}>+{bonus} Bonus</div>}
           </button>
         ))}
       </div>
