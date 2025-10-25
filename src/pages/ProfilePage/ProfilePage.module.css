@@ -337,110 +337,127 @@ min-width: 220px;
 /* -------------------------------------------- */
 
 
-/* Кнопка "+" для Internal Stars */
-.PlusButton {
-  margin-left: 6px;
-  background: linear-gradient(45deg, #ffd700, #ffb700); /* жовтий градієнт */
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  color: #1a1a1a;
-  font-weight: bold;
-  font-size: 16px;
+/* === Internal Stars === */
+.InternalStarsContainer {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(90deg, #ffd700, #ffef8a);
+  padding: 10px 18px;
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  transition: all 0.25s ease;
 }
 
-.PlusButton:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+.InternalStarsContainer:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 230, 100, 0.9);
 }
 
-/* Іконка зірки всередині кнопки */
+.InternalStarsNumber {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+}
+
 .StarIcon {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  margin-left: 2px;
-  display: inline-block;
-  filter: drop-shadow(0 0 4px #ffd700);
+  width: 26px;
+  height: 26px;
 }
 
-/* Модальне вікно */
+/* Прибираємо стару кнопку "+" */
+.PlusButton {
+  display: none;
+}
+
+/* === Modal Overlay === */
 .ModalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 9999;
 }
 
+/* === Deposit Modal === */
 .DepositModal {
-  background: #1a1a2e;
-  border-radius: 15px;
-  padding: 30px 25px;
+  background: #0d0d0d;
+  color: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
   text-align: center;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-  max-width: 400px;
+  animation: fadeIn 0.3s ease-in-out;
   width: 90%;
-  animation: fadeIn 0.3s ease;
+  max-width: 420px;
 }
 
-/* Анімація появи модалки */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+.DepositModal h3 {
+  color: #ffd700;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
-/* Сітка кнопок суми депозиту */
+.DepositModal p {
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+/* Кнопки для суми */
 .AmountGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 .AmountButton {
-  padding: 12px;
+  background: linear-gradient(90deg, #ffcc00, #ffe680);
   border: none;
   border-radius: 10px;
-  background: linear-gradient(45deg, #00ffff, #00aaff);
-  color: #0d0c1d;
-  font-weight: bold;
-  font-size: 14px;
+  padding: 10px 18px;
+  font-weight: 600;
+  color: #000;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .AmountButton:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
 }
 
-/* Кнопка закриття модалки */
+/* Кнопка закриття */
 .CloseButton {
-  background: none;
-  color: #00ffff;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
+  margin-top: 18px;
+  background: #222;
+  border: 1px solid #ffd700;
+  border-radius: 10px;
+  padding: 8px 16px;
+  color: #ffd700;
   cursor: pointer;
-  margin-top: 15px;
-  transition: color 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .CloseButton:hover {
-  color: #a721fd;
+  background: #ffd700;
+  color: #000;
 }
 
-/* Іконка зірки */
+/* Анімація появи модалки */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

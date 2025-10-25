@@ -171,19 +171,13 @@ export default function ProfilePage({ user }) {
           </div>
 
    <div>
-  <div className={styles.InternalStarsContainer}>
-    <span className={styles.InternalStarsNumber}>
-      {user.user.internal_stars || 0}
-    </span>
-    <img src="/images/star.png" alt="star" className={styles.StarIcon} />
-    <button
-      className={styles.PlusButton}
-      onClick={() => setShowDeposit(true)}
-    >
-      +
-    </button>
-  </div>
-  <p>Internal Stars</p>
+  <div className={styles.InternalStarsContainer} onClick={() => setShowDeposit(true)}>
+  <span className={styles.InternalStarsNumber}>
+    {user.user.internal_stars || 0}
+  </span>
+  <img src="/images/star.png" alt="star" className={styles.StarIcon} />
+</div>
+<p>Internal Stars</p>
 </div>
         </div>
 
