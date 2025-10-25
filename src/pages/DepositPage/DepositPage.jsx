@@ -6,6 +6,7 @@ export default function DepositPage() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
   const [message, setMessage] = useState("");
+  const [balance, setBalance] = useState(0); // ← збережений поточний баланс
 
   const depositOptions = [
     { amount: 10, bonus: 0 },
@@ -15,27 +16,37 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
+  // === Ініціалізація Telegram WebApp ===
   useEffect(() => {
-    // Ініціалізуємо Telegram WebApp
     if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
+      const tg = window.Telegram.WebApp;
+      tg.ready();
 
-      // ✅ Відстежуємо подію закриття інвойсу
-      window.Telegram.WebApp.onEvent("invoiceClosed", (status) => {
-        console.log("Invoice status:", status);
+      // Слухач завершення платежу
+      tg.onEvent("invoiceClosed", async (status) => {
+        console.log("Invoice closed:", status);
+
         if (status === "paid") {
-          setMessage("✅ Оплата успішна! Баланс буде оновлено.");
-          // Можна зробити додатковий запит на бекенд, щоб оновити дані користувача:
-          // await api.get("/user/me");
+          setMessage("✅ Оплата успішна! Оновлюємо баланс...");
+          try {
+            const res = await api.get("/api/user/me"); // <-- твій бек повертає оновленого юзера
+            if (res.data?.user) {
+              setBalance(res.data.user.internal_stars); // <-- оновлюємо баланс
+              setMessage("💰 Баланс оновлено!");
+            }
+          } catch (e) {
+            console.error("Balance update error:", e);
+            setMessage("⚠️ Не вдалося оновити баланс");
+          }
         } else if (status === "cancelled") {
           setMessage("❌ Оплату скасовано.");
-        } else {
-          setMessage("ℹ️ Оплата не завершена.");
+        } else if (status === "failed") {
+          setMessage("💀 Помилка під час оплати.");
         }
       });
     }
 
-    // Чистимо слухач при виході зі сторінки
+    // При виході — чистимо слухач
     return () => {
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.offEvent("invoiceClosed");
@@ -43,6 +54,7 @@ export default function DepositPage() {
     };
   }, []);
 
+  // === Створення інвойсу ===
   const handleDeposit = async (amount) => {
     try {
       setLoading(true);
@@ -53,12 +65,13 @@ export default function DepositPage() {
 
       if (res.data?.success && res.data.invoice_link) {
         if (window.Telegram?.WebApp) {
+          // 🔥 Відкриваємо оплату саме у Telegram WebApp, не у браузері
           window.Telegram.WebApp.openInvoice(res.data.invoice_link);
           setMessage("💳 Відкриваємо оплату у Telegram...");
         } else {
-          // fallback — відкриття у браузері
+          // fallback для вебверсії (якщо тестуєш у браузері)
           window.open(res.data.invoice_link, "_blank");
-          setMessage("Оплату відкрито у новій вкладці ✅");
+          setMessage("Відкрито у новому вікні ✅");
         }
       } else {
         setMessage("Не вдалося створити інвойс 😕");
@@ -71,10 +84,24 @@ export default function DepositPage() {
     }
   };
 
+  // === Початкове завантаження поточного балансу ===
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get("/api/user/me");
+        if (res.data?.user) {
+          setBalance(res.data.user.internal_stars || 0);
+        }
+      } catch (e) {
+        console.error("Load balance error:", e);
+      }
+    })();
+  }, []);
+
   return (
     <div className={styles.Container}>
       <h2 className={styles.Title}>💰 Deposit Stars</h2>
-      <p className={styles.Subtitle}>Поповни свій внутрішній баланс ⭐</p>
+      <p className={styles.Subtitle}>Твій поточний баланс: {balance} ⭐</p>
 
       <div className={styles.ButtonGrid}>
         {depositOptions.map(({ amount, bonus }) => (
