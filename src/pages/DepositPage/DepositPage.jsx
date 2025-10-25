@@ -16,20 +16,35 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
-  // === Завантаження поточного балансу ===
+  // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ 🟢 ===
   useEffect(() => {
     const fetchBalance = async () => {
       try {
         const res = await api.get("/api/user/me");
-        if (res.data?.user) setBalance(res.data.user.internal_stars || 0);
+        
+        // Ваш старий код очікував res.data.user, але бекенд повертає масив [ ... ]
+        // if (res.data?.user) setBalance(res.data.user.internal_stars || 0);
+
+        // НОВИЙ КОД:
+        // Ми перевіряємо, чи існує res.data і чи є в ньому перший елемент [0]
+        if (res.data && res.data[0]) {
+          // Беремо internal_stars з ПЕРШОГО об'єкта в масиві
+          setBalance(res.data[0].internal_stars || 0);
+        } else {
+          // Це може спрацювати, якщо бекенд ІНОДІ повертає правильний формат
+          if (res.data?.user) setBalance(res.data.user.internal_stars || 0);
+        }
+        
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch balance:", err);
       }
     };
     fetchBalance();
-  }, []);
+  }, []); // Пустий масив означає, що це спрацює 1 раз при завантаженні
+  // === / Кінець виправлення ===
 
-  // === Створення інвойсу та підтвердження платежу ===
+
+  // === Створення інвойсу та підтвердження платежу (цей код вже правильний) ===
   const handleDeposit = async (amount) => {
     setLoading(true);
     setSelected(amount);
@@ -46,22 +61,15 @@ export default function DepositPage() {
         const tg = window.Telegram.WebApp;
         tg.openInvoice(invoice_link);
 
-        // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ 🟢 ===
-        // 1. Аргумент 'status' перейменовано на 'eventData', бо Telegram надсилає об'єкт
         const onInvoiceClosed = async (eventData) => {
           tg.offEvent("invoiceClosed", onInvoiceClosed);
 
-          // 2. Перевіряємо поле 'status' всередині об'єкта 'eventData'
           if (eventData.status === "paid") {
             setMessage("✅ Оплата завершена. Перевіряємо сервер...");
 
             try {
-              // Викликаємо наш бекенд, який ми виправили раніше
               const completeRes = await api.post("/api/deposit/complete", { payload });
-              
               if (completeRes.data?.success) {
-                // Встановлюємо новий загальний баланс,
-                // який повернув бекенд (internal_stars)
                 setBalance(completeRes.data.internal_stars);
                 setMessage("💰 Баланс оновлено!");
               } else {
@@ -72,11 +80,9 @@ export default function DepositPage() {
               setMessage("⚠️ Не вдалося оновити баланс");
             }
           } else {
-            // Сюди потраплять статуси 'cancelled', 'failed' тощо.
             setMessage("❌ Оплата скасована або не завершена");
           }
         };
-        // === / Кінець виправлення ===
 
         tg.onEvent("invoiceClosed", onInvoiceClosed);
       } else {
