@@ -1,5 +1,5 @@
-import { useState } from "react";
-import api from "../../utils/api"; // твій axios wrapper
+import { useState, useEffect } from "react";
+import api from "../../utils/api";
 import styles from "./DepositPage.module.css";
 
 export default function DepositPage() {
@@ -8,41 +8,68 @@ export default function DepositPage() {
   const [message, setMessage] = useState("");
 
   const depositOptions = [
-    { amount: 1, bonus: 0 },
+    { amount: 10, bonus: 0 },
     { amount: 50, bonus: 0 },
     { amount: 100, bonus: 20 },
     { amount: 500, bonus: 100 },
     { amount: 1000, bonus: 300 },
   ];
 
-const handleDeposit = async (amount) => {
-  try {
-    setLoading(true);
-    setSelected(amount);
-    setMessage("");
+  useEffect(() => {
+    // Ініціалізуємо Telegram WebApp
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
 
-    const res = await api.post("/api/deposit/create_invoice", { amount });
-
-    if (res.data?.success && res.data.invoice_link) {
-      // Якщо користувач у Telegram WebApp
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.openInvoice(res.data.invoice_link);
-        setMessage("Оплата відкрилася у Telegram ✅");
-      } else {
-        // fallback, якщо відкрито не через Telegram
-        window.open(res.data.invoice_link, "_blank");
-        setMessage("Оплату відкрито у новому вікні ✅");
-      }
-    } else {
-      setMessage("Не вдалося створити інвойс 😕");
+      // ✅ Відстежуємо подію закриття інвойсу
+      window.Telegram.WebApp.onEvent("invoiceClosed", (status) => {
+        console.log("Invoice status:", status);
+        if (status === "paid") {
+          setMessage("✅ Оплата успішна! Баланс буде оновлено.");
+          // Можна зробити додатковий запит на бекенд, щоб оновити дані користувача:
+          // await api.get("/user/me");
+        } else if (status === "cancelled") {
+          setMessage("❌ Оплату скасовано.");
+        } else {
+          setMessage("ℹ️ Оплата не завершена.");
+        }
+      });
     }
-  } catch (err) {
-    console.error("Deposit error:", err);
-    setMessage("Помилка під час створення інвойсу");
-  } finally {
-    setLoading(false);
-  }
-};
+
+    // Чистимо слухач при виході зі сторінки
+    return () => {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.offEvent("invoiceClosed");
+      }
+    };
+  }, []);
+
+  const handleDeposit = async (amount) => {
+    try {
+      setLoading(true);
+      setSelected(amount);
+      setMessage("");
+
+      const res = await api.post("/api/deposit/create_invoice", { amount });
+
+      if (res.data?.success && res.data.invoice_link) {
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.openInvoice(res.data.invoice_link);
+          setMessage("💳 Відкриваємо оплату у Telegram...");
+        } else {
+          // fallback — відкриття у браузері
+          window.open(res.data.invoice_link, "_blank");
+          setMessage("Оплату відкрито у новій вкладці ✅");
+        }
+      } else {
+        setMessage("Не вдалося створити інвойс 😕");
+      }
+    } catch (err) {
+      console.error("Deposit error:", err);
+      setMessage("Помилка під час створення інвойсу");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.Container}>
@@ -60,9 +87,7 @@ const handleDeposit = async (amount) => {
             disabled={loading}
           >
             <div className={styles.Amount}>{amount} ⭐</div>
-            {bonus > 0 && (
-              <div className={styles.Bonus}>+{bonus} бонус</div>
-            )}
+            {bonus > 0 && <div className={styles.Bonus}>+{bonus} бонус</div>}
           </button>
         ))}
       </div>
