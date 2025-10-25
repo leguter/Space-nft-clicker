@@ -374,12 +374,12 @@ min-width: 220px;
   height: 26px;
 }
 
-.InternalStarsWrapper p {
+/* .InternalStarsWrapper p {
   color: #000;
   font-weight: 600;
   margin-top: 4px;
   font-size: 14px;
-}
+} */
 
 /* Прибираємо стару кнопку "+" */
 .PlusButton {
