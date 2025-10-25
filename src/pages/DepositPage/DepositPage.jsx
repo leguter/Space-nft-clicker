@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+// 1. Імпортуємо useNavigate
+import { useNavigate } from "react-router-dom"; 
 import api from "../../utils/api";
 import styles from "./DepositPage.module.css";
 
@@ -8,6 +10,9 @@ export default function DepositPage() {
   const [message, setMessage] = useState("");
   const [balance, setBalance] = useState(0);
 
+  // 2. Ініціалізуємо хук навігації
+  const navigate = useNavigate();
+
   const depositOptions = [
     { amount: 1, bonus: 0 },
     { amount: 50, bonus: 0 },
@@ -16,20 +21,16 @@ export default function DepositPage() {
     { amount: 1000, bonus: 300 },
   ];
 
-  // === 🟢 ГОЛОВНЕ ВИПРАВЛЕННЯ ТУТ 🟢 ===
+  // === Завантаження поточного балансу ===
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        // 1. ДОДАЄМО ЗАГОЛОВОК АВТОРИЗАЦІЇ
         const res = await api.get("/api/user/me", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
 
-        // 2. ПРАВИЛЬНО ПАРСИМО ДАНІ
-        // Ваш бекенд повертає ОДИН ОБ'ЄКТ (res.json(userResult.rows[0]))
-        // Тому ми звертаємось напряму до res.data
         if (res.data && res.data.internal_stars !== undefined) {
           setBalance(res.data.internal_stars);
         } else {
@@ -42,9 +43,7 @@ export default function DepositPage() {
       }
     };
     fetchBalance();
-  }, []); // Пустий масив = виконати 1 раз при завантаженні
-  // === / Кінець виправлення ===
-
+  }, []); 
 
   // === Створення інвойсу (цей код вже правильний) ===
   const handleDeposit = async (amount) => {
@@ -99,9 +98,18 @@ export default function DepositPage() {
     }
   };
 
-  // === Рендер компонента (без змін) ===
+  // === Рендер компонента ===
   return (
     <div className={styles.Container}>
+      
+      {/* 3. ДОДАНО КНОПКУ "НАЗАД" */}
+      <button 
+        className={styles.BackButton} // Вам потрібно буде додати стилі для .BackButton
+        onClick={() => navigate(-1)} // Ця функція повертає на попередню сторінку
+      >
+        ← Назад
+      </button>
+
       <h2 className={styles.Title}>💰 Deposit Stars</h2>
       <p className={styles.Subtitle}>Твій поточний баланс: {balance} ⭐</p>
 
@@ -120,6 +128,15 @@ export default function DepositPage() {
       </div>
 
       {message && <p className={styles.Message}>{message}</p>}
+
+      {/* 4. ДОДАНО КНОПКУ ДЛЯ РУЛЕТОК */}
+      <button 
+        className={styles.NavButton} // Вам потрібно буде додати стилі для .NavButton
+        onClick={() => navigate("/wheel")} // Змініть "/roulettes" на ваш реальний шлях
+      >
+        🎰 Перейти до рулеток
+      </button>
+
     </div>
   );
 }

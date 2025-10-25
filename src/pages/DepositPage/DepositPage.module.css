@@ -65,3 +65,49 @@
   font-size: 1rem;
   color: #0f0;
 }
+/*
+ * Додайте цей код в кінець вашого файлу DepositPage.module.css
+ */
+
+/* * Стиль для кнопки "← Назад" (зверху)
+ */
+.BackButton {
+  background: none; /* Без фону */
+  border: none; /* Без рамки */
+  color: #a0a0b0; /* Світло-сірий колір (або ваш колір тексту) */
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  margin-bottom: 10px; /* Відступ від заголовка */
+  
+  /* Цей рядок поставить кнопку зліва (якщо .Container це flex-box) */
+  align-self: flex-start; 
+}
+
+.BackButton:hover {
+  color: #ffffff; /* Робимо яскравішою при наведенні */
+}
+
+
+/* * Стиль для кнопки навігації "Перейти до рулеток" (знизу)
+ */
+.NavButton {
+  background-color: #2c2c3a; /* Темний фон, схожий на кнопки депозиту */
+  border: 1px solid #4a4a5a; /* Легка рамка */
+  color: white;
+  font-size: 18px;
+  font-weight: 600; /* Жирний шрифт */
+  cursor: pointer;
+  padding: 14px 20px; /* Робимо кнопку великою */
+  border-radius: 12px; /* Заокруглення, як у кнопок депозиту */
+  width: 100%; /* На всю ширину */
+  margin-top: 20px; /* Відступ зверху від повідомлень або кнопок */
+  text-align: center;
+  
+  /* Ефект при натисканні */
+  transition: background-color 0.2s ease;
+}
+
+.NavButton:hover {
+  background-color: #3a3a4c; /* Трохи світліший фон при наведенні */
+}
