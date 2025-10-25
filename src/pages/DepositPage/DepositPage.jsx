@@ -22,7 +22,7 @@ export default function DepositPage() {
       try {
         const res = await api.get("/api/user/me");
         if (res.data?.user) {
-          setBalance(res.data.user.internal_stars || 0);
+          setBalance(res.data.internal_stars || 0);
         }
       } catch (e) {
         console.error("Load balance error:", e);
