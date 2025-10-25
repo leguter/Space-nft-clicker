@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import api from "../../utils/api"; // Твій файл для API-запитів
-import styles from "./ExchangePage.module.css"; // Твої стилі
+import styles from "./ExchangeModal.module.css"; // Твої стилі
 
 // Опції для обміну
 const exchangeOptions = [
