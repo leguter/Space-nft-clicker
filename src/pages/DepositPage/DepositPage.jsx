@@ -134,7 +134,7 @@ export default function DepositPage() {
         className={styles.NavButton} // Вам потрібно буде додати стилі для .NavButton
         onClick={() => navigate("/wheel")} // Змініть "/roulettes" на ваш реальний шлях
       >
-        🎰 Перейти до рулеток
+        🎰 Wheel Page
       </button>
 
     </div>
