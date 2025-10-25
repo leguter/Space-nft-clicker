@@ -170,9 +170,11 @@ export default function ProfilePage({ user }) {
             <p>Total Clicked</p>
           </div>
 
-         <div>
-  <span className={styles.StatNumber}>
-    {user.user.internal_stars || 0}{" "}
+   <div>
+  <div className={styles.InternalStarsContainer}>
+    <span className={styles.InternalStarsNumber}>
+      {user.user.internal_stars || 0}
+    </span>
     <img src="/images/star.png" alt="star" className={styles.StarIcon} />
     <button
       className={styles.PlusButton}
@@ -180,7 +182,7 @@ export default function ProfilePage({ user }) {
     >
       +
     </button>
-  </span>
+  </div>
   <p>Internal Stars</p>
 </div>
         </div>

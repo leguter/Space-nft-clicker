@@ -343,57 +343,78 @@ min-width: 220px;
   background: linear-gradient(45deg, #00ffff, #00aaff);
   border: none;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   color: #0d0c1d;
   font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .PlusButton:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
 }
 
 /* Модальне вікно */
 .ModalOverlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex; justify-content: center; align-items: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
 
 .DepositModal {
   background: #1a1a2e;
   border-radius: 15px;
-  padding: 25px;
+  padding: 30px 25px;
   text-align: center;
-  box-shadow: 0 0 25px rgba(0,255,255,0.4);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+  max-width: 400px;
+  width: 90%;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Анімація появи модалки */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Сітка кнопок суми депозиту */
 .AmountGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
   margin: 20px 0;
 }
 
 .AmountButton {
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: linear-gradient(45deg, #00ffff, #00aaff);
   color: #0d0c1d;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .AmountButton:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
 }
 
 /* Кнопка закриття модалки */
@@ -402,15 +423,21 @@ min-width: 220px;
   color: #00ffff;
   border: none;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 15px;
+  transition: color 0.2s ease;
 }
+
 .CloseButton:hover {
   color: #a721fd;
 }
+
+/* Іконка зірки */
 .StarIcon {
   width: 18px;
   height: 18px;
   vertical-align: middle;
-  margin-left: 3px; /* невеликий відступ від числа */
+  margin-left: 5px;
+  display: inline-block;
 }
