@@ -357,11 +357,9 @@ export default function HorizontalWheel() {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
 
-  // === НОВІ ЗМІННІ ===
-  const [balance, setBalance] = useState(0); // Стан для балансу
-  const navigate = useNavigate(); // Ініціалізуємо хук навігації
-  const spinCost = 10; // Вартість одного спіну
-  // === / Кінець нових змінних ===
+  const [balance, setBalance] = useState(0);
+  const navigate = useNavigate();
+  const spinCost = 10;
 
   const segmentWidth = 160;
   const totalSegments = segments.length;
@@ -392,7 +390,6 @@ export default function HorizontalWheel() {
     };
     fetchBalance();
   }, []); // Пустий масив = виконати 1 раз при завантаженні
-  // === / Кінець блоку завантаження ===
 
   const spinToReward = (rewardType) => {
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
@@ -423,7 +420,6 @@ export default function HorizontalWheel() {
 
   const handleAnimationComplete = () => {
     if (transition.duration === 0) return;
-
     const currentBaseOffset = offset % wheelCycleLength;
     setTransition({ duration: 0 });
     setOffset(currentBaseOffset);
@@ -432,48 +428,61 @@ export default function HorizontalWheel() {
   const handleSpin = async () => {
     if (spinning) return;
 
-    // 1. Перевіряємо баланс ДО запиту
     if (balance < spinCost) {
       console.log("Недостатньо зірок. Перенаправлення на сторінку поповнення...");
-      // 2. Якщо зірок не вистачає - перекидуємо на сторінку депозиту
-      navigate("/deposit"); // (або ваш шлях до сторінки поповнення)
+      navigate("/deposit");
       return;
     }
 
-    // Якщо грошей вистачає
     setSpinning(true);
     setResult(null);
 
     try {
-      // 3. БІЛЬШЕ НЕ СТВОРЮЄМО ІНВОЙС.
-      // Одразу викликаємо ендпоінт спіну.
+      // Викликаємо ендпоінт спіну
+      // ВАШ БЕКЕНД /api/wheel/spin МАЄ ЗРОБИТИ ПЕРЕВІРКУ
+      // І СПИСАТИ 10 ЗІРОК З internal_stars В БАЗІ ДАНИХ
       const { data: spinData } = await api.post("/api/wheel/spin");
 
       if (!spinData.success) {
-        // Обробляємо помилку з бекенду
+        // Якщо бекенд повернув помилку (напр, "спін не вдався")
         throw new Error(spinData.message || "Спін не вдався");
       }
 
-      // 4. Оновлюємо баланс локально
+      // === 🟢 ВИПРАВЛЕННЯ СПИСАННЯ 🟢 ===
+      // Якщо бекенд повернув новий баланс - використовуємо його
       if (spinData.new_internal_stars !== undefined) {
         setBalance(spinData.new_internal_stars);
       } else {
-        // Якщо бекенд не повернув, оновлюємо оптимістично
+        // Якщо ні - списуємо "оптимістично" (тільки на фронтенді)
         setBalance((prev) => prev - spinCost);
       }
+      // === / Кінець виправлення ===
 
-      // 5. Запускаємо анімацію
+      // Запускаємо анімацію
       spinToReward(spinData.result.type);
 
     } catch (err) {
       console.error("Помилка спіну:", err);
+      // Якщо сталася помилка, гроші не списуються (бо 'setBalance' не викликався)
       setSpinning(false);
     }
+  };
+
+  // 4. Функція для переходу на сторінку депозиту
+  const goToDeposit = () => {
+    navigate("/deposit"); // (або ваш шлях до сторінки поповнення)
   };
 
   return (
     <div className={styles.container}>
       <h2>🎡 Wheel of Fortune</h2>
+
+      {/* 5. ДОДАНО КЛІКАБЕЛЬНИЙ БАЛАНС */}
+      <div className={styles.balanceDisplay} onClick={goToDeposit}>
+        Твій баланс: {balance} ⭐
+        <span className={styles.depositIcon}>+</span>
+      </div>
+      {/* / Кінець доданого блоку */}
 
       <div className={styles.wheelWrapper}>
         <motion.div

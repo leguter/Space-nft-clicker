@@ -137,3 +137,36 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/*
+ * Додайте цей код в кінець вашого файлу HorizontalWheel.module.css
+ */
+
+.balanceDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #c0c0d0; /* Світло-сірий колір тексту */
+  margin-bottom: 20px;
+  cursor: pointer; /* Показує, що елемент клікабельний */
+}
+
+.depositIcon {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #4CAF50; /* Зелений колір (або ваш колір "плюсика") */
+  background-color: rgba(76, 175, 80, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  line-height: 24px; /* Центрує "+" вертикально */
+  text-align: center;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.balanceDisplay:hover .depositIcon {
+  transform: scale(1.1); /* Збільшуємо "+" при наведенні */
+}
