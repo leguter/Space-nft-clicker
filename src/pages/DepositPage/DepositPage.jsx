@@ -9,7 +9,7 @@ export default function DepositPage() {
   const [balance, setBalance] = useState(0); // ← збережений поточний баланс
 
   const depositOptions = [
-    { amount: 10, bonus: 0 },
+    { amount: 1, bonus: 0 },
     { amount: 50, bonus: 0 },
     { amount: 100, bonus: 20 },
     { amount: 500, bonus: 100 },
