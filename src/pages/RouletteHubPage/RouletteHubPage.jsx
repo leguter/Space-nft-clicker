@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import styles from "./RouletteHub.module.css";
+import styles from "./RouletteHubPage.module.css";
 
 export default function RouletteHub() {
   const navigate = useNavigate();
