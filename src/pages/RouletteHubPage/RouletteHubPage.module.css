@@ -1,0 +1,87 @@
+.Container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #050015, #090021);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.Title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #00d9ff;
+  text-shadow: 0 0 10px #00d9ff;
+}
+
+.WheelList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.Card {
+  background: linear-gradient(135deg, #222, #111);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.Card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.Card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+.Card p {
+  font-size: 15px;
+  color: #b0b0b0;
+}
+
+.Card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.Card:hover::before {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .Container {
+    padding: 30px 15px;
+  }
+
+  .Title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .Card {
+    padding: 20px;
+  }
+
+  .Card h3 {
+    font-size: 18px;
+  }
+}

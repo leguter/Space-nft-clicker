@@ -277,6 +277,7 @@ import HorizontalWheel from "./pages/HorizontalWheel/HorizontalWheel";
 import MainLayout from "../src/components/MainLayout/MainLayout";
 import api from './utils/api';
 import DepositPage from "./pages/DepositPage/DepositPage";
+import RouletteHub from "./pages/RouletteHubPage/RouletteHubPage";
 
 export default function App() {
   const [userData, setUserData] = useState(null);
@@ -369,7 +370,8 @@ export default function App() {
           <Route path="raffles/:id" element={<RaffleDetail />} />
           <Route path="boosters" element={<BoostersPage />} />
           <Route path="profile" element={<ProfilePage user={userData} />} />
-          <Route path="/wheel" element={<HorizontalWheel />} />
+          <Route path="/wheel" element={<RouletteHub />} />
+          <Route path="/wheel/stardard" element={<HorizontalWheel />} />
            <Route path="/deposit" element={<DepositPage />} />
         </Route>
       </Routes>
