@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "../../utils/api";
-import styles from "./WheelPage.module.css";
+import styles from "./WheelsPage.module.css";
 
 export default function WheelBase({ title, segments, apiEndpoint }) {
   const [spinning, setSpinning] = useState(false);
