@@ -278,6 +278,8 @@ import MainLayout from "../src/components/MainLayout/MainLayout";
 import api from './utils/api';
 import DepositPage from "./pages/DepositPage/DepositPage";
 import RouletteHub from "./pages/RouletteHubPage/RouletteHubPage";
+import ReferralWheel from "./pages/wheels/ReferralWheel";
+import DailyWheel from "./pages/wheels/DailyWheel";
 
 export default function App() {
   const [userData, setUserData] = useState(null);
@@ -370,9 +372,15 @@ export default function App() {
           <Route path="raffles/:id" element={<RaffleDetail />} />
           <Route path="boosters" element={<BoostersPage />} />
           <Route path="profile" element={<ProfilePage user={userData} />} />
-          <Route path="/wheel" element={<RouletteHub />} />
-          <Route path="/wheel/stardard" element={<HorizontalWheel />} />
+          {/* <Route path="/wheel" element={<RouletteHub />} />
+          <Route path="/wheel/standard" element={<HorizontalWheel />} /> */}
            <Route path="/deposit" element={<DepositPage />} />
+           <Route path="/wheel">
+  <Route index element={<RouletteHub />} />
+  <Route path="standard" element={<HorizontalWheel />} />
+  <Route path="referral" element={<ReferralWheel />} />
+  <Route path="daily" element={<DailyWheel />} />
+</Route>
         </Route>
       </Routes>
       <ToastContainer

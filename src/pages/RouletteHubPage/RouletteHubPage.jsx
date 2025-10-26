@@ -9,7 +9,7 @@ export default function RouletteHub() {
       title: "Standard Wheel",
       desc: "Крути за зірки 🌟",
       path: "/wheel/standard",
-      color: "linear-gradient(135deg, #00c3ff, #0066ff)",
+      color: "linear-gradient(135deg, #007bff, #00e1ff)",
     },
     {
       title: "Referral Wheel",
@@ -21,8 +21,14 @@ export default function RouletteHub() {
       title: "Daily Wheel",
       desc: "1 спін кожні 24 години ⏰",
       path: "/wheel/daily",
-      color: "linear-gradient(135deg, #00ff88, #007744)",
+      color: "linear-gradient(135deg, #00ff88, #008f4c)",
     },
+    // {
+    //   title: "Premium Wheel",
+    //   desc: "Елітні призи 💎",
+    //   path: "/wheel/premium",
+    //   color: "linear-gradient(135deg, #b400ff, #ff008c)",
+    // },
   ];
 
   return (
