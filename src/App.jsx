@@ -278,8 +278,8 @@ import MainLayout from "../src/components/MainLayout/MainLayout";
 import api from './utils/api';
 import DepositPage from "./pages/DepositPage/DepositPage";
 import RouletteHub from "./pages/RouletteHubPage/RouletteHubPage";
-import ReferralWheel from "./pages/wheels/ReferralWheel";
-import DailyWheel from "./pages/wheels/DailyWheel";
+import ReferralWheel from "./pages/WheelsPage/ReferralWheel";
+import DailyWheel from "./pages/WheelsPage/DailyWheel";
 
 export default function App() {
   const [userData, setUserData] = useState(null);

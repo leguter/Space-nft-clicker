@@ -1,0 +1,246 @@
+/* .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #cce4ff;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0b0e2e, #03051b);
+  padding-top: 40px;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff;
+  margin-bottom: 20px;
+}
+
+.wheelContainer {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin-bottom: 20px;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid #00ffff;
+  position: relative;
+  transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+  overflow: hidden;
+}
+
+.segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0% 0%;
+  background: rgba(0, 255, 255, 0.15);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segment span {
+  transform: skewY(45deg) rotate(90deg);
+  font-size: 0.8rem;
+}
+
+.pointer {
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 24px solid #00ffff;
+  position: absolute;
+  top: -28px;
+  left: calc(50% - 12px);
+  filter: drop-shadow(0 0 6px #00ffff);
+}
+
+.spinButton {
+  background: #00ffff;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spinButton:hover {
+  background: #0ff9;
+  box-shadow: 0 0 12px #00ffff;
+}
+
+.resultBox {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.balance {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #aaf;
+} */
+
+/* SpaceRaffle.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: white;
+  background: radial-gradient(circle at center, #0a0026, #000010 80%);
+  overflow: hidden; /* Щоб градієнти не виходили за межі */
+}
+
+.title {
+  font-size: 1.25rem; /* text-xl */
+  margin-bottom: 1rem; /* mb-4 */
+  letter-spacing: 0.1em; /* tracking-widest */
+  color: #c4b5fd; /* text-purple-300 */
+  font-weight: 700; /* font-bold */
+}
+
+.wheelWrapper {
+  position: relative;
+}
+
+.pointer {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 20px solid #ff00cc;
+  filter: drop-shadow(0 0 10px #ff00cc);
+}
+/* .wheel {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.3);
+} */
+ .wheel {
+
+  
+  width: 300px;
+  height: 300px;
+  position: relative;
+  border-radius: 9999px; /* rounded-full */
+  overflow: hidden;
+  
+  /* ❗️ ВИДАЛЯЄМО СТАРИЙ BORDER ❗️ */
+  /* border: 4px solid #5b21b6; */ 
+
+  /* ❗️ ДОДАЄМО НОВІ ТІНІ ❗️ */
+  /* 1. Внутрішня тінь (для обрізки) */
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5),
+  /* 2. Ваша стара тінь-сяйво */
+              0 0 30px rgba(120, 0, 255, 0.7),
+  /* 3. Нова "рамка" (4px) */
+              0 0 0 4px #5b21b6;
+}
+
+.segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0% 0%;
+  display: flex;
+  align-items: center;
+  border: 1px solid white;
+  /* box-sizing: border-box; */
+  justify-content: center;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  user-select: none;
+}
+
+
+
+
+.segmentSpan {
+  display: inline-block;
+  width: 110px;
+  text-align: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+.spinButton {
+  margin-top: 2rem; /* mt-8 */
+  padding: 0.75rem 1.5rem; /* px-6 py-3 */
+  border-radius: 0.75rem; /* rounded-xl */
+  font-weight: 600; /* font-semibold */
+  font-size: 1.125rem; /* text-lg */
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  background-image: linear-gradient(to right, #7a00ff, #ff00cc);
+  transition: transform 150ms;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.spinButton:hover {
+  transform: scale(1.05); /* hover:scale-105 */
+}
+
+.spinButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+
+.resultBox {
+  margin-top: 1.5rem; /* mt-6 */
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  color: #ffe600;
+  text-shadow: 0 0 20px #ff00cc;
+  animation: blink 0.5s ease-in-out infinite alternate;
+}
+
+.ticketsBox {
+  margin-top: 1rem; /* mt-4 */
+  font-size: 1.125rem; /* text-lg */
+}
+
+.balanceBox {
+  margin-top: 0.5rem; /* mt-2 */
+  font-size: 1.125rem; /* text-lg */
+}
+
+/* Анімація блимання */
+@keyframes blink {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
