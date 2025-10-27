@@ -83,41 +83,31 @@ export default function UniversalWheel({ mode = "paid" }) {
     })();
   }, [mode]);
 
-  // === Автооновлення реферальних спінів ===
+  // === Періодичне оновлення стану для referral та daily ===
   useEffect(() => {
-    if (mode !== "referral") return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await api.get("/api/wheel/referral_status");
-        if (res.data.referral_spins !== availableSpins) {
-          setAvailableSpins(res.data.referral_spins);
+    if (mode === "referral") {
+      const interval = setInterval(async () => {
+        try {
+          const res = await api.get("/api/wheel/referral_status");
+          setAvailableSpins(res.data.referral_spins || 0);
+        } catch (err) {
+          console.error("Referral update error:", err);
         }
-      } catch (err) {
-        console.error("Referral update error:", err);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [mode, availableSpins]);
-
-  // === Автооновлення щоденного спіну ===
-  useEffect(() => {
-    if (mode !== "daily") return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await api.get("/api/wheel/daily_status");
-        if (res.data.daily_available !== canSpin) {
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+    if (mode === "daily") {
+      const interval = setInterval(async () => {
+        try {
+          const res = await api.get("/api/wheel/daily_status");
           setCanSpin(res.data.daily_available);
+        } catch (err) {
+          console.error("Daily update error:", err);
         }
-      } catch (err) {
-        console.error("Daily update error:", err);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [mode, canSpin]);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [mode]);
 
   // === Обертання колеса ===
   const spinToReward = (rewardType) => {
