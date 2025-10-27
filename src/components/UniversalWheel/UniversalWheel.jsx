@@ -8,58 +8,91 @@ export default function UniversalWheel({ mode = "paid" }) {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [availableSpins, setAvailableSpins] = useState(0);
+  const [canSpin, setCanSpin] = useState(true);
+  const [nextSpinTime, setNextSpinTime] = useState(null);
   const [offset, setOffset] = useState(0);
   const [transition, setTransition] = useState({ duration: 0, ease: "easeOut" });
 
   const navigate = useNavigate();
   const spinCost = 10;
 
-  // 🔹 Універсальні сегменти (можна заміняти залежно від mode)
-  const segments = [
-    { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-    { label: "NFT Calendar", type: "nft", image: "/images/calendar.jpg", stars: 1200 },
-    { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
-    { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
-    { label: "Swiss Watch", type: "nft", image: "/images/swisswatch.jpg", stars: 5500 },
-  ];
+  // === 🔹 Визначаємо сегменти залежно від типу рулетки ===
+  const getSegments = () => {
+    if (mode === "paid") {
+      return [
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+        { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+        { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
+        { label: "💎 20 Stars", type: "stars", stars: 20, image: "/images/20stars.png" },
+      ];
+    }
+
+    if (mode === "daily") {
+      return [
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "🌟 3 Stars", type: "stars", stars: 3, image: "/images/3stars.png" },
+        { label: "🧧 Bonus Box", type: "nft", image: "/images/bonusbox.jpg", stars: 200 },
+        { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+      ];
+    }
+
+    if (mode === "referral") {
+      return [
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "💰 10 Stars", type: "stars", stars: 10, image: "/images/10stars.png" },
+        { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
+        { label: "🎟 2 Tickets", type: "raffle_ticket", image: "/images/2tickets.png" },
+      ];
+    }
+
+    return [];
+  };
+
+  const segments = getSegments();
 
   const segmentWidth = 160;
   const totalSegments = segments.length;
   const wheelCycleLength = totalSegments * segmentWidth;
   const centeringOffset = segmentWidth / 2;
 
-  // === Завантаження балансу ===
+  // === 🧩 Ініціалізація даних ===
   useEffect(() => {
-    const fetchBalance = async () => {
+    (async () => {
       try {
-        const res = await api.get("/api/user/me", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-        });
-        setBalance(res.data?.internal_stars ?? 0);
-      } catch (err) {
-        console.error("❌ Balance error:", err);
-        setBalance(0);
-      }
-    };
-    fetchBalance();
-  }, []);
+        if (mode === "paid") {
+          const res = await api.get("/api/user/me", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+          });
+          setBalance(res.data.internal_stars || 0);
+        }
 
-  // === Обертання ===
+        if (mode === "daily") {
+          const res = await api.get("/api/wheel/daily_status");
+          setCanSpin(res.data.can_spin);
+          setNextSpinTime(res.data.next_spin_time);
+        }
+
+        if (mode === "referral") {
+          const res = await api.get("/api/wheel/referral_status");
+          setAvailableSpins(res.data.available_spins || 0);
+        }
+      } catch (err) {
+        console.error("Init error:", err);
+      }
+    })();
+  }, [mode]);
+
+  // === 🌀 Обертання ===
   const spinToReward = (rewardType) => {
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
-    if (winningIndex === -1) {
-      console.error("Приз не знайдено:", rewardType);
-      setSpinning(false);
-      return;
-    }
+    if (winningIndex === -1) return;
 
     const targetPosition = winningIndex * -segmentWidth + centeringOffset;
-    const currentOffset = offset;
-    const currentBaseOffset = currentOffset % wheelCycleLength;
+    const currentBaseOffset = offset % wheelCycleLength;
     const randomTurns = 4 + Math.floor(Math.random() * 3);
-    const spinDistance = wheelCycleLength * randomTurns;
-
-    const finalOffset = currentOffset + (targetPosition - currentBaseOffset) - spinDistance;
+    const finalOffset = offset + (targetPosition - currentBaseOffset) - wheelCycleLength * randomTurns;
 
     setTransition({ duration: 4, ease: "easeOut" });
     setResult(null);
@@ -71,6 +104,49 @@ export default function UniversalWheel({ mode = "paid" }) {
     }, 4500);
   };
 
+  // === 🎯 Обробка спіну ===
+  const handleSpin = async () => {
+    if (spinning) return;
+
+    setSpinning(true);
+
+    try {
+      let data;
+
+      if (mode === "paid") {
+        if (balance < spinCost) {
+          navigate("/deposit");
+          setSpinning(false);
+          return;
+        }
+        const res = await api.post("/api/wheel/spin");
+        data = res.data;
+        if (data.new_internal_stars !== undefined) setBalance(data.new_internal_stars);
+        else setBalance((b) => b - spinCost);
+      }
+
+      if (mode === "daily") {
+        const res = await api.post("/api/wheel/daily_spin");
+        data = res.data;
+        setCanSpin(false);
+        setNextSpinTime(data.next_spin_time);
+      }
+
+      if (mode === "referral") {
+        const res = await api.post("/api/wheel/referral_spin");
+        data = res.data;
+        setAvailableSpins((prev) => prev - 1);
+      }
+
+      if (!data.success) throw new Error(data.message);
+      spinToReward(data.result.type);
+    } catch (err) {
+      console.error("Spin error:", err);
+      setSpinning(false);
+    }
+  };
+
+  // === Анімація завершена ===
   const handleAnimationComplete = () => {
     if (transition.duration === 0) return;
     const currentBaseOffset = offset % wheelCycleLength;
@@ -78,42 +154,35 @@ export default function UniversalWheel({ mode = "paid" }) {
     setOffset(currentBaseOffset);
   };
 
-  const handleSpin = async () => {
-    if (spinning) return;
-
-    if (balance < spinCost) {
-      navigate("/deposit");
-      return;
-    }
-
-    setSpinning(true);
-    setResult(null);
-
-    try {
-      const { data: spinData } = await api.post("/api/wheel/spin");
-      if (!spinData.success) throw new Error(spinData.message || "Spin failed");
-
-      if (spinData.new_internal_stars !== undefined)
-        setBalance(spinData.new_internal_stars);
-      else setBalance((prev) => prev - spinCost);
-
-      spinToReward(spinData.result.type);
-    } catch (err) {
-      console.error("Spin error:", err);
-      setSpinning(false);
-    }
+  // === Текст кнопки ===
+  const renderSpinButton = () => {
+    if (mode === "paid") return spinning ? "Spinning..." : `Spin for ${spinCost} ⭐`;
+    if (mode === "daily")
+      return spinning
+        ? "Spinning..."
+        : canSpin
+        ? "Spin Free"
+        : `Next spin: ${nextSpinTime ? new Date(nextSpinTime).toLocaleTimeString() : "—"}`;
+    if (mode === "referral")
+      return spinning ? "Spinning..." : availableSpins > 0 ? `Spin (${availableSpins})` : "No spins left";
   };
 
-  const goToDeposit = () => navigate("/deposit");
+  // === Назва ===
+  const getTitle = () => {
+    if (mode === "paid") return "🎡 Paid Wheel";
+    if (mode === "daily") return "🎁 Daily Wheel";
+    if (mode === "referral") return "🤝 Referral Wheel";
+  };
 
   return (
     <div className={styles.container}>
-      <h2>🎡 Wheel of Fortune</h2>
+      <h2>{getTitle()}</h2>
 
-      <div className={styles.balanceDisplay} onClick={goToDeposit}>
-        Your Balance: {balance} ⭐
-        <span className={styles.depositIcon}>+</span>
-      </div>
+      {mode === "paid" && (
+        <div className={styles.balanceDisplay} onClick={() => navigate("/deposit")}>
+          Your Balance: {balance} ⭐ <span className={styles.depositIcon}>+</span>
+        </div>
+      )}
 
       <div className={styles.wheelWrapper}>
         <motion.div
@@ -128,26 +197,25 @@ export default function UniversalWheel({ mode = "paid" }) {
                 key={`${i}-${idx}`}
                 className={styles.segment}
                 style={{
-                  background: seg.image
-                    ? `url(${seg.image}) center/cover no-repeat`
-                    : seg.color,
+                  background: seg.image ? `url(${seg.image}) center/cover no-repeat` : seg.color,
                 }}
-              >
-                {!seg.image && seg.label}
-              </div>
+              ></div>
             ))
           )}
         </motion.div>
-
         <div className={styles.marker}>▼</div>
       </div>
 
       <button
         onClick={handleSpin}
-        disabled={spinning}
+        disabled={
+          spinning ||
+          (mode === "daily" && !canSpin) ||
+          (mode === "referral" && availableSpins <= 0)
+        }
         className={styles.spinButton}
       >
-        {spinning ? "Spinning..." : `Spin for ${spinCost} ⭐`}
+        {renderSpinButton()}
       </button>
 
       {result && (
