@@ -17,29 +17,15 @@ export default function UniversalWheel({ mode = "paid" }) {
   const navigate = useNavigate();
   const spinCost = 10;
 
-  // === 🔹 Визначаємо сегменти залежно від типу рулетки ===
   const getSegments = () => {
     if (mode === "paid") {
       return [
-          { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-  {
-    label: "calendar",
-    type: "nft",
-    image: "/images/calendar.jpg",
-    stars: 1200,
-  },
-  { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-  { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
-  { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
-  {
-    label: "Swiss watch",
-    type: "nft",
-    image: "/images/swisswatch.jpg",
-    stars: 5500,
-  },
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+        { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+        { label: "🎁 Mystery NFT", type: "nft", image: "/images/nftbox.png" },
       ];
     }
-
     if (mode === "daily") {
       return [
         { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
@@ -48,39 +34,24 @@ export default function UniversalWheel({ mode = "paid" }) {
         { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
       ];
     }
-
     if (mode === "referral") {
       return [
-      { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-  {
-    label: "calendar",
-    type: "nft",
-    image: "/images/calendar.jpg",
-    stars: 1200,
-  },
-  { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-  { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
-  { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
-  {
-    label: "Swiss watch",
-    type: "nft",
-    image: "/images/swisswatch.jpg",
-    stars: 5500,
-  },
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+        { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+        { label: "🎁 Mystery NFT", type: "nft", image: "/images/nftbox.png" },
       ];
     }
-
     return [];
   };
 
   const segments = getSegments();
-
   const segmentWidth = 160;
   const totalSegments = segments.length;
   const wheelCycleLength = totalSegments * segmentWidth;
   const centeringOffset = segmentWidth / 2;
 
-  // === 🧩 Ініціалізація даних ===
+  // === Ініціалізація даних ===
   useEffect(() => {
     (async () => {
       try {
@@ -107,7 +78,25 @@ export default function UniversalWheel({ mode = "paid" }) {
     })();
   }, [mode]);
 
-  // === 🌀 Обертання ===
+  // === Автооновлення реферальних спінів кожні 15 сек ===
+  useEffect(() => {
+    if (mode !== "referral") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get("/api/wheel/referral_status");
+        if (res.data.available_spins !== availableSpins) {
+          setAvailableSpins(res.data.available_spins || 0);
+        }
+      } catch (err) {
+        console.error("Referral update error:", err);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [mode, availableSpins]);
+
+  // === Обертання колеса ===
   const spinToReward = (rewardType) => {
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
     if (winningIndex === -1) return;
@@ -127,10 +116,9 @@ export default function UniversalWheel({ mode = "paid" }) {
     }, 4500);
   };
 
-  // === 🎯 Обробка спіну ===
+  // === Спін ===
   const handleSpin = async () => {
     if (spinning) return;
-
     setSpinning(true);
 
     try {
@@ -145,7 +133,6 @@ export default function UniversalWheel({ mode = "paid" }) {
         const res = await api.post("/api/wheel/spin");
         data = res.data;
         if (data.new_internal_stars !== undefined) setBalance(data.new_internal_stars);
-        else setBalance((b) => b - spinCost);
       }
 
       if (mode === "daily") {
@@ -169,7 +156,6 @@ export default function UniversalWheel({ mode = "paid" }) {
     }
   };
 
-  // === Анімація завершена ===
   const handleAnimationComplete = () => {
     if (transition.duration === 0) return;
     const currentBaseOffset = offset % wheelCycleLength;
@@ -177,7 +163,6 @@ export default function UniversalWheel({ mode = "paid" }) {
     setOffset(currentBaseOffset);
   };
 
-  // === Текст кнопки ===
   const renderSpinButton = () => {
     if (mode === "paid") return spinning ? "Spinning..." : `Spin for ${spinCost} ⭐`;
     if (mode === "daily")
@@ -190,7 +175,6 @@ export default function UniversalWheel({ mode = "paid" }) {
       return spinning ? "Spinning..." : availableSpins > 0 ? `Spin (${availableSpins})` : "No spins left";
   };
 
-  // === Назва ===
   const getTitle = () => {
     if (mode === "paid") return "🎡 Paid Wheel";
     if (mode === "daily") return "🎁 Daily Wheel";
@@ -246,33 +230,6 @@ export default function UniversalWheel({ mode = "paid" }) {
           🎉 You won: <strong>{result.label}</strong>
         </div>
       )}
-
-      <h2 className={styles.sectionTitle}>CASE CONTENTS</h2>
-      <div className={styles.itemsGrid}>
-        {segments.map((item, index) => (
-          <div key={index} className={styles.itemCard}>
-            <div className={styles.itemImageWrapper}>
-              <img
-                src={item.image || "/images/placeholder.png"}
-                alt={item.label}
-                className={styles.itemImage}
-                width="48"
-                height="48"
-              />
-            </div>
-            <div className={styles.itemDetails}>
-              <p className={styles.itemName}>{item.label}</p>
-              {item.stars ? (
-                <div className={styles.itemStars}>
-                  {item.stars} <span className={styles.rotatingStar}>⭐️</span>
-                </div>
-              ) : (
-                <div className={styles.itemStars}></div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
