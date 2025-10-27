@@ -1,0 +1,130 @@
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 30px 16px;
+  color: #fff;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0a0f1c, #000);
+}
+
+.Container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #00e1ff, #ff55cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.balanceDisplay {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  margin-bottom: 25px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.balanceDisplay:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.depositIcon {
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #ffcc00;
+  margin-left: 6px;
+}
+
+.wheelWrapper {
+  position: relative;
+  width: 320px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+  margin-bottom: 24px;
+}
+
+.wheel {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.segment {
+  width: 160px;
+  height: 100%;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #444, #111);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.marker {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: #ffcc00;
+  text-shadow: 0 0 6px #000;
+}
+
+.spinButton {
+  background: linear-gradient(90deg, #00e1ff, #007bff);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 36px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 224, 255, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.spinButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 224, 255, 0.5);
+}
+
+.spinButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #00ffcc;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+}
+
+/* 🧩 Адаптив */
+@media (max-width: 480px) {
+  .wheelWrapper {
+    width: 280px;
+    height: 100px;
+  }
+  .segment {
+    width: 140px;
+  }
+  .spinButton {
+    padding: 12px 28px;
+    font-size: 1rem;
+  }
+}

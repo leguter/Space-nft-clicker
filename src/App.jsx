@@ -280,6 +280,7 @@ import DepositPage from "./pages/DepositPage/DepositPage";
 import RouletteHub from "./pages/RouletteHubPage/RouletteHubPage";
 import ReferralWheel from "./pages/WheelsPage/ReferralWheel";
 import DailyWheel from "./pages/WheelsPage/DailyWheel";
+import UniversalWheel from "./components/UniversalWheel/UniversalWheel";
 
 export default function App() {
   const [userData, setUserData] = useState(null);
@@ -377,9 +378,9 @@ export default function App() {
            <Route path="/deposit" element={<DepositPage />} />
            <Route path="/wheel">
   <Route index element={<RouletteHub />} />
-  <Route path="standard" element={<HorizontalWheel />} />
-  <Route path="referral" element={<ReferralWheel />} />
-  <Route path="daily" element={<DailyWheel />} />
+  <Route path="standard" element={<UniversalWheel mode="paid" />} />
+  <Route path="referral" element={<UniversalWheel mode="referral" />} />
+  <Route path="daily" element={<UniversalWheel mode="daily" />} />
 </Route>
         </Route>
       </Routes>

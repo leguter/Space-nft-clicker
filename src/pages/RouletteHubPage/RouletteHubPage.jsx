@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./RouletteHubPage.module.css";
 
-export default function RouletteHub() {
+export default function RouletteHubPage() {
   const navigate = useNavigate();
 
   const wheels = [
@@ -23,17 +23,12 @@ export default function RouletteHub() {
       path: "/wheel/daily",
       color: "linear-gradient(135deg, #00ff88, #008f4c)",
     },
-    // {
-    //   title: "Premium Wheel",
-    //   desc: "Елітні призи 💎",
-    //   path: "/wheel/premium",
-    //   color: "linear-gradient(135deg, #b400ff, #ff008c)",
-    // },
   ];
 
   return (
     <div className={styles.Container}>
-      <h2 className={styles.Title}>🎰 Choose your Wheel</h2>
+      <h2 className={styles.Title}>🎰 Обери свою рулетку</h2>
+
       <div className={styles.WheelList}>
         {wheels.map((wheel) => (
           <div
