@@ -1,43 +1,9 @@
-.Container {
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  color: white;
   text-align: center;
-  padding: 30px 16px;
-  color: #fff;
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #0a0f1c, #000);
-}
-
-.Container h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  background: linear-gradient(90deg, #00e1ff, #ff55cc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.balanceDisplay {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  margin-bottom: 25px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.balanceDisplay:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.depositIcon {
-  font-weight: bold;
-  font-size: 1.3rem;
-  color: #ffcc00;
-  margin-left: 6px;
 }
 
 .wheelWrapper {
@@ -45,86 +11,162 @@
   width: 320px;
   height: 120px;
   overflow: hidden;
+  border: 3px solid #fff;
   border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
-  margin-bottom: 24px;
+  margin: 20px 0;
 }
 
 .wheel {
   display: flex;
   flex-direction: row;
-  height: 100%;
 }
 
 .segment {
-  width: 160px;
-  height: 100%;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #444, #111);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 160px;
+  height: 120px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
+  align-items: center;
+  font-size: 22px;
+  font-weight: bold;
+  border-right: 2px solid rgba(255,255,255,0.2);
 }
 
 .marker {
   position: absolute;
-  top: -8px;
+  top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1.5rem;
-  color: #ffcc00;
-  text-shadow: 0 0 6px #000;
+  font-size: 22px;
+  color: #ffeb3b;
+  text-shadow: 0 0 4px #000;
 }
 
 .spinButton {
-  background: linear-gradient(90deg, #00e1ff, #007bff);
+  background: linear-gradient(90deg, #ff0077, #ff55cc);
   border: none;
-  border-radius: 12px;
-  padding: 14px 36px;
   color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(0, 224, 255, 0.3);
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.spinButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 224, 255, 0.5);
+  transition: 0.3s;
 }
 
 .spinButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 .result {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #00ffcc;
-  text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+  margin-top: 16px;
+  font-size: 18px;
+}
+/* ITEMS WHEEEL */
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f1f1;
+  margin: 16px 0 8px;
 }
 
-/* 🧩 Адаптив */
-@media (max-width: 480px) {
-  .wheelWrapper {
-    width: 280px;
-    height: 100px;
-  }
-  .segment {
-    width: 140px;
-  }
-  .spinButton {
-    padding: 12px 28px;
-    font-size: 1rem;
-  }
+.itemsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.itemCard {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.itemImageWrapper {
+  width: 48px;
+  height: 48px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e5e5;
+  margin: 0 0 4px 0;
+}
+
+.itemStars {
+  font-size: 13px;
+  color: #ffcc33;
+  display: flex;
+  align-items: center;
+}
+.rotatingStar {
+  display: inline-block;
+  margin-left: 2px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/*
+ * Додайте цей код в кінець вашого файлу HorizontalWheel.module.css
+ */
+
+.balanceDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #c0c0d0; /* Світло-сірий колір тексту */
+  margin-bottom: 20px;
+  cursor: pointer; /* Показує, що елемент клікабельний */
+}
+
+.depositIcon {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #4CAF50; /* Зелений колір (або ваш колір "плюсика") */
+  background-color: rgba(76, 175, 80, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  line-height: 24px; /* Центрує "+" вертикально */
+  text-align: center;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.balanceDisplay:hover .depositIcon {
+  transform: scale(1.1); /* Збільшуємо "+" при наведенні */
 }
