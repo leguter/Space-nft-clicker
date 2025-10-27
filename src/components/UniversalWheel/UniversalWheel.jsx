@@ -13,7 +13,12 @@ export default function UniversalWheel({ mode = "paid" }) {
   const [nextSpinTime, setNextSpinTime] = useState(null);
 
   const navigate = useNavigate();
-
+  const segments = [
+    { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+    { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+    { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+    { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
+  ];
   const segmentWidth = 160;
   const totalSegments = segments.length;
   const wheelCycleLength = totalSegments * segmentWidth;
@@ -25,12 +30,7 @@ export default function UniversalWheel({ mode = "paid" }) {
   const spinCost = 10;
 
   // 🔹 Сегменти (однакові для всіх)
-  const segments = [
-    { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-    { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
-    { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
-    { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
-  ];
+
 
   // === 🧩 1. Ініціалізація за типом рулетки ===
   useEffect(() => {
