@@ -21,11 +21,22 @@ export default function UniversalWheel({ mode = "paid" }) {
   const getSegments = () => {
     if (mode === "paid") {
       return [
-        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-        { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
-        { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
-        { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
-        { label: "💎 20 Stars", type: "stars", stars: 20, image: "/images/20stars.png" },
+          { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+  {
+    label: "calendar",
+    type: "nft",
+    image: "/images/calendar.jpg",
+    stars: 1200,
+  },
+  { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+  { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+  { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+  {
+    label: "Swiss watch",
+    type: "nft",
+    image: "/images/swisswatch.jpg",
+    stars: 5500,
+  },
       ];
     }
 
@@ -40,10 +51,22 @@ export default function UniversalWheel({ mode = "paid" }) {
 
     if (mode === "referral") {
       return [
-        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-        { label: "💰 10 Stars", type: "stars", stars: 10, image: "/images/10stars.png" },
-        { label: "🎁 NFT Box", type: "nft", image: "/images/nftbox.jpg", stars: 500 },
-        { label: "🎟 2 Tickets", type: "raffle_ticket", image: "/images/2tickets.png" },
+      { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+  {
+    label: "calendar",
+    type: "nft",
+    image: "/images/calendar.jpg",
+    stars: 1200,
+  },
+  { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+  { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
+  { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+  {
+    label: "Swiss watch",
+    type: "nft",
+    image: "/images/swisswatch.jpg",
+    stars: 5500,
+  },
       ];
     }
 
