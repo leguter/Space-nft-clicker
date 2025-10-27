@@ -83,6 +83,42 @@ export default function UniversalWheel({ mode = "paid" }) {
     })();
   }, [mode]);
 
+  // === Автооновлення реферальних спінів ===
+  useEffect(() => {
+    if (mode !== "referral") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get("/api/wheel/referral_status");
+        if (res.data.referral_spins !== availableSpins) {
+          setAvailableSpins(res.data.referral_spins);
+        }
+      } catch (err) {
+        console.error("Referral update error:", err);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [mode, availableSpins]);
+
+  // === Автооновлення щоденного спіну ===
+  useEffect(() => {
+    if (mode !== "daily") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get("/api/wheel/daily_status");
+        if (res.data.daily_available !== canSpin) {
+          setCanSpin(res.data.daily_available);
+        }
+      } catch (err) {
+        console.error("Daily update error:", err);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [mode, canSpin]);
+
   // === Обертання колеса ===
   const spinToReward = (rewardType) => {
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
