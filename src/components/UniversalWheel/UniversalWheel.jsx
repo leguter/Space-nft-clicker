@@ -162,7 +162,11 @@ export default function UniversalWheel({ mode = "paid" }) {
       }
 
       if (!data.success) throw new Error(data.message);
-      spinToReward(data.result.type);
+      if (data.result) {
+  spinToReward(data.result.type);
+} else {
+  setSpinning(false);
+}
     } catch (err) {
       console.error("Spin error:", err);
       setSpinning(false);
