@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import api from "../../utils/api";
 import styles from "./UniversalWheel.module.css";
 
+// ❗️ НОВА ФУНКЦІЯ: Генерує "cache buster" (унікальний параметр),
+// щоб запити GET не кешувалися
+const noCache = () => `?_=${new Date().getTime()}`;
+
 export default function UniversalWheel({ mode = "paid" }) {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
@@ -17,7 +21,7 @@ export default function UniversalWheel({ mode = "paid" }) {
   const navigate = useNavigate();
   const spinCost = 10;
 
-  // === Сегменти колеса ===
+  // === Сегменти (без змін) ===
   const getSegments = () => {
     if (mode === "paid") {
       return [
@@ -56,63 +60,63 @@ export default function UniversalWheel({ mode = "paid" }) {
   const wheelCycleLength = totalSegments * segmentWidth;
   const centeringOffset = segmentWidth / 2;
 
-  // === Ініціалізація даних ===
+  // ❗️ РЕФАКТОР: Окремий useEffect для завантаження балансу (запускається 1 раз)
   useEffect(() => {
-    (async () => {
-      try {
-        if (mode === "paid") {
+    if (mode === "paid") {
+      (async () => {
+        try {
+          // Використовуємо той самий 'api.get'
           const res = await api.get("/api/user/me", {
             headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
           });
           setBalance(res.data.internal_stars || 0);
+        } catch (err) {
+          console.error("Paid balance fetch error:", err);
         }
+      })();
+    }
+  }, [mode]);
 
+  // ❗️ РЕФАКТОР: Об'єднаний useEffect для опитування (polling)
+  useEffect(() => {
+    // Функція, яка завантажує статус
+    const fetchWheelStatus = async () => {
+      try {
         if (mode === "daily") {
-          const res = await api.get("/api/wheel/daily_status");
+          const res = await api.get(`/api/wheel/daily_status${noCache()}`);
           setCanSpin(res.data.daily_available);
           setNextSpinTime(res.data.next_spin_time || null);
         }
-
         if (mode === "referral") {
-          const res = await api.get("/api/wheel/referral_status");
+          const res = await api.get(`/api/wheel/referral_status${noCache()}`);
           setAvailableSpins(res.data.referral_spins || 0);
         }
       } catch (err) {
-        console.error("Init error:", err);
+        console.error("Wheel status update error:", err);
       }
-    })();
-  }, [mode]);
+    };
 
-  // === Періодичне оновлення стану для referral та daily ===
-  useEffect(() => {
-    if (mode === "referral") {
-      const interval = setInterval(async () => {
-        try {
-          const res = await api.get("/api/wheel/referral_status");
-          setAvailableSpins(res.data.referral_spins || 0);
-        } catch (err) {
-          console.error("Referral update error:", err);
-        }
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-    if (mode === "daily") {
-      const interval = setInterval(async () => {
-        try {
-          const res = await api.get("/api/wheel/daily_status");
-          setCanSpin(res.data.daily_available);
-        } catch (err) {
-          console.error("Daily update error:", err);
-        }
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [mode]);
+    // 1. Викликаємо одразу при завантаженні компонента
+    fetchWheelStatus();
 
-  // === Обертання колеса ===
+    // 2. Встановлюємо інтервал
+    const interval = setInterval(fetchWheelStatus, 5000);
+
+    // 3. Очищуємо інтервал при виході
+    return () => clearInterval(interval);
+    
+  }, [mode]); // Цей ефект перезапуститься, якщо 'mode' зміниться
+
+  // === Обертання колеса (без змін) ===
   const spinToReward = (rewardType) => {
+    // Знаходимо *перший* індекс, що збігається. Це важливо.
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
-    if (winningIndex === -1) return;
+    if (winningIndex === -1) {
+       console.error(`Could not find segment with type: ${rewardType}`);
+       // Аварійна зупинка, щоб користувач не застряг
+       setSpinning(false); 
+       return;
+    }
 
     const targetPosition = winningIndex * -segmentWidth + centeringOffset;
     const currentBaseOffset = offset % wheelCycleLength;
@@ -129,10 +133,11 @@ export default function UniversalWheel({ mode = "paid" }) {
     }, 4500);
   };
 
-  // === Обробка спіну ===
+  // ❗️ РЕФАКТОР: Обробка спіну тепер коректно оновлює стан
   const handleSpin = async () => {
     if (spinning) return;
     setSpinning(true);
+    setResult(null); // Завжди очищуємо результат перед спіном
 
     try {
       let data;
@@ -145,12 +150,16 @@ export default function UniversalWheel({ mode = "paid" }) {
         }
         const res = await api.post("/api/wheel/spin");
         data = res.data;
-        if (data.new_internal_stars !== undefined) setBalance(data.new_internal_stars);
+        // Оновлюємо баланс з відповіді сервера (це у вас було)
+        if (data.new_internal_stars !== undefined) {
+            setBalance(data.new_internal_stars);
+        }
       }
 
       if (mode === "daily") {
         const res = await api.post("/api/wheel/daily_spin");
         data = res.data;
+        // Оновлюємо стан з відповіді сервера (це у вас було)
         setCanSpin(false);
         setNextSpinTime(data.next_spin_time || null);
       }
@@ -158,22 +167,38 @@ export default function UniversalWheel({ mode = "paid" }) {
       if (mode === "referral") {
         const res = await api.post("/api/wheel/referral_spin");
         data = res.data;
-        setAvailableSpins((prev) => Math.max(prev - 1, 0));
+        
+        // ❗️ ОСЬ ТУТ ВИПРАВЛЕННЯ:
+        // Ми беремо нове значення спінів з відповіді сервера,
+        // а не просто віднімаємо 1.
+        if (data.referral_spins !== undefined) {
+          setAvailableSpins(data.referral_spins);
+        } else {
+          // Аварійний варіант, якщо сервер раптом не повернув
+          setAvailableSpins((prev) => Math.max(prev - 1, 0));
+        }
       }
 
-      if (!data.success) throw new Error(data.message);
-      if (data.result) {
-  spinToReward(data.result.type);
-} else {
-  setSpinning(false);
-}
+      // Загальна обробка результату
+      if (!data.success) {
+        // Якщо сервер повернув { success: false, message: "..." }
+        throw new Error(data.message || "Spin request failed");
+      }
+      
+      if (data.result && data.result.type) {
+        spinToReward(data.result.type);
+      } else {
+        // Якщо спін не вдався (напр, 'no spins left' обійшов 'disabled')
+        setSpinning(false);
+      }
+
     } catch (err) {
       console.error("Spin error:", err);
       setSpinning(false);
     }
   };
 
-  // === Анімація завершена ===
+  // === Анімація завершена (без змін) ===
   const handleAnimationComplete = () => {
     if (transition.duration === 0) return;
     const currentBaseOffset = offset % wheelCycleLength;
@@ -181,7 +206,7 @@ export default function UniversalWheel({ mode = "paid" }) {
     setOffset(currentBaseOffset);
   };
 
-  // === Текст кнопки спіну ===
+  // === Текст кнопки спіну (без змін) ===
   const renderSpinButton = () => {
     if (mode === "paid") return spinning ? "Spinning..." : `Spin for ${spinCost} ⭐`;
     if (mode === "daily")
@@ -194,12 +219,14 @@ export default function UniversalWheel({ mode = "paid" }) {
       return spinning ? "Spinning..." : availableSpins > 0 ? `Spin (${availableSpins})` : "No spins left";
   };
 
+  // === Заголовок (без змін) ===
   const getTitle = () => {
     if (mode === "paid") return "🎡 Paid Wheel";
     if (mode === "daily") return "🎁 Daily Wheel";
     if (mode === "referral") return "🤝 Referral Wheel";
   };
 
+  // === JSX (без змін) ===
   return (
     <div className={styles.container}>
       <h2>{getTitle()}</h2>
