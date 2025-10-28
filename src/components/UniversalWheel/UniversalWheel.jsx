@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import api from "../../utils/api";
 import styles from "./UniversalWheel.module.css";
 
-// ❗️ НОВА ФУНКЦІЯ: Генерує "cache buster" (унікальний параметр),
-// щоб запити GET не кешувалися
 const noCache = () => `?_=${new Date().getTime()}`;
 
 export default function UniversalWheel({ mode = "paid" }) {
@@ -21,8 +19,15 @@ export default function UniversalWheel({ mode = "paid" }) {
   const navigate = useNavigate();
   const spinCost = 10;
 
+  // ❗️ ВИПРАВЛЕННЯ: Створюємо об'єкт з хедерами в одному місці
+  // Це буде використовуватись для ВСІХ запитів
+  const authHeaders = {
+    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+  };
+
   // === Сегменти (без змін) ===
   const getSegments = () => {
+    // ... (ваш код сегментів без змін) ...
     if (mode === "paid") {
       return [
         { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
@@ -60,64 +65,67 @@ export default function UniversalWheel({ mode = "paid" }) {
   const wheelCycleLength = totalSegments * segmentWidth;
   const centeringOffset = segmentWidth / 2;
 
-  // ❗️ РЕФАКТОР: Окремий useEffect для завантаження балансу (запускається 1 раз)
+  // === Ініціалізація балансу ===
   useEffect(() => {
     if (mode === "paid") {
       (async () => {
         try {
-          // Використовуємо той самий 'api.get'
-          const res = await api.get("/api/user/me", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-          });
+          // ❗️ ВИПРАВЛЕНО: Використовуємо authHeaders
+          const res = await api.get("/api/user/me", authHeaders);
           setBalance(res.data.internal_stars || 0);
         } catch (err) {
           console.error("Paid balance fetch error:", err);
         }
       })();
     }
-  }, [mode]);
+  }, [mode]); // Видалено authHeaders із залежностей, щоб уникнути зайвих ре-рендерів
 
-  // ❗️ РЕФАКТОР: Об'єднаний useEffect для опитування (polling)
+  // === Опитування статусу ===
   useEffect(() => {
-    // Функція, яка завантажує статус
+    // Перевіряємо, чи є токен. Якщо ні, немає сенсу робити запити
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        console.error("No auth token found, wheel polling stopped.");
+        return;
+    }
+
+    // Створюємо хедери тут, щоб вони були актуальні
+    const headersConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
     const fetchWheelStatus = async () => {
       try {
         if (mode === "daily") {
-          const res = await api.get(`/api/wheel/daily_status${noCache()}`);
+          // ❗️ ВИПРАВЛЕНО: Додано headersConfig
+          const res = await api.get(`/api/wheel/daily_status${noCache()}`, headersConfig);
           setCanSpin(res.data.daily_available);
           setNextSpinTime(res.data.next_spin_time || null);
         }
         if (mode === "referral") {
-          const res = await api.get(`/api/wheel/referral_status${noCache()}`);
+          // ❗️ ВИПРАВЛЕНО: Додано headersConfig
+          const res = await api.get(`/api/wheel/referral_status${noCache()}`, headersConfig);
           setAvailableSpins(res.data.referral_spins || 0);
         }
       } catch (err) {
-        console.error("Wheel status update error:", err);
+        console.error("Wheel status update error:", err.response?.data || err.message);
       }
     };
 
-    // 1. Викликаємо одразу при завантаженні компонента
     fetchWheelStatus();
-
-    // 2. Встановлюємо інтервал
     const interval = setInterval(fetchWheelStatus, 5000);
-
-    // 3. Очищуємо інтервал при виході
     return () => clearInterval(interval);
     
-  }, [mode]); // Цей ефект перезапуститься, якщо 'mode' зміниться
+  }, [mode]); // Залишаємо залежність тільки від 'mode'
 
   // === Обертання колеса (без змін) ===
   const spinToReward = (rewardType) => {
-    // Знаходимо *перший* індекс, що збігається. Це важливо.
     const winningIndex = segments.findIndex((s) => s.type === rewardType);
     if (winningIndex === -1) {
        console.error(`Could not find segment with type: ${rewardType}`);
-       // Аварійна зупинка, щоб користувач не застряг
        setSpinning(false); 
        return;
     }
-
     const targetPosition = winningIndex * -segmentWidth + centeringOffset;
     const currentBaseOffset = offset % wheelCycleLength;
     const randomTurns = 4 + Math.floor(Math.random() * 3);
@@ -133,11 +141,22 @@ export default function UniversalWheel({ mode = "paid" }) {
     }, 4500);
   };
 
-  // ❗️ РЕФАКТОР: Обробка спіну тепер коректно оновлює стан
+  // === Обробка спіну ===
   const handleSpin = async () => {
     if (spinning) return;
     setSpinning(true);
-    setResult(null); // Завжди очищуємо результат перед спіном
+    setResult(null);
+
+    // ❗️ ВИПРАВЛЕННЯ: Отримуємо хедери ПЕРЕД запитом
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        console.error("Cannot spin, no auth token found");
+        setSpinning(false);
+        return;
+    }
+    const headersConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
 
     try {
       let data;
@@ -148,52 +167,47 @@ export default function UniversalWheel({ mode = "paid" }) {
           setSpinning(false);
           return;
         }
-        const res = await api.post("/api/wheel/spin");
+        // ❗️ ВИПРАВЛЕНО: Додано headersConfig
+        // post запит: api.post(url, data, config)
+        const res = await api.post("/api/wheel/spin", {}, headersConfig); 
         data = res.data;
-        // Оновлюємо баланс з відповіді сервера (це у вас було)
         if (data.new_internal_stars !== undefined) {
             setBalance(data.new_internal_stars);
         }
       }
 
       if (mode === "daily") {
-        const res = await api.post("/api/wheel/daily_spin");
+        // ❗️ ВИПРАВЛЕНО: Додано headersConfig
+        const res = await api.post("/api/wheel/daily_spin", {}, headersConfig);
         data = res.data;
-        // Оновлюємо стан з відповіді сервера (це у вас було)
         setCanSpin(false);
         setNextSpinTime(data.next_spin_time || null);
       }
 
       if (mode === "referral") {
-        const res = await api.post("/api/wheel/referral_spin");
+        // ❗️ ВИПРАВЛЕНО: Додано headersConfig
+        const res = await api.post("/api/wheel/referral_spin", {}, headersConfig);
         data = res.data;
         
-        // ❗️ ОСЬ ТУТ ВИПРАВЛЕННЯ:
-        // Ми беремо нове значення спінів з відповіді сервера,
-        // а не просто віднімаємо 1.
         if (data.referral_spins !== undefined) {
           setAvailableSpins(data.referral_spins);
         } else {
-          // Аварійний варіант, якщо сервер раптом не повернув
           setAvailableSpins((prev) => Math.max(prev - 1, 0));
         }
       }
 
-      // Загальна обробка результату
       if (!data.success) {
-        // Якщо сервер повернув { success: false, message: "..." }
         throw new Error(data.message || "Spin request failed");
       }
       
       if (data.result && data.result.type) {
         spinToReward(data.result.type);
       } else {
-        // Якщо спін не вдався (напр, 'no spins left' обійшов 'disabled')
         setSpinning(false);
       }
 
     } catch (err) {
-      console.error("Spin error:", err);
+      console.error("Spin error:", err.response?.data || err.message);
       setSpinning(false);
     }
   };
