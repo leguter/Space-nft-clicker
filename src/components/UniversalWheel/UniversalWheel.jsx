@@ -36,9 +36,11 @@ export default function UniversalWheel({ mode = "paid" }) {
     if (mode === "daily") {
       return [
         { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
-        { label: "🌟 3 Stars", type: "stars", stars: 3, image: "/images/3stars.png" },
-        { label: "🧧 Bonus Box", type: "nft", image: "/images/bonusbox.jpg", stars: 200 },
+        { label: "Calendar", type: "nft", image: "/images/calendar.jpg", stars: 1200 },
+        { label: "🎟 Ticket", type: "raffle_ticket", image: "/images/ticket.png" },
+        { label: "🌟 5 Stars", type: "stars", stars: 5, image: "/images/5stars.png" },
         { label: "🚀 Boost", type: "boost", image: "/images/boost.png" },
+        { label: "Swiss Watch", type: "nft", image: "/images/swisswatch.jpg", stars: 5500 },
       ];
     }
     if (mode === "referral") {
