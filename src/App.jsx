@@ -285,78 +285,83 @@ import UniversalWheel from "./components/UniversalWheel/UniversalWheel";
 export default function App() {
   const [userData, setUserData] = useState(null);
 
-useEffect(() => {
-    // Функція для реєстрації
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    // Функція для реєстрації реферала
     const registerReferral = async (referrerId) => {
       try {
-        // Викликаємо ваш бекенд-ендпоінт
+        // Цей запит тепер буде мати правильний 'authToken'
         await api.post('/api/user/referral/register', { referrerId });
-        console.log('Referral registered successfully!');
+        console.log('✅ Referral registered successfully!');
       } catch (err) {
-        // Ми не показуємо помилку користувачу (B),
-        // тому що "ви не можете запросити самі себе" або "вже зареєстровані"
-        // не є критичними помилками для нього.
         console.warn('Referral registration failed (this is often OK):', err.response?.data?.message);
       }
     };
 
-    // Перевіряємо, чи є start_param
-    const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+    const waitForInitData = async () => {
+      let attempts = 0;
+      while (!tg.initData && attempts < 10) {
+        await new Promise(res => setTimeout(res, 300));
+        attempts++;
+      }
 
-    if (startParam) {
-      // Якщо параметр є, викликаємо реєстрацію
-      registerReferral(startParam);
-    }
-  }, []);
-useEffect(() => {
-  const tg = window.Telegram.WebApp;
-  tg.ready();
+      if (!tg.initData) {
+        console.error("❌ Не знайдено initData навіть після очікування");
+        setUserData({ error: true });
+        return;
+      }
 
-  const waitForInitData = async () => {
-    // Очікуємо, поки Telegram передасть initData
-    let attempts = 0;
-    while (!tg.initData && attempts < 10) {
-      await new Promise(res => setTimeout(res, 300)); // чекати 0.3 сек
-      attempts++;
-    }
+      try {
+        // console.log("📤 Відправляємо initData:", tg.initData);
 
-    if (!tg.initData) {
-      console.error("❌ Не знайдено initData навіть після очікування");
-      setUserData({ error: true });
-      return;
-    }
+        // 1. АВТЕНТИФІКАЦІЯ
+        const res = await api.post(
+          "/api/auth",
+          { initData: tg.initData }
+        );
+        
+        // console.log("✅ Отримано userData:", res.data);
+        localStorage.setItem("authToken", res.data.token);
+        
+        // 2. ❗️ РЕФАКТОРИНГ ЛОГІКИ РЕЄСТРАЦІЇ РЕФЕРАЛА ❗️
+        
+        // Створюємо об'єкт для роботи з параметрами URL
+        const params = new URLSearchParams(window.location.search);
+        
+        // Дістаємо 'referrer_id' з URL (https://...app?referrer_id=12345)
+        // Це той 'referrer_id', який ваш bot.py успішно додає!
+        const referrerId = params.get('referrer_id'); 
+  
+        // console.log(`Перевірка referrer_id (з URL): ${referrerId || 'НЕ ЗНАЙДЕНО'}`);
+  
+        // ❗️ Ми більше не перевіряємо ненадійний 'start_param'.
+        // Ми перевіряємо 'referrerId' з URL.
+        if (referrerId) {
+          await registerReferral(referrerId);
+        }
 
-    try {
-    console.log("📤 Відправляємо initData:", tg.initData);
+        // 3. ВСТАНОВЛЕННЯ ДАНИХ
+        setUserData(res.data);
 
-    // axios.post приймає URL, потім тіло запиту (data), а потім конфігурацію
-    const res = await api.post(
-      "/api/auth",
-      { initData: tg.initData } // 👈 Тіло запиту передається як об'єкт
-    );
+      } catch (err) {
+        const errorMessage = err.response ? err.response.data.message : "Помилка автентифікації";
+        console.error("❌ Помилка під час авторизації:", errorMessage);
+        setUserData({ error: true });
+      }
+    };
 
-    // ✅ Дані вже в res.data, перевірка res.ok не потрібна
-    console.log("✅ Отримано userData:", res.data);
-    localStorage.setItem("authToken", res.data.token);
-    setUserData(res.data);
+    waitForInitData();
+  }, []); // Пустий масив гарантує, що це виконається один раз
 
-  } catch (err) {
-    // ❌ Axios автоматично переходить сюди при помилці (статус не 2xx)
-    const errorMessage = err.response ? err.response.data.message : "Помилка автентифікації";
-    console.error("❌ Помилка під час авторизації:", errorMessage);
-    setUserData({ error: true });
+  if (userData === null) {
+    return <div>Завантаження...</div>; // Або ваш компонент завантажувача
   }
-};
 
-  waitForInitData();
-}, []); // Пустий масив залежностей означає, що код виконається 1 раз
-if (userData === null) {
-  return <div>Завантаження...</div>;
-}
-
-if (userData?.error) {
-  return <div>Запустіть додаток через Telegram для авторизації</div>;
-}
+  if (userData?.error) {
+    return <div>Запустіть додаток через Telegram для авторизації</div>;
+  }
 
   return (
     <div>
